@@ -28,8 +28,13 @@ export SRCDIR="${KERNELDIR}"
 export OUTDIR="${KERNELDIR}/out"
 
 # AnyKernel and Aroma Location
-export ANYKERNEL="${KERNELDIR}/chewy/aroma/anykernel/"
-export AROMA="${KERNELDIR}/chewy/aroma/"
+if [[ ${WORKER} == raphielbox ]]; then
+    export ANYKERNEL="${HOME}/working/aroma/anykernel/"
+    export AROMA="${HOME}/working/aroma/"
+else
+    export ANYKERNEL="${KERNELDIR}/chewy/aroma/anykernel/"
+    export AROMA="${KERNELDIR}/chewy/aroma/"
+fi
 
 # Wot Arch
 export ARCH="arm64"
@@ -46,31 +51,36 @@ fi
 # Wot is my defconfig?
 export DEFCONFIG="raph_defconfig"
 
-# Where's the zip?
-export ZIP_DIR="${KERNELDIR}/chewy/files/"
+# Where will the zip go?
+if [[ ${WORKER} == semaphore ]]; then
+    export ZIP_DIR="${KERNELDIR}/chewy/files/"
+else
+    export ZIP_DIR="${HOME}/working/weeb_zip"
+fi
+
 export IMAGE="${OUTDIR}/arch/${ARCH}/boot/Image.gz-dtb"
 
 # When it's Clang, do rolls
 if [[ ${CC} == Clang ]]; then
-    echo -e "We're building Clang bois";
+    echo -e "We're building Clang bois"
     
     # Clang configurations
     export CLANG_TCHAIN=clang
     export TCHAIN_PATH=aarch64-linux-gnu-
-    export CLANG_TRIPLE="aarch64-linux-gnu-";
+    export CLANG_TRIPLE="aarch64-linux-gnu-"
     
     # Kbuild Sets
     export KBUILD_COMPILER_STRING="$(${CLANG_TCHAIN} --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')";
-    export CROSS_COMPILE="${TCHAIN_PATH}";
+    export CROSS_COMPILE="${TCHAIN_PATH}"
     
     # Export the make
-    export MAKE="make O=${OUTDIR} CC=clang";
+    export MAKE="make O=${OUTDIR} CC=clang"
     
     # Scream out the Clang compiler used
-    echo -e "Using toolchain: $(${CLANG_TCHAIN} --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')";
+    echo -e "Using toolchain: $(${CLANG_TCHAIN} --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
 else
     # We're using GCC, So throw normal make script
-    export MAKE="make O=${OUTDIR}";
+    export MAKE="make O=${OUTDIR}"
 fi
 
 # Caster configurations
