@@ -99,7 +99,7 @@ if [[ ! -f "${IMAGE}" ]]; then
 else
     echo -e "Build Succesful!";
     tg_yay
-    tg_sendinfo "echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."";
+    tg_sendinfo echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds.";
     success=true;
 fi
 
