@@ -16,6 +16,8 @@ trap '{
     exit -1
 }' INT
 
+setarch
+
 # Toolchain Checkups
 function check_toolchain() {
     export TC="$(find ${TOOLCHAIN}/bin -type f -name *-gcc)"

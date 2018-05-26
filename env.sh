@@ -36,9 +36,10 @@ else
     export AROMA="${KERNELDIR}/chewy/aroma/"
 fi
 
-# Wot Arch
+function setarch() {
 export ARCH="arm64"
 export SUBARCH="arm64"
+}
 
 # Identifier
 export KBUILD_BUILD_USER="raphielscape"
@@ -63,6 +64,7 @@ export IMAGE="${OUTDIR}/arch/${ARCH}/boot/Image.gz-dtb"
 # When it's Clang, do rolls
 if [[ ${CC} == Clang ]]; then
     echo -e "We're building Clang bois"
+    setarch
     
     # Clang configurations
     export CLANG_TCHAIN=clang
