@@ -100,13 +100,16 @@ DIFF=$(($END - $START))
 # Finalize things
 if [[ ! -f "${IMAGE}" ]]; then
     echo -e "Build failed :P";
+    echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."
+    tg_sendinfo "$(echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds.")"
     tg_senderror
     success=false;
     exit 1;
 else
     echo -e "Build Succesful!";
+    echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."
+    tg_sendinfo "$(echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds.")"
     tg_yay
-    tg_sendinfo $(echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds.")
     success=true;
 fi
 
