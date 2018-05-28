@@ -9,14 +9,18 @@ else
     source "${HOME}/working/scripts/env.sh"
 fi
 
+# First-post works
+setperf
+tg_sendstick
+tg_sendinfo "${MSG} started by $(whoami)."
+tg_channelcast "${MSG} started by $(whoami)."
+
 # Whenever build is interrupted by purpose, report it
 trap '{
     tg_sendinfo "${MSG} stopped due to SIGINT, Meh, We will right back"
     tg_channelcast "${MSG} stopped due to SIGINT, Meh, We will right back"
     exit -1
 }' INT
-
-setarch
 
 # Toolchain Checkups
 function check_toolchain() {
@@ -42,13 +46,13 @@ fi
 
 # Set Kerneldir Plox
 if [[ -z ${KERNELDIR} ]]; then
-    echo -e "Please set KERNELDIR";
-    exit 1;
+    echo -e "Please set KERNELDIR"
+    exit 1
 fi
 
 # How much jobs we need?
 if [[ -z "${JOBS}" ]]; then
-    export JOBS="$(grep -c '^processor' /proc/cpuinfo)";
+    export JOBS="$(grep -c '^processor' /proc/cpuinfo)"
 fi
 
 # Toolchain Thrower
@@ -99,14 +103,14 @@ DIFF=$(($END - $START))
 
 # Finalize things
 if [[ ! -f "${IMAGE}" ]]; then
-    echo -e "Build failed :P";
+    echo -e "Build failed :P"
     echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."
     tg_sendinfo "$(echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds.")"
     tg_senderror
     success=false;
     exit 1;
 else
-    echo -e "Build Succesful!";
+    echo -e "Build Succesful!"
     echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."
     tg_sendinfo "$(echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds.")"
     tg_yay
@@ -114,19 +118,19 @@ else
 fi
 
 # Copy the image to AnyKernel 
-echo -e "Copying kernel image";
+echo -e "Copying kernel image"
     cp -v "${IMAGE}" "${ANYKERNEL}/"
-cd -;
+cd -
 
 # Zip the wae
-cd ${AROMA};
-zip -r9 ${FINAL_ZIP} *;
-cd -;
+cd ${AROMA}
+    zip -r9 ${FINAL_ZIP} *
+cd -
 
 # Finalize the zip down
-if [ -f "$FINAL_ZIP" ];
+if [ -f "$FINAL_ZIP" ]
 then
-echo -e "$ZIPNAME zip can be found at $FINAL_ZIP";
+echo -e "$ZIPNAME zip can be found at $FINAL_ZIP"
 if [[ ${success} == true && ${WORKER} == semaphore ]]; then
     echo -e "Uploading ${ZIPNAME} to Dropbox"
     transfer "${FINAL_ZIP}"

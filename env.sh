@@ -36,10 +36,8 @@ else
     export AROMA="${KERNELDIR}/chewy/aroma/"
 fi
 
-function setarch() {
 export ARCH="arm64"
 export SUBARCH="arm64"
-}
 
 # Identifier
 export KBUILD_BUILD_USER="raphielscape"
@@ -64,7 +62,6 @@ export IMAGE="${OUTDIR}/arch/${ARCH}/boot/Image.gz-dtb"
 # When it's Clang, do rolls
 if [[ ${CC} == Clang ]]; then
     echo -e "We're building Clang bois"
-    setarch
     
     # Clang configurations
     export CLANG_TCHAIN=clang
@@ -86,7 +83,14 @@ else
 fi
 
 # Caster configurations
+
+# Messageworks
+if [[ ${WORKER} == raphielbox ]]; then
+MSG="Clang memes staged with commit $(git log --pretty=format:'%h : %s' -1) Under $(hostname) has been"
+else
 MSG="Memes staged with commit $(git log --pretty=format:'%h : %s' -1) Under $(hostname) has been"
+fi
+
 MAIN=-1001371047577
 BUILD=-1001153251064
 STICKER=CAADBAADNwADp8uuGBHV2tl40w7WAg
@@ -167,8 +171,4 @@ function tg_yay() {
     tg_channelcast "Boi"
 }
 
-# Init
-setperf
-tg_sendstick
-tg_sendinfo "${MSG} started by $(whoami)."
-tg_channelcast "${MSG} started by $(whoami)."
+
