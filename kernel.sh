@@ -12,14 +12,14 @@ fi
 # First-post works
 setperf
 tg_sendstick
-tg_sendinfo "${MSG} started by $(whoami)."
-tg_channelcast "${MSG} started by $(whoami)."
+tg_sendinfo "${MSG} started on $(whoami)."
+tg_channelcast "${MSG} started on $(whoami)."
 
 # Whenever build is interrupted by purpose, report it
 trap '{
-    tg_sendinfo "${MSG} stopped due to SIGINT, Meh, We will right back"
-    tg_channelcast "${MSG} stopped due to SIGINT, Meh, We will right back"
-    exit -1
+    tg_sendinfo "$(echo -e "${MSG} Interrupted Expectedly\n@raphielscape Confirm this, b-baka!")"
+    tg_channelcast "$(echo -e "${MSG} Interrupted Expectedly\nBaka @raphielscape")"
+    exit 130
 }' INT
 
 # Toolchain Checkups
@@ -103,15 +103,15 @@ DIFF=$(($END - $START))
 
 # Finalize things
 if [[ ! -f "${IMAGE}" ]]; then
-    echo -e "Build failed :P"
-    echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."
-    tg_sendinfo "$(echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds.")"
+    echo -e "Eeehhh?"
+    echo -e "My works took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds\nbut it's error..."
+    tg_sendinfo "$(echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds\nbut it's error...")"
     tg_senderror
     success=false;
     exit 1;
 else
-    echo -e "Build Succesful!"
-    echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."
+    echo -e "Yay!~"
+    echo -e "My works took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."
     tg_sendinfo "$(echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds.")"
     tg_yay
     success=true;

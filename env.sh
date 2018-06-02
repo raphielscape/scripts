@@ -57,6 +57,7 @@ else
     export ZIP_DIR="${HOME}/working/weeb_zip"
 fi
 
+# Image result
 export IMAGE="${OUTDIR}/arch/${ARCH}/boot/Image.gz-dtb"
 
 # When it's Clang, do rolls
@@ -73,7 +74,7 @@ if [[ ${CC} == Clang ]]; then
     export CROSS_COMPILE="${TCHAIN_PATH}"
     
     # Export the make
-    export MAKE="make O=${OUTDIR} CC=clang"
+    export MAKE="make O=${OUTDIR} CC="ccache clang""
     
     # Scream out the Clang compiler used
     echo -e "Using toolchain: $(${CLANG_TCHAIN} --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
@@ -85,10 +86,10 @@ fi
 # Caster configurations
 
 # Messageworks
-if [[ ${WORKER} == raphielbox ]]; then
-MSG="Clang memes staged with commit $(git log --pretty=format:'%h : %s' -1) Under $(hostname) has been"
+if [[ ${CC} == Clang ]]; then
+MSG="I'm gotta working with Clang at commit $(git log --pretty=format:'%h : %s' -1) Under $(hostname) and it's been"
 else
-MSG="Memes staged with commit $(git log --pretty=format:'%h : %s' -1) Under $(hostname) has been"
+MSG="I'm gotta working with GCC at commit $(git log --pretty=format:'%h : %s' -1) Under $(hostname) and it's been"
 fi
 
 MAIN=-1001371047577
@@ -128,14 +129,6 @@ function tg_sendinfo() {
          -d chat_id=${MAIN} >> /dev/null
 }
 
-# Local builder notification thrower
-function local_done() {
-    localdone="Raphielscaper build completed with the latest commit -";
-    curl -s -X POST https://api.telegram.org/bot$BOT_API_KEY/sendMessage \
-    -d text="$localdone $(git log --pretty=format:'%h : %s' -1)" \
-    -d chat_id=@raphiel_ci >> /dev/null
-}
-
 # Report progress to a Telegram chat
 function tg_sendinfo() {
     curl -s -X POST https://api.telegram.org/bot$BOT_API_KEY/sendMessage \
@@ -153,22 +146,22 @@ function tg_channelcast() {
 
 # Whenever build is interrupted by purpose, report it
 trap '{
-    tg_sendinfo "${MSG} stopped due to SIGINT, Meh, We will right back"
-    tg_channelcast "${MSG} stopped due to SIGINT, Meh, We will right back"
-    exit -1
+    tg_sendinfo "$(echo -e "${MSG} Interrupted Expectedly\n@raphielscape Confirm this, b-baka!")"
+    tg_channelcast "$(echo -e "${MSG} Interrupted Expectedly\nBaka @raphielscape")"
+    exit 130
 }' INT
 
 # Whenever errors occured, report them
 function tg_senderror() {
-    tg_sendinfo "${MSG} errored rrrrrreeeeeeeee."
-    tg_channelcast "${MSG} errored rrrrrreeeeeeeee."
+    tg_sendinfo "$(echo -e "${MSG} Throwing Error(s)\n@raphielscape ...")"
+    tg_channelcast "$(echo -e "${MSG} Throwing Error(s)\nHoi ...")"
     exit 1
 }
 
 # Announce the completion
 function tg_yay() {
-    tg_sendinfo "Science Blaster Time~"
-    tg_channelcast "Boi"
+    tg_sendinfo "$(echo -e "${MSG} Completed yay!~\n@raphielscape Will you give me cookies?")"
+    tg_channelcast "$(echo -e "${MSG} Completed yay!~\nAnd I will got cookies!")"
 }
 
 
