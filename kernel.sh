@@ -17,8 +17,8 @@ tg_channelcast "${MSG} started on $(whoami)."
 
 # Whenever build is interrupted by purpose, report it
 trap '{
-    tg_sendinfo "$(echo -e "${MSG} Interrupted Expectedly\n@raphielscape Confirm this, b-baka!")"
-    tg_channelcast "$(echo -e "${MSG} Interrupted Expectedly\nBaka @raphielscape")"
+    tg_sendinfo "$(echo -e "${MSG} Interrupted Expectedly\n@raphielscape Confirm this, b-bangsat!")"
+    tg_channelcast "$(echo -e "${MSG} Interrupted Expectedly\nBgst @raphielscape")"
     exit 130
 }' INT
 

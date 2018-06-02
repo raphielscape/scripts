@@ -146,15 +146,15 @@ function tg_channelcast() {
 
 # Whenever build is interrupted by purpose, report it
 trap '{
-    tg_sendinfo "$(echo -e "${MSG} Interrupted Expectedly\n@raphielscape Confirm this, b-baka!")"
+    tg_sendinfo "$(echo -e "${MSG} Interrupted Expectedly\n@raphielscape Confirm this, b-bangsat!")"
     tg_channelcast "$(echo -e "${MSG} Interrupted Expectedly\nBaka @raphielscape")"
     exit 130
 }' INT
 
 # Whenever errors occured, report them
 function tg_senderror() {
-    tg_sendinfo "$(echo -e "${MSG} Throwing Error(s)\n@raphielscape ...")"
-    tg_channelcast "$(echo -e "${MSG} Throwing Error(s)\nHoi ...")"
+    tg_sendinfo "$(echo -e "${MSG} Throwing Error(s)\nAsw ...")"
+    tg_channelcast "$(echo -e "${MSG} Throwing Error(s)\nBangsat ...")"
     exit 1
 }
 
