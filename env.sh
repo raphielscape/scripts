@@ -23,6 +23,9 @@ nc='\e[0m'
 
 # Default configurations
 
+# For ccache (ANGERY)
+export PATH="/usr/lib/ccache/bin/:$PATH"
+
 # Sourcedir
 export SRCDIR="${KERNELDIR}"
 export OUTDIR="${KERNELDIR}/out"
@@ -65,8 +68,8 @@ if [[ ${CC} == Clang ]]; then
     echo -e "We're building Clang bois"
     
     # Clang configurations
-    export CLANG_TCHAIN=clang
-    export TCHAIN_PATH=aarch64-linux-gnu-
+    export CLANG_TCHAIN="ccache clang"
+    export TCHAIN_PATH="aarch64-linux-gnu-"
     export CLANG_TRIPLE="aarch64-linux-gnu-"
     
     # Kbuild Sets
@@ -74,7 +77,7 @@ if [[ ${CC} == Clang ]]; then
     export CROSS_COMPILE="${TCHAIN_PATH}"
     
     # Export the make
-    export MAKE="make O=${OUTDIR} CC="ccache clang""
+    export MAKE="make O=${OUTDIR} CC="clang""
     
     # Scream out the Clang compiler used
     echo -e "Using toolchain: $(${CLANG_TCHAIN} --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
