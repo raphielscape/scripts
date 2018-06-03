@@ -61,7 +61,7 @@ else
 fi
 
 # Image result
-export IMAGE="${OUTDIR}/arch/${ARCH}/boot/Image.gz-dtb"
+export IMAGE="${OUTDIR}/arch/${ARCH}/boot/Image-dtb"
 
 # When it's Clang, do rolls
 if [[ ${CC} == Clang ]]; then

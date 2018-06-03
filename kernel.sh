@@ -118,14 +118,14 @@ else
 fi
 
 # Copy the image to AnyKernel 
-echo -e "Copying kernel image"
-    cp -v "${IMAGE}" "${ANYKERNEL}/"
-cd -
+echo -e "Copying kernel image..."
+    cp -v "${IMAGE}" "${ANYKERNEL}/" >> /dev/null
+cd - >> /dev/null
 
 # Zip the wae
-cd ${AROMA}
-    zip -r9 ${FINAL_ZIP} *
-cd -
+cd ${AROMA} >> /dev/null
+    zip -r9 ${FINAL_ZIP} * >> /dev/null
+cd - >> /dev/null
 
 # Finalize the zip down
 if [ -f "$FINAL_ZIP" ]
