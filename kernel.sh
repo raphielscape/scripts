@@ -16,11 +16,7 @@ tg_sendinfo "${MSG} started on $(whoami)."
 tg_channelcast "${MSG} started on $(whoami)."
 
 # Whenever build is interrupted by purpose, report it
-trap '{
-    tg_sendinfo "$(echo -e "${MSG} Interrupted Expectedly\n@raphielscape Confirm this, b-bangsat!")"
-    tg_channelcast "$(echo -e "${MSG} Interrupted Expectedly\nBgst @raphielscape")"
-    exit 130
-}' INT
+trap
 
 # Toolchain Checkups
 function check_toolchain() {

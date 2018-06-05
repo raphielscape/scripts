@@ -90,9 +90,9 @@ fi
 
 # Messageworks
 if [[ ${CC} == Clang ]]; then
-MSG="I'm gotta working with Clang at commit $(git log --pretty=format:'%h : %s' -1) Under $(hostname) and it's been"
+MSG="I'm gotta working with Clang at commit $(git log --pretty=format:'%h : %s' -1) Under $(hostname) and it's"
 else
-MSG="I'm gotta working with GCC at commit $(git log --pretty=format:'%h : %s' -1) Under $(hostname) and it's been"
+MSG="I'm gotta working with GCC at commit $(git log --pretty=format:'%h : %s' -1) Under $(hostname) and it's"
 fi
 
 MAIN=-1001371047577
@@ -149,21 +149,21 @@ function tg_channelcast() {
 
 # Whenever build is interrupted by purpose, report it
 trap '{
-    tg_sendinfo "$(echo -e "${MSG} Interrupted Expectedly\n@raphielscape Confirm this, b-bangsat!")"
+    tg_sendinfo "$(echo -e "Compilation Interrupted Expectedly\n@raphielscape Confirm this, b-bangsat!")"
     tg_channelcast "$(echo -e "${MSG} Interrupted Expectedly\nBaka @raphielscape")"
     exit 130
 }' INT
 
 # Whenever errors occured, report them
 function tg_senderror() {
-    tg_sendinfo "$(echo -e "${MSG} Throwing Error(s)\nAsw ...")"
-    tg_channelcast "$(echo -e "${MSG} Throwing Error(s)\nBangsat ...")"
+    tg_sendinfo "$(echo -e "Build Throwing Error(s)\nAsw ...")"
+    tg_channelcast "$(echo -e "Build Throwing Error(s)\nBangsat ...")"
     exit 1
 }
 
 # Announce the completion
 function tg_yay() {
-    tg_sendinfo "$(echo -e "${MSG} Completed yay!~\n@raphielscape Will you give me cookies?")"
+    tg_sendinfo "$(echo -e "Compilation Completed yay!~\n@raphielscape Will you give me cookies?")"
     tg_channelcast "$(echo -e "${MSG} Completed yay!~\nAnd I will got cookies!")"
 }
 
