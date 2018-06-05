@@ -149,15 +149,30 @@ function tg_channelcast() {
 
 # Whenever build is interrupted by purpose, report it
 trap '{
-    tg_sendinfo "$(echo -e "Compilation Interrupted Expectedly\n@raphielscape Confirm this, b-bangsat!")"
-    tg_channelcast "$(echo -e "${MSG} Interrupted Expectedly\nBaka @raphielscape")"
+    tg_intstick
+    tg_intstickmain
     exit 130
 }' INT
 
+# Interruption Happen, report with sticker
+function tg_intstick() {
+    curl -s -X POST https://api.telegram.org/bot$BOT_API_KEY/sendSticker \
+         -d sticker="CAADAQADFQADlS0LHvIFwsaTaVjGAg" \
+         -d chat_id=${BUILD} >> /dev/null
+}
+
+function tg_intstickmain() {
+    curl -s -X POST https://api.telegram.org/bot$BOT_API_KEY/sendSticker \
+         -d sticker="CAADAQADFQADlS0LHvIFwsaTaVjGAg" \
+         -d chat_id=${MAIN} >> /dev/null
+}
+
 # Whenever errors occured, report them
 function tg_senderror() {
-    tg_sendinfo "$(echo -e "Build Throwing Error(s)\nAsw ...")"
-    tg_channelcast "$(echo -e "Build Throwing Error(s)\nBangsat ...")"
+    tg_channelcast "$(echo -e "Build Throwing Error(s)\n*put my regular badwords here*")"
+    tg_channelcast "$(echo -e "Build Throwing Error(s)\nBangsat...")"
+    [[ ! -z ${STATUS} ]] && \
+    exit ${STATUS} || \
     exit 1
 }
 

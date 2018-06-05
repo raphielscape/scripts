@@ -16,7 +16,10 @@ tg_sendinfo "${MSG} started on $(whoami)."
 tg_channelcast "${MSG} started on $(whoami)."
 
 # Whenever build is interrupted by purpose, report it
-trap
+trap '{
+    STATUS=${?}
+    tg_senderror
+}' ERR
 
 # Toolchain Checkups
 function check_toolchain() {
