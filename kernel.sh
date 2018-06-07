@@ -63,9 +63,9 @@ awk -F ')' '{print $2}' | awk '{print tolower($1)}')"
 
 # Zipname
 if [[ ${CC} == Clang ]]; then
-    export ZIPNAME="weeb-clang-oreo-$(date +%Y%m%d-%H%M).zip"
+    export ZIPNAME="kat-clang-oreo-$(date +%Y%m%d-%H%M).zip"
 else
-    export ZIPNAME="weeb-treble-oreo-$(date +%Y%m%d-%H%M).zip"
+    export ZIPNAME="kat-treble-oreo-$(date +%Y%m%d-%H%M).zip"
 fi
 
 # Final Zip 
