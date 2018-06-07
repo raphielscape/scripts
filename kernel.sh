@@ -15,7 +15,7 @@ tg_sendstick
 tg_sendinfo "${MSG} started on $(whoami)."
 tg_channelcast "${MSG} started on $(whoami)."
 
-# Whenever build is interrupted by purpose, report it
+# Whenever build is errored, report it
 trap '{
     STATUS=${?}
     tg_senderror
@@ -100,31 +100,15 @@ ${MAKE} -j${JOBS};
     END=$(date +"%s")
 DIFF=$(($END - $START))
 
-# Finalize things
-if [[ ! -f "${IMAGE}" ]]; then
-    echo -e "Eeehhh?"
-    echo -e "My works took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds\nbut it's error..."
-    tg_sendinfo "$(echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds\nbut it's error...")"
-    tg_senderror
-    success=false;
-    exit 1;
-else
-    echo -e "Yay!~"
-    echo -e "My works took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."
-    tg_sendinfo "$(echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds.")"
-    tg_yay
-    success=true;
-fi
-
 # Copy the image to AnyKernel 
 echo -e "Copying kernel image..."
-    cp -v "${IMAGE}" "${ANYKERNEL}/" >> /dev/null
-cd - >> /dev/null
+    cp -v "${IMAGE}" "${ANYKERNEL}/"
+cd - 
 
 # Zip the wae
-cd ${AROMA} >> /dev/null
-    zip -r9 ${FINAL_ZIP} * >> /dev/null
-cd - >> /dev/null
+cd ${AROMA} 
+    zip -r9 ${FINAL_ZIP} * $BLUE
+cd - 
 
 # Finalize the zip down
 if [ -f "$FINAL_ZIP" ]
@@ -140,4 +124,20 @@ fi
 else
     echo -e "Zip Creation Failed =("
     tg_senderror
+fi
+
+# Finalize things
+if [[ ! -f "$FINAL_ZIP" ]]; then
+    echo -e "Eeehhh?"
+    echo -e "My works took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds\nbut it's error..."
+    tg_sendinfo "$(echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds\nbut it's error...")"
+    tg_senderror
+    success=false;
+    exit 1;
+else
+    echo -e "Yay!~"
+    echo -e "My works took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."
+    tg_sendinfo "$(echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds.")"
+    tg_yay
+    success=true;
 fi
