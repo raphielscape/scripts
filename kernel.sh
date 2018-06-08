@@ -21,26 +21,9 @@ trap '{
     tg_senderror
 }' ERR
 
-# Toolchain Checkups
-function check_toolchain() {
-    export TC="$(find ${TOOLCHAIN}/bin -type f -name *-gcc)"
-
-	if [[ -f "${TC}" ]]; then
-		export CROSS_COMPILE="${TOOLCHAIN}/bin/$(echo ${TC} | \
-		awk -F '/' '{print $NF'} | \
-        sed -e 's/gcc//')"
-        
-		echo -e "Using toolchain: $(${CROSS_COMPILE}gcc --version | head -1)";
-		
-	else
-		echo -e "No suitable toolchain found in ${TOOLCHAIN}"
-		exit 1;
-	fi
-}
-
 # When the worker is Semaphore
 if [[ ${WORKER} == semaphore ]]; then
-    check_toolchain;
+    check_gcc_toolchain;
 fi
 
 # Set Kerneldir Plox
@@ -111,33 +94,17 @@ cd ${AROMA}
 cd - 
 
 # Finalize the zip down
-if [ -f "$FINAL_ZIP" ]
-then
-echo -e "$ZIPNAME zip can be found at $FINAL_ZIP"
-if [[ ${success} == true && ${WORKER} == semaphore ]]; then
+if [ -f "$FINAL_ZIP" ]; then
+if [[ ${WORKER} == semaphore ]]; then
     echo -e "Uploading ${ZIPNAME} to Dropbox"
     transfer "${FINAL_ZIP}"
     push
 fi
-
+    echo -e "$ZIPNAME zip can be found at $FINAL_ZIP"
+    fin
 # Oh no
 else
     echo -e "Zip Creation Failed =("
-    tg_senderror
+    finerr
 fi
 
-# Finalize things
-if [[ ! -f "$FINAL_ZIP" ]]; then
-    echo -e "Eeehhh?"
-    echo -e "My works took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds\nbut it's error..."
-    tg_sendinfo "$(echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds\nbut it's error...")"
-    tg_senderror
-    success=false;
-    exit 1;
-else
-    echo -e "Yay!~"
-    echo -e "My works took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."
-    tg_sendinfo "$(echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds.")"
-    tg_yay
-    success=true;
-fi

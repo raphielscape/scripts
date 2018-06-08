@@ -182,4 +182,32 @@ function tg_yay() {
     tg_channelcast "$(echo -e "${MSG} Completed yay!~\nAnd I will got cookies!")"
 }
 
+# Finalize things
+function finerr() {
+    echo -e "Eeehhh?"
+    echo -e "My works took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds\nbut it's error..."
+    tg_sendinfo "$(echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds\nbut it's error...")"
+    tg_senderror
+    exit 1
+}
 
+function fin() {
+    echo -e "Yay!~"
+    echo -e "My works took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."
+    tg_sendinfo "$(echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds.")"
+    tg_yay
+}
+
+# Toolchain Checks (GCC)
+function check_gcc_toolchain() {
+    export TC="$(find ${TOOLCHAIN}/bin -type f -name *-gcc)"
+	if [[ -f "${TC}" ]]; then
+		export CROSS_COMPILE="${TOOLCHAIN}/bin/$(echo ${TC} | \
+		awk -F '/' '{print $NF'} | \
+        sed -e 's/gcc//')"
+		echo -e "Using toolchain: $(${CROSS_COMPILE}gcc --version | head -1)";
+	else
+		echo -e "No suitable toolchain found in ${TOOLCHAIN}"
+		exit 1;
+	fi
+}
