@@ -104,6 +104,13 @@ function setperf() {
     echo "performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor >> /dev/null
 }
 
+# Play Cartoon Network Summer Music when execution happen
+if [[ ${WORKER} == raphielbox ]]; then
+	while $@; do play -q ${WIRESLOCATION};done >> /dev/null
+else
+echo -e "No music for you, Semaphore"
+fi
+
 # Dropbox Thrower
 function transfer() {
 	zipname="$(echo $1 | awk -F '/' '{print $NF}')";
@@ -182,15 +189,7 @@ function tg_yay() {
     tg_channelcast "$(echo -e "${MSG} Completed yay!~\nAnd I will got cookies!")"
 }
 
-# Finalize things
-function finerr() {
-    echo -e "Eeehhh?"
-    echo -e "My works took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds\nbut it's error..."
-    tg_sendinfo "$(echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds\nbut it's error...")"
-    tg_senderror
-    exit 1
-}
-
+# Fin Prober
 function fin() {
     echo -e "Yay!~"
     echo -e "My works took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."
@@ -210,4 +209,13 @@ function check_gcc_toolchain() {
 		echo -e "No suitable toolchain found in ${TOOLCHAIN}"
 		exit 1;
 	fi
+}
+
+# Errored Prober
+function finerr() {
+    echo -e "Eeehhh?"
+    echo -e "My works took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds\nbut it's error..."
+    tg_sendinfo "$(echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds\nbut it's error...")"
+    tg_senderror
+    exit 1
 }
