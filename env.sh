@@ -66,19 +66,19 @@ export IMAGE="${OUTDIR}/arch/${ARCH}/boot/Image-dtb"
 # When it's Clang, do rolls
 if [[ ${CC} == Clang ]]; then
     echo -e "We're building Clang bois"
-    
+
     # Clang configurations
     export CLANG_TCHAIN="ccache clang"
     export TCHAIN_PATH="aarch64-linux-gnu-"
     export CLANG_TRIPLE="aarch64-linux-gnu-"
-    
+
     # Kbuild Sets
     export KBUILD_COMPILER_STRING="$(${CLANG_TCHAIN} --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')";
     export CROSS_COMPILE="${TCHAIN_PATH}"
-    
+
     # Export the make
     export MAKE="make O=${OUTDIR} CC="clang""
-    
+
     # Scream out the Clang compiler used
     echo -e "Using toolchain: $(${CLANG_TCHAIN} --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
 else
@@ -106,7 +106,14 @@ function setperf() {
 
 # Play Cartoon Network Summer Music when execution happen
 if [[ ${WORKER} == raphielbox ]]; then
-	while $@; do play -q ${WIRESLOCATION};done >> /dev/null
+  COMPLETE=0
+	if [[ ${COMPLETE} == 0 ]]; then
+    tg_sendinfo "Playing Wires!~"
+    play -q ${WIRESLOCATION} repeat &
+  fi
+  if [[ ${COMPLETE} == 1 ]]; then
+    killplay
+  fi
 else
 echo -e "No music for you, Semaphore"
 fi
@@ -122,7 +129,7 @@ function transfer() {
 # Push to Channel
 function push() {
     curl -F document=@"${ZIP_DIR}/$ZIPNAME" https://api.telegram.org/bot$BOT_API_KEY/sendDocument \
-         -F chat_id="-1001153251064" 
+         -F chat_id="-1001153251064"
 }
 
 # Send the Astolfo FTW Sticker
@@ -158,6 +165,7 @@ function tg_channelcast() {
 trap '{
     tg_intstick
     tg_intstickmain
+    killplay
     exit 130
 }' INT
 
@@ -172,6 +180,11 @@ function tg_intstickmain() {
     curl -s -X POST https://api.telegram.org/bot$BOT_API_KEY/sendSticker \
          -d sticker="CAADAQADFQADlS0LHvIFwsaTaVjGAg" \
          -d chat_id=${MAIN} >> /dev/null
+}
+
+# Stop Music
+function killplay() {
+  killall play
 }
 
 # Whenever errors occured, report them

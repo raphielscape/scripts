@@ -18,6 +18,7 @@ tg_channelcast "${MSG} started on $(whoami)."
 # Whenever build is errored, report it
 trap '{
     STATUS=${?}
+    killplay
     tg_senderror
 }' ERR
 
@@ -51,7 +52,7 @@ else
     export ZIPNAME="kat-treble-oreo-$(date +%Y%m%d-%H%M).zip"
 fi
 
-# Final Zip 
+# Final Zip
 export FINAL_ZIP="${ZIP_DIR}/${ZIPNAME}"
 
 # Prepping
@@ -83,15 +84,15 @@ ${MAKE} -j${JOBS};
     END=$(date +"%s")
 DIFF=$(($END - $START))
 
-# Copy the image to AnyKernel 
+# Copy the image to AnyKernel
 echo -e "Copying kernel image..."
     cp -v "${IMAGE}" "${ANYKERNEL}/"
-cd - 
+cd -
 
 # Zip the wae
-cd ${AROMA} 
+cd ${AROMA}
     zip -r9 ${FINAL_ZIP} * $BLUE
-cd - 
+cd -
 
 # Finalize the zip down
 if [ -f "$FINAL_ZIP" ]; then
@@ -102,9 +103,10 @@ if [[ ${WORKER} == semaphore ]]; then
 fi
     echo -e "$ZIPNAME zip can be found at $FINAL_ZIP"
     fin
+    killplay
 # Oh no
 else
     echo -e "Zip Creation Failed =("
     finerr
+    killplay
 fi
-
