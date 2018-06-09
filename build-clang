@@ -2,6 +2,7 @@
 # Clang compilation script
 # Copyright (C) 2018 Nathan Chancellor
 # Copyright (C) 2018 Albert I (krasCGQ)
+# Copyright (C) 2018 Raphiel Rollerscaperers (raphielscape)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 
@@ -17,7 +18,7 @@ RED="\033[01;31m"
 RST="\033[0m"
 
 # Folder that will house the source and build files
-MAIN_FOLDER=${HOME}/KudProject/clang
+MAIN_FOLDER=${HOME}/working/clang
 
 # Folder that will hold the main LLVM source
 LLVM_FOLDER=${MAIN_FOLDER}/llvm
@@ -240,7 +241,7 @@ function build() {
           -DLLVM_TARGETS_TO_BUILD="AArch64" \
           -DLLVM_OPTIMIZED_TABLEGEN=ON \
           -DLLVM_USE_LINKER=gold \
-          -DCLANG_VENDOR="Flash " \
+          -DCLANG_VENDOR="Wires " \
           -DLLVM_VERSION_PATCH="$(cd "${SVN_FOLDER}" || die "SVN folder doesn't exist";
                                   svn info -r HEAD --show-item revision)" \
           -DLLVM_VERSION_SUFFIX="" \
