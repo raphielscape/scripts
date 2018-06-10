@@ -99,25 +99,6 @@ MAIN=-1001371047577
 BUILD=-1001153251064
 STICKER=CAADBAADNwADp8uuGBHV2tl40w7WAg
 
-# Set Performance as governor when compiling
-function setperf() {
-    echo "performance" | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor >> /dev/null
-}
-
-# Play Cartoon Network Summer Music when execution happen
-if [[ ${WORKER} == raphielbox ]]; then
-  COMPLETE=0
-	if [[ ${COMPLETE} == 0 ]]; then
-    tg_sendinfo "Playing Wires!~"
-    play -q ${WIRESLOCATION} repeat &
-  fi
-  if [[ ${COMPLETE} == 1 ]]; then
-    killplay
-  fi
-else
-echo -e "No music for you, Semaphore"
-fi
-
 # Dropbox Thrower
 function transfer() {
 	zipname="$(echo $1 | awk -F '/' '{print $NF}')";
@@ -180,6 +161,11 @@ function tg_intstickmain() {
     curl -s -X POST https://api.telegram.org/bot$BOT_API_KEY/sendSticker \
          -d sticker="CAADAQADFQADlS0LHvIFwsaTaVjGAg" \
          -d chat_id=${MAIN} >> /dev/null
+}
+
+# Start the music bois
+function wires() {
+  play -q ${WIRESLOCATION} repeat &
 }
 
 # Stop Music

@@ -4,13 +4,20 @@
 
 # Init da wae
 if [[ ${WORKER} == semaphore ]]; then
-    source "chewy/scripts/env.sh"
+    source "${HOME}/scripts/env"
 else
-    source "${HOME}/working/scripts/env.sh"
+    source "${HOME}/working/scripts/env"
+fi
+
+# Play Cartoon Network Summer Music when execution happen
+if [[ ${WORKER} == raphielbox ]]; then
+    tg_sendinfo "Playing Wires!~"
+    wires
+else
+    echo -e "No music for you, Semaphore"
 fi
 
 # First-post works
-setperf
 tg_sendstick
 tg_sendinfo "${MSG} started on $(whoami)."
 tg_channelcast "${MSG} started on $(whoami)."
@@ -58,6 +65,11 @@ export FINAL_ZIP="${ZIP_DIR}/${ZIPNAME}"
 # Prepping
 [ ! -d "${ZIP_DIR}" ] && mkdir -pv ${ZIP_DIR}
 [ ! -d "${OUTDIR}" ] && mkdir -pv ${OUTDIR}
+
+# Link out directory to cache directory as per Semaphore documentation
+if [[ ${WORKER} == semaphore ]]; then
+  ln -s ${SEMAPHORE_CACHE_DIR}/out ${KERNELDIR}/out
+fi
 
 # Here we go
 cd "${SRCDIR}";
