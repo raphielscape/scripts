@@ -25,7 +25,6 @@ tg_channelcast "${MSG} started on $(whoami)."
 # Whenever build is errored, report it
 trap '{
     STATUS=${?}
-    killplay
     tg_senderror
 }' ERR
 
@@ -115,10 +114,12 @@ if [[ ${WORKER} == semaphore ]]; then
 fi
     echo -e "$ZIPNAME zip can be found at $FINAL_ZIP"
     fin
-    killplay
 # Oh no
 else
     echo -e "Zip Creation Failed =("
     finerr
-    killplay
+fi
+
+if [[ ${WORKER} == raphielbox ]]; then
+  killplay
 fi
