@@ -47,7 +47,7 @@ export KBUILD_BUILD_USER="raphielscape"
 
 # Where's my damn Toolchain if it's Semaphore?
 if [[ ${WORKER} == semaphore ]]; then
-    export TOOLCHAIN="${HOME}/GNU/GCC9/"
+    export TOOLCHAIN="${HOME}/GNU/GCC"
 fi
 
 # Wot is my defconfig?
@@ -206,6 +206,7 @@ function check_gcc_toolchain() {
 		echo -e "Using toolchain: $(${CROSS_COMPILE}gcc --version | head -1)";
 	else
 		echo -e "No suitable toolchain found in ${TOOLCHAIN}"
+    tg_senderror
 		exit 1;
 	fi
 }

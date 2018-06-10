@@ -21,7 +21,7 @@ fi
 
 # Clone needed components
 clone https://github.com/raphielscape/raphiel-zip.git ${KERNELDIR}/chewy/aroma
-clone https://github.com/raphielscape/scripts ${KERNELDIR}/chewy/scripts
+clone https://github.com/krasCGQ/aarch64-linux-android.git --branch "opt-gnu-8.x" ${TOOLCHAIN}
 
 # Going to start
 cd ${KERNELDIR}
