@@ -22,9 +22,12 @@ tg_sendstick
 tg_sendinfo "${MSG} started on $(whoami)."
 tg_channelcast "${MSG} started on $(whoami)."
 
-# Whenever build is errored, report it
+# Whenever build is errored, report it, and killplay
 trap '{
     STATUS=${?}
+    if [[ ${WORKER} == raphielbox ]]; then
+      killplay
+    fi
     tg_senderror
 }' ERR
 
