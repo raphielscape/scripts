@@ -9,26 +9,16 @@ else
     source "${HOME}/working/scripts/env"
 fi
 
-# Play Cartoon Network Summer Music when execution happen
-if [[ ${WORKER} == raphielbox ]]; then
-    tg_sendinfo "Playing Wires!~"
-    wires
-else
-    echo -e "No music for you, Semaphore"
-fi
-
 # First-post works
 tg_sendstick
-tg_sendinfo "${MSG} started on $(whoami)."
-tg_channelcast "${MSG} started on $(whoami)."
+tg_sendinfo "${MSG} started on $(whoami)~"
+tg_channelcast "${MSG} started on $(whoami)~"
 
 # Whenever build is errored, report it, and killplay
 trap '{
     STATUS=${?}
-    if [[ ${WORKER} == raphielbox ]]; then
-      killplay
-    fi
     tg_senderror
+    finerr
 }' ERR
 
 # When the worker is Semaphore
@@ -55,7 +45,9 @@ export TCVERSION2="$(${CROSS_COMPILE}gcc --version | head -1 |\
 awk -F ')' '{print $2}' | awk '{print tolower($1)}')"
 
 # Zipname
-if [[ ${CC} == Clang ]]; then
+if [[ ${branch} == MIUI ]]; then
+    export ZIPNAME="kat-miui-$(date +%Y%m%d-%H%M).zip"
+elif [[ ${CC} == Clang ]]; then
     export ZIPNAME="kat-clang-oreo-$(date +%Y%m%d-%H%M).zip"
 else
     export ZIPNAME="kat-treble-oreo-$(date +%Y%m%d-%H%M).zip"
@@ -95,34 +87,77 @@ START=$(date +"%s");
     echo -e "Using ${JOBS} threads to compile"
 ${MAKE} -j${JOBS};
     exitCode="$?";
-    END=$(date +"%s")
-DIFF=$(($END - $START))
+    END=$(date +"%s");
+DIFF=$(($END - $START));
+
+# AnyKernel cleanups
+if [[ ${WORKER} == raphielbox ]]; then
+  echo -e "Bringing-up AnyKernel~";
+  $(rm -rf ${ANYKERNEL});
+    $(cp -R "${WORKDIR}/AnyKernel2-git" "${ANYKERNEL}");
+    cd ${ANYKERNEL};
+      $(rm zImage);
+      $(rm -rf ".git");
+    cd ${ANYKERNEL}/patch;
+      $(rm -rf *);
+    cd -;
+else
+    cd ${ANYKERNEL};
+      $(rm zImage);
+      $(rm -rf ".git");
+    cd ${ANYKERNEL}/patch;
+      $(rm -rf *);
+    cd -;
+fi
 
 # Copy the image to AnyKernel
-echo -e "Copying kernel image..."
-    cp -v "${IMAGE}" "${ANYKERNEL}/"
-cd -
+echo -e "Copying kernel image...";
+    cp "${IMAGE}" "${ANYKERNEL}/";
+cd -;
+
+# Delett old modules if exists and it's MIUI
+if [[ ${branch} == MIUI ]]; then
+  rm -rf "${MODULES}";
+fi
+
+# Copy modules used by MIUI
+if [[ ${branch} == MIUI ]]; then
+  echo -e "Copying modules for MehUI...";
+    cp "${OUTDIR}/block/test-iosched.ko" "${MODULES}";
+    cp "${OUTDIR}/crypto/ansi_cprng.ko" "${MODULES}";
+    cp "${OUTDIR}/drivers/char/rdbg.ko" "${MODULES}";
+    cp "${OUTDIR}/drivers/input/evbug.ko" "${MODULES}";
+    cp "${OUTDIR}/drivers/mmc/card/mmc_block_test.ko" "${MODULES}";
+    cp "${OUTDIR}/drivers/mmc/card/mmc_test.ko" "${MODULES}";
+    cp "${OUTDIR}/drivers/net/wireless/ath/wil6210/wil6210.ko" "${MODULES}";
+    cp "${OUTDIR}/drivers/scsi/ufs/ufs_test.ko" "${MODULES}";
+    cp "${OUTDIR}/drivers/video/backlight/backlight.ko" "${MODULES}";
+    cp "${OUTDIR}/drivers/video/backlight/lcd.ko" "${MODULES}";
+    cp "${OUTDIR}/drivers/video/backlight/generic_bl.ko" "${MODULES}";
+    cp "${OUTDIR}/drivers/spi/spidev.ko" "${MODULES}";
+    cp "${OUTDIR}/net/bridge/br_netfilter.ko" "${MODULES}";
+    cp "${OUTDIR}/net/ipv4/tcp_htcp.ko" "${MODULES}";
+    cp "${OUTDIR}/drivers/staging/prima/wlan.ko" "${MODULES}";
+    mkdir "${MODULES}/pronto";
+    cp "${MODULES}/wlan.ko" "${MODULES}/pronto/pronsto_wlan.ko";
+fi
 
 # Zip the wae
-cd ${AROMA}
-    zip -r9 ${FINAL_ZIP} * $BLUE
-cd -
+cd ${ANYKERNEL};
+  zip -rT9 ${FINAL_ZIP} *;
+cd -;
 
 # Finalize the zip down
 if [ -f "$FINAL_ZIP" ]; then
 if [[ ${WORKER} == semaphore ]]; then
-    echo -e "Uploading ${ZIPNAME} to Dropbox"
-    transfer "${FINAL_ZIP}"
-    push
+    echo -e "Uploading ${ZIPNAME} to Dropbox";
+    transfer "${FINAL_ZIP}";
+    push;
 fi
-    echo -e "$ZIPNAME zip can be found at $FINAL_ZIP"
+    echo -e "${ZIPNAME} can be found at ${FINAL_ZIP}"
     fin
 # Oh no
 else
     echo -e "Zip Creation Failed =("
     finerr
-fi
-
-if [[ ${WORKER} == raphielbox ]]; then
-  killplay
 fi

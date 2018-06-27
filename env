@@ -30,20 +30,36 @@ export PATH="/usr/lib/ccache/bin/:$PATH"
 export SRCDIR="${KERNELDIR}"
 export OUTDIR="${KERNELDIR}/out"
 
+# A little mantra for MIUI build
+branch="$(echo -e $(git rev-parse --abbrev-ref HEAD))"
+
+if [[ ${branch} == miui-new ]]; then
+  echo -e "You're working with MehUI now, feel the meme ahead"
+    export branch="MIUI"
+fi
+
 # AnyKernel and Aroma Location
 if [[ ${WORKER} == raphielbox ]]; then
-    export ANYKERNEL="${HOME}/working/aroma/anykernel/"
-    export AROMA="${HOME}/working/aroma/"
+    export ANYKERNEL="${WORKDIR}/AnyKernel2/"
 else
     export ANYKERNEL="${KERNELDIR}/chewy/aroma/anykernel/"
-    export AROMA="${KERNELDIR}/chewy/aroma/"
 fi
+
+# Modules boi
+if [[ ${branch} == MIUI ]]; then
+    export MODULES="${HOME}/working/AnyKernel2/modules/system/lib/modules"
+fi
+
+# Delett Old AnyKernel in Aroma dir if exists
+rm -rf ${ANYKERNEL_DONE}
 
 export ARCH="arm64"
 export SUBARCH="arm64"
 
 # Identifier
-export KBUILD_BUILD_USER="raphielscape"
+if [[ ${WORKER} == semaphore ]]; then
+  export KBUILD_BUILD_USER="raphielscape"
+fi
 
 # Where's my damn Toolchain if it's Semaphore?
 if [[ ${WORKER} == semaphore ]]; then
@@ -61,7 +77,11 @@ else
 fi
 
 # Image result
-export IMAGE="${OUTDIR}/arch/${ARCH}/boot/Image-dtb"
+if [[ ${branch} == MIUI ]]; then
+  export IMAGE="${OUTDIR}/arch/${ARCH}/boot/Image.gz-dtb"
+else
+  export IMAGE="${OUTDIR}/arch/${ARCH}/boot/Image-dtb"
+fi
 
 # When it's Clang, do rolls
 if [[ ${CC} == Clang ]]; then
@@ -90,36 +110,36 @@ fi
 
 # Messageworks
 if [[ ${CC} == Clang ]]; then
-MSG="I'm gotta working with Clang at commit $(git log --pretty=format:'%h : %s' -1) Under $(hostname) and it's"
+MSG="I'm working with Clang at commit $(git log --pretty=format:'%h : %s' -1) Under $(hostname)"
 else
-MSG="I'm gotta working with GCC at commit $(git log --pretty=format:'%h : %s' -1) Under $(hostname) and it's"
+MSG="I'm working with GCC at commit $(git log --pretty=format:'%h : %s' -1) Under $(hostname)"
 fi
 
 # Technical difficultiescast file Location
-
 BOI="$(cat ${HOME}/working/scripts/techdiff)"
 
-MAIN=-1001371047577
-BUILD=-1001153251064
-STICKER=CAADBAADNwADp8uuGBHV2tl40w7WAg
+# Memes
+MAIN="-1001371047577"
+BUILD="-1001153251064"
+STICKER="CAADBAADNwADp8uuGBHV2tl40w7WAg"
 
 # Dropbox Thrower
 function transfer() {
-	zipname="$(echo $1 | awk -F '/' '{print $NF}')";
-	url="$(bash $KERNELDIR/chewy/scripts/dropbox_uploader.sh upload $1 /megalovania)";
-	printf '\n';
-	echo -e "Download ${zipname} at ${url}";
+    zipname="$(echo $1 | awk -F '/' '{print $NF}')";
+      url="$(bash $KERNELDIR/chewy/scripts/dropbox_uploader.sh upload $1 /megalovania)";
+        printf '\n';
+        echo -e "Download ${zipname} at ${url}";
 }
 
 # Push to Channel
 function push() {
-    curl -F document=@"${ZIP_DIR}/$ZIPNAME" https://api.telegram.org/bot$BOT_API_KEY/sendDocument \
+    curl -F document=@"${ZIP_DIR}/$ZIPNAME" "https://api.telegram.org/bot$BOT_API_KEY/sendDocument" \
          -F chat_id="-1001153251064"
 }
 
 # Send the Astolfo FTW Sticker
 function tg_sendstick() {
-    curl -s -X POST https://api.telegram.org/bot$BOT_API_KEY/sendSticker \
+    curl -s -X POST "https://api.telegram.org/bot$BOT_API_KEY/sendSticker" \
          -d sticker="${STICKER}" \
          -d chat_id=${BUILD} >> /dev/null
 }
@@ -134,16 +154,17 @@ function tg_sendinfo() {
 }
 
 function techdiff() {
-  curl -s "https://api.telegram.org/bot$BOT_API_KEY/sendMessage" \
-       -d "parse_mode=markdown" \
-       -d text="${BOI}" \
-       -d chat_id=${MAIN} \
-       -d "disable_web_page_preview=true"
+    curl -s "https://api.telegram.org/bot$BOT_API_KEY/sendMessage" \
+         -d "parse_mode=markdown" \
+         -d text="${BOI}" \
+         -d chat_id=${MAIN} \
+         -d "disable_web_page_preview=true"
 }
 
 # Report progress to Channelcast
 function tg_channelcast() {
-    curl -s -X POST https://api.telegram.org/bot$BOT_API_KEY/sendMessage \
+    curl -s -X POST "https://api.telegram.org/bot$BOT_API_KEY/sendMessage" \
+         -d "parse_mode=markdown" \
          -d text="${1}" \
          -d chat_id=${BUILD} >> /dev/null
 }
@@ -153,7 +174,6 @@ function tg_channelcast() {
 trap '{
     tg_intstick
     tg_intstickmain
-    killplay
     exit 130
 }' INT
 
@@ -170,16 +190,6 @@ function tg_intstickmain() {
          -d chat_id=${MAIN} >> /dev/null
 }
 
-# Start the music bois
-function wires() {
-  play -q ${WIRESLOCATION} repeat &
-}
-
-# Stop Music
-function killplay() {
-  killall play
-}
-
 # Whenever errors occured, report them
 function tg_senderror() {
     tg_sendinfo "$(echo -e "Build Throwing Error(s)\n*put my regular badwords here*")"
@@ -192,7 +202,7 @@ function tg_senderror() {
 # Announce the completion
 function tg_yay() {
     tg_sendinfo "$(echo -e "Compilation Completed yay!~\n@raphielscape Will you give me cookies?")"
-    tg_channelcast "$(echo -e "${MSG} Completed yay!~\nAnd I will got cookies!")"
+    tg_channelcast "$(echo -e "Compilation Completed yay!~\nAnd I will got cookies!")"
 }
 
 # Fin Prober
@@ -206,16 +216,16 @@ function fin() {
 # Toolchain Checks (GCC)
 function check_gcc_toolchain() {
     export TC="$(find ${TOOLCHAIN}/bin -type f -name *-gcc)"
-	if [[ -f "${TC}" ]]; then
-		export CROSS_COMPILE="${TOOLCHAIN}/bin/$(echo ${TC} | \
-		awk -F '/' '{print $NF'} | \
+  if [[ -f "${TC}" ]]; then
+    export CROSS_COMPILE="${TOOLCHAIN}/bin/$(echo ${TC} | \
+        awk -F '/' '{print $NF'} | \
         sed -e 's/gcc//')"
-		echo -e "Using toolchain: $(${CROSS_COMPILE}gcc --version | head -1)";
-	else
-		echo -e "No suitable toolchain found in ${TOOLCHAIN}"
+    echo -e "Using toolchain: $(${CROSS_COMPILE}gcc --version | head -1)";
+  else
+    echo -e "No suitable toolchain found in ${TOOLCHAIN}"
     tg_senderror
-		exit 1;
-	fi
+    exit 1;
+  fi
 }
 
 # Errored Prober
