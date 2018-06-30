@@ -23,12 +23,12 @@ trap '{
 
 # When the worker is Semaphore
 if [[ ${WORKER} == semaphore ]]; then
-    check_gcc_toolchain;
+    check_gcc_toolchain
 fi
 
 # Set Kerneldir Plox
 if [[ -z ${KERNELDIR} ]]; then
-    echo -e "Please set KERNELDIR"
+    echo "Please set KERNELDIR"
     exit 1
 fi
 
@@ -57,8 +57,10 @@ fi
 export FINAL_ZIP="${ZIP_DIR}/${ZIPNAME}"
 
 # Prepping
+colorize "${RED}"
 [ ! -d "${ZIP_DIR}" ] && mkdir -pv ${ZIP_DIR}
 [ ! -d "${OUTDIR}" ] && mkdir -pv ${OUTDIR}
+decolorize
 
 # Link out directory to cache directory as per Semaphore documentation
 if [[ ${WORKER} == semaphore ]]; then
@@ -66,10 +68,12 @@ if [[ ${WORKER} == semaphore ]]; then
 fi
 
 # Here we go
-cd "${SRCDIR}";
+cd "${SRCDIR}"
 
 # Delett old image
-rm -fv ${IMAGE};
+colorize "${RED}"
+delett ${IMAGE}
+decolorize
 
 # How 2 be Mr.Proper 101
 if [[ "$@" =~ "mrproper" ]]; then
@@ -82,82 +86,98 @@ if [[ "$@" =~ "clean" ]]; then
 fi
 
 # Relatable
-${MAKE} $DEFCONFIG;
-START=$(date +"%s");
-    echo -e "Using ${JOBS} threads to compile"
-${MAKE} -j${JOBS};
-    exitCode="$?";
-    END=$(date +"%s");
-DIFF=$(($END - $START));
+colorize "${CYAN}"
+${MAKE} $DEFCONFIG
+decolorize
+
+START=$(date +"%s")
+header "Using ${JOBS} threads to compile" "${LIGHTCYAN}"
+
+colorize ${LIGHTRED}
+${MAKE} -j${JOBS}
+decolorize
+
+exitCode="$?"
+END=$(date +"%s")
+
+DIFF=$(($END - $START))
 
 # AnyKernel cleanups
-if [[ ${WORKER} == raphielbox ]]; then
-  echo -e "Bringing-up AnyKernel~";
-  $(rm -rf ${ANYKERNEL});
-    $(cp -R "${WORKDIR}/AnyKernel2-git" "${ANYKERNEL}");
-    cd ${ANYKERNEL};
-      $(rm zImage);
-      $(rm -rf ".git");
-    cd ${ANYKERNEL}/patch;
-      $(rm -rf *);
-    cd -;
-else
-    cd ${ANYKERNEL};
-      $(rm zImage);
-      $(rm -rf ".git");
-    cd ${ANYKERNEL}/patch;
-      $(rm -rf *);
-    cd -;
-fi
+header "Bringing-up AnyKernel~"
+colorize ${YELLOW}
+  if [[ ${WORKER} == raphielbox ]]; then
+    delett ${ANYKERNEL}
+      copy "${WORKDIR}/AnyKernel2-git" "${ANYKERNEL}"
+        cd ${ANYKERNEL} >> /dev/null
+          delett -v zImage
+          delett ".git"
+        cd ${ANYKERNEL}/patch >> /dev/null
+          delett *
+        cd - >> /dev/null
+  else
+    cd ${ANYKERNEL} >> /dev/null
+      delett zImage
+      delett ".git"
+    cd ${ANYKERNEL}/patch >> /dev/null
+      delett *
+    cd - >> /dev/null
+  fi
+decolorize
 
 # Copy the image to AnyKernel
-echo -e "Copying kernel image...";
-    cp "${IMAGE}" "${ANYKERNEL}/";
-cd -;
+header "Copying kernel image..." "${BLUE}"
+colorize ${LIGHTCYAN}
+    copy "${IMAGE}" "${ANYKERNEL}/"
+decolorize
+cd - >> /dev/null
 
 # Delett old modules if exists and it's MIUI
 if [[ ${branch} == MIUI ]]; then
-  rm -rf "${MODULES}";
+    delett "${MODULES}"
 fi
 
 # Copy modules used by MIUI
 if [[ ${branch} == MIUI ]]; then
-  echo -e "Copying modules for MehUI...";
-    cp "${OUTDIR}/block/test-iosched.ko" "${MODULES}";
-    cp "${OUTDIR}/crypto/ansi_cprng.ko" "${MODULES}";
-    cp "${OUTDIR}/drivers/char/rdbg.ko" "${MODULES}";
-    cp "${OUTDIR}/drivers/input/evbug.ko" "${MODULES}";
-    cp "${OUTDIR}/drivers/mmc/card/mmc_block_test.ko" "${MODULES}";
-    cp "${OUTDIR}/drivers/mmc/card/mmc_test.ko" "${MODULES}";
-    cp "${OUTDIR}/drivers/net/wireless/ath/wil6210/wil6210.ko" "${MODULES}";
-    cp "${OUTDIR}/drivers/scsi/ufs/ufs_test.ko" "${MODULES}";
-    cp "${OUTDIR}/drivers/video/backlight/backlight.ko" "${MODULES}";
-    cp "${OUTDIR}/drivers/video/backlight/lcd.ko" "${MODULES}";
-    cp "${OUTDIR}/drivers/video/backlight/generic_bl.ko" "${MODULES}";
-    cp "${OUTDIR}/drivers/spi/spidev.ko" "${MODULES}";
-    cp "${OUTDIR}/net/bridge/br_netfilter.ko" "${MODULES}";
-    cp "${OUTDIR}/net/ipv4/tcp_htcp.ko" "${MODULES}";
-    cp "${OUTDIR}/drivers/staging/prima/wlan.ko" "${MODULES}";
-    mkdir "${MODULES}/pronto";
-    cp "${MODULES}/wlan.ko" "${MODULES}/pronto/pronsto_wlan.ko";
+  header "Copying modules for MehUI..." "${BLUE}"
+    copy "${OUTDIR}/block/test-iosched.ko" "${MODULES}"
+    copy "${OUTDIR}/crypto/ansi_cprng.ko" "${MODULES}"
+    copy "${OUTDIR}/drivers/char/rdbg.ko" "${MODULES}"
+    copy "${OUTDIR}/drivers/input/evbug.ko" "${MODULES}"
+    copy "${OUTDIR}/drivers/mmc/card/mmc_block_test.ko" "${MODULES}"
+    copy "${OUTDIR}/drivers/mmc/card/mmc_test.ko" "${MODULES}"
+    copy "${OUTDIR}/drivers/net/wireless/ath/wil6210/wil6210.ko" "${MODULES}"
+    copy "${OUTDIR}/drivers/scsi/ufs/ufs_test.ko" "${MODULES}"
+    copy "${OUTDIR}/drivers/video/backlight/backlight.ko" "${MODULES}"
+    copy "${OUTDIR}/drivers/video/backlight/lcd.ko" "${MODULES}"
+    copy "${OUTDIR}/drivers/video/backlight/generic_bl.ko" "${MODULES}"
+    copy "${OUTDIR}/drivers/spi/spidev.ko" "${MODULES}"
+    copy "${OUTDIR}/net/bridge/br_netfilter.ko" "${MODULES}"
+    copy "${OUTDIR}/net/ipv4/tcp_htcp.ko" "${MODULES}"
+    copy "${OUTDIR}/drivers/staging/prima/wlan.ko" "${MODULES}"
+    mkdir "${MODULES}/pronto"
+    copy "${MODULES}/wlan.ko" "${MODULES}/pronto/pronto_wlan.ko"
 fi
 
 # Zip the wae
-cd ${ANYKERNEL};
-  zip -rT9 ${FINAL_ZIP} *;
-cd -;
+header "Zipping AnyKernel..." "${BLUE}"
+cd ${ANYKERNEL}
+   colorize "${CYAN}"
+   command zip -rT9 ${FINAL_ZIP} *
+   decolorize
+cd - >> /dev/null
 
 # Finalize the zip down
 if [ -f "$FINAL_ZIP" ]; then
 if [[ ${WORKER} == semaphore ]]; then
-    echo -e "Uploading ${ZIPNAME} to Dropbox";
-    transfer "${FINAL_ZIP}";
-    push;
+    header "Uploading ${ZIPNAME} to Dropbox" "${LIGHTGREEN}"
+    transfer "${FINAL_ZIP}"
+    push
 fi
-    echo -e "${ZIPNAME} can be found at ${FINAL_ZIP}"
+    header "${ZIPNAME} can be found at ${FINAL_ZIP}" "${LIGHTGREEN}"
     fin
 # Oh no
 else
-    echo -e "Zip Creation Failed =("
+    header "Zip Creation Failed =("
+    die "My works took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds\nbut it's error..."
     finerr
 fi
