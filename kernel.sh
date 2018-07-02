@@ -50,7 +50,7 @@ if [[ ${branch} == MIUI ]]; then
 elif [[ ${CC} == Clang ]]; then
     export ZIPNAME="kat-clang-oreo-$(date +%Y%m%d-%H%M).zip"
 else
-    export ZIPNAME="kat-treble-oreo-$(date +%Y%m%d-%H%M).zip"
+    export ZIPNAME="kat-combo-oreo-$(date +%Y%m%d-%H%M).zip"
 fi
 
 # Final Zip
@@ -95,6 +95,7 @@ header "Using ${JOBS} threads to compile" "${LIGHTCYAN}"
 
 colorize ${LIGHTRED}
 ${MAKE} -j${JOBS}
+${MAKE} -j${JOBS} dtbs
 decolorize
 
 exitCode="$?"
@@ -127,7 +128,9 @@ decolorize
 # Copy the image to AnyKernel
 header "Copying kernel image..." "${BLUE}"
 colorize ${LIGHTCYAN}
-    copy "${IMAGE}" "${ANYKERNEL}/"
+    copy "${IMAGE}" "${ANYKERNEL}/kernel"
+    copy "${DTB_TREBLE}" "${ANYKERNEL}/treble/${DTB_T}"
+    copy "${DTB_NONTREBLE}" "${ANYKERNEL}/nontreble/${DTB_NT}"
 decolorize
 cd - >> /dev/null
 

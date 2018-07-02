@@ -86,9 +86,9 @@ fi
 
 # AnyKernel and Aroma Location
 if [[ ${WORKER} == raphielbox ]]; then
-    export ANYKERNEL="${WORKDIR}/AnyKernel2/"
+    export ANYKERNEL="${WORKDIR}/AnyKernel2"
 else
-    export ANYKERNEL="${KERNELDIR}/chewy/aroma/anykernel/"
+    export ANYKERNEL="${KERNELDIR}/chewy/aroma/anykernel"
 fi
 
 # Modules boi
@@ -117,7 +117,7 @@ export DEFCONFIG="raph_defconfig"
 
 # Where will the zip go?
 if [[ ${WORKER} == semaphore ]]; then
-    export ZIP_DIR="${KERNELDIR}/chewy/files/"
+    export ZIP_DIR="${KERNELDIR}/chewy/files"
 else
     export ZIP_DIR="${HOME}/working/weeb_zip"
 fi
@@ -126,8 +126,15 @@ fi
 if [[ ${branch} == MIUI ]]; then
   export IMAGE="${OUTDIR}/arch/${ARCH}/boot/Image.gz-dtb"
 else
-  export IMAGE="${OUTDIR}/arch/${ARCH}/boot/Image-dtb"
+  export IMAGE="${OUTDIR}/arch/${ARCH}/boot/Image.gz"
 fi
+
+# DTB Locations
+export DTB=msm8953-qrd-sku3-mido
+export DTB_T=${DTB}-treble.dtb
+export DTB_NT=${DTB}-nontreble.dtb
+export DTB_TREBLE="${OUTDIR}/arch/${ARCH}/boot/dts/qcom/${DTB_T}"
+export DTB_NONTREBLE="${OUTDIR}/arch/${ARCH}/boot/dts/qcom/${DTB_NT}"
 
 # When it's Clang, do rolls
 if [[ ${CC} == Clang ]]; then
