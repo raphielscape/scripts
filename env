@@ -229,7 +229,7 @@ function disclaimer() {
     curl -s "https://api.telegram.org/bot$BOT_API_KEY/sendMessage" \
          -d "parse_mode=markdown" \
          -d text="${DISCLAIMER}" \
-         -d chat_id=${MAIN} \
+         -d chat_id=${BUILD} \
          -d "disable_web_page_preview=true"
 }
 

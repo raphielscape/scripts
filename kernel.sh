@@ -13,6 +13,9 @@ fi
 tg_sendstick
 tg_sendinfo "${MSG} started on $(whoami)~"
 tg_channelcast "${MSG} started on $(whoami)~"
+if [[ ${branch} == qc ]]; then
+disclaimer
+fi
 
 # Whenever build is errored, report it, and killplay
 trap '{
