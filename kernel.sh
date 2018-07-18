@@ -47,6 +47,8 @@ awk -F ')' '{print $2}' | awk '{print tolower($1)}')"
 # Zipname
 if [[ ${branch} == MIUI ]]; then
     export ZIPNAME="kat-miui-$(date +%Y%m%d-%H%M).zip"
+elif [[ ${branch} == qc ]]; then
+    export ZIPNAME="kat-QC-$(date +%Y%m%d-%H%M).zip"
 elif [[ ${CC} == Clang ]]; then
     export ZIPNAME="kat-clang-oreo-$(date +%Y%m%d-%H%M).zip"
 else

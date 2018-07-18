@@ -133,7 +133,7 @@ function parse_parameters() {
     fi
 
     # Folder that will hold the final compiled toolchain
-    INSTALL_FOLDER=/opt/kud/flash-clang-${VERSION}.x
+    INSTALL_FOLDER=/opt/raph/raph-clang-${VERSION}.x
 
     # SVN copy of the LLVM folder for revisioning
     SVN_FOLDER=${MAIN_FOLDER}/svn-${VERSION}.x
@@ -241,7 +241,7 @@ function build() {
           -DLLVM_TARGETS_TO_BUILD="AArch64" \
           -DLLVM_OPTIMIZED_TABLEGEN=ON \
           -DLLVM_USE_LINKER=gold \
-          -DCLANG_VENDOR="Wires " \
+          -DCLANG_VENDOR="Raphielscape " \
           -DLLVM_VERSION_PATCH="$(cd "${SVN_FOLDER}" || die "SVN folder doesn't exist";
                                   svn info -r HEAD --show-item revision)" \
           -DLLVM_VERSION_SUFFIX="" \

@@ -84,6 +84,11 @@ if [[ ${branch} == miui-new ]]; then
     export branch="MIUI"
 fi
 
+if [[ ${branch} == experimental-qc-deletthis ]]; then
+  header "You're working with QC branch now, BOI" "$GREEN"
+    export branch="qc"
+fi
+
 # AnyKernel and Aroma Location
 if [[ ${WORKER} == raphielbox ]]; then
     export ANYKERNEL="${WORKDIR}/AnyKernel2"
@@ -169,7 +174,13 @@ MSG="I'm working with GCC at commit $(git log --pretty=format:'%h : %s' -1) Unde
 fi
 
 # Technical difficultiescast file Location
+if [[ ${WORKER} == raphielbox ]]; then
 BOI="$(cat ${HOME}/working/scripts/techdiff)"
+DISCLAIMER="$(cat ${HOME}/working/scripts/disclaimer)"
+else
+BOI="$(cat ${HOME}/scripts/techdiff)"
+DISCLAIMER="$(cat ${HOME}/scripts/disclaimer)"
+fi
 
 # Memes
 MAIN="-1001371047577"
@@ -210,6 +221,14 @@ function techdiff() {
     curl -s "https://api.telegram.org/bot$BOT_API_KEY/sendMessage" \
          -d "parse_mode=markdown" \
          -d text="${BOI}" \
+         -d chat_id=${MAIN} \
+         -d "disable_web_page_preview=true"
+}
+
+function disclaimer() {
+    curl -s "https://api.telegram.org/bot$BOT_API_KEY/sendMessage" \
+         -d "parse_mode=markdown" \
+         -d text="${DISCLAIMER}" \
          -d chat_id=${MAIN} \
          -d "disable_web_page_preview=true"
 }
