@@ -176,7 +176,7 @@ cd - >> /dev/null
 
 # Finalize the zip down
 if [ -f "$FINAL_ZIP" ]; then
-if [[ ${WORKER} == semaphore ]]; then
+if [[ ${ZIP_UPLOAD} == true ]]; then
     header "Uploading ${ZIPNAME} to Dropbox" "${LIGHTGREEN}"
     transfer "${FINAL_ZIP}"
     push

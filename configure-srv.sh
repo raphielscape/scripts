@@ -7,6 +7,9 @@ source "${HOME}/scripts/env"
 # Export Kernel Directory
 export KERNELDIR=${HOME}/kat_kernel_reworks
 
+# We're gonna upload this everytime
+export ZIP_UPLOAD=true
+
 # Some alias
 function clone() {
   command git clone --depth 1 "${@}"

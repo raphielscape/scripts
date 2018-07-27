@@ -76,6 +76,9 @@ export PATH="/usr/lib/ccache/bin/:$PATH"
 export SRCDIR="${KERNELDIR}"
 export OUTDIR="${KERNELDIR}/out"
 
+# Re
+keks="$(git rev-parse --abbrev-ref HEAD)"
+
 # A little mantra for MIUI build
 branch="$(echo $(git rev-parse --abbrev-ref HEAD))"
 
@@ -168,9 +171,9 @@ fi
 
 # Messageworks
 if [[ ${CC} == Clang ]]; then
-MSG="I'm working with Clang at commit $(git log --pretty=format:'%h : %s' -1) Under $(hostname)"
+MSG="I'm working with Clang at commit $(git log --pretty=format:'%h : %s' -1) at branch ${keks} Under $(hostname)"
 else
-MSG="I'm working with GCC at commit $(git log --pretty=format:'%h : %s' -1) Under $(hostname)"
+MSG="I'm working with GCC at commit $(git log --pretty=format:'%h : %s' -1) at branch ${keks} Under $(hostname)"
 fi
 
 # Technical difficultiescast file Location
