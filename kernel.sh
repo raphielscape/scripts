@@ -24,8 +24,8 @@ trap '{
     finerr
 }' ERR
 
-# When the worker is Semaphore
-if [[ ${WORKER} == semaphore ]]; then
+# When the Cross-compiler is GCC
+if [[ ${CC} != Clang ]]; then
     check_gcc_toolchain
 fi
 
@@ -54,6 +54,8 @@ elif [[ ${branch} == qc ]]; then
     export ZIPNAME="kat-QC-$(date +%Y%m%d-%H%M).zip"
 elif [[ ${CC} == Clang ]]; then
     export ZIPNAME="kat-clang-oreo-$(date +%Y%m%d-%H%M).zip"
+elif [[ ${branch} == penkek ]]; then
+    export ZIPNAME="kat-clang-penkek-$(date +%Y%m%d-%H%M).zip"
 else
     export ZIPNAME="kat-combo-oreo-$(date +%Y%m%d-%H%M).zip"
 fi
@@ -131,12 +133,19 @@ colorize ${YELLOW}
 decolorize
 
 # Copy the image to AnyKernel
+if [[ ${branch} == penkek ]]; then
+header "Copying kernel..." "${BLUE}"
+    colorize ${LIGHTCYAN}
+        copy "${IMAGE}" "${ANYKERNEL}"
+    decolorize
+else
 header "Copying kernel image..." "${BLUE}"
-colorize ${LIGHTCYAN}
-    copy "${IMAGE}" "${ANYKERNEL}/kernel"
-    copy "${DTB_TREBLE}" "${ANYKERNEL}/treble/${DTB_T}"
-    copy "${DTB_NONTREBLE}" "${ANYKERNEL}/nontreble/${DTB_NT}"
-decolorize
+    colorize ${LIGHTCYAN}
+        copy "${IMAGE}" "${ANYKERNEL}/kernel"
+        copy "${DTB_TREBLE}" "${ANYKERNEL}/treble/${DTB_T}"
+        copy "${DTB_NONTREBLE}" "${ANYKERNEL}/nontreble/${DTB_NT}"
+    decolorize
+fi
 cd - >> /dev/null
 
 # Delett old modules if exists and it's MIUI
