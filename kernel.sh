@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (C) 2018 Raphiel Rollerscaperers (raphielscape)
+# Copyright (C) 2018 Raphielscape LLC.
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 # Init da wae

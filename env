@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (C) 2018 Raphiel Rollerscaperers (raphielscape)
+# Copyright (C) 2018 Raphielscape LLC.
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 # tput colormap
@@ -89,7 +89,7 @@ if [[ ${branch} == experimental-qc-deletthis ]]; then
     export branch="qc"
 fi
 
-if [[ ${branch} == staging/penkek ]]; then
+if [[ ${branch} == */penkek ]]; then
   header "Excooz me" "$GREEN"
     export branch="penkek"
 fi
