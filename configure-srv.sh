@@ -24,7 +24,7 @@ fi
 
 # Clone needed components
 if [[ ${branch} == staging/penkek ]]; then
-clone https://github.com/raphielscape/AnyKernel2.git penkek ${KERNELDIR}/chewy/aroma/anykernel
+clone https://github.com/raphielscape/AnyKernel2.git --branch=penkek ${KERNELDIR}/chewy/aroma/anykernel
 else
 clone https://github.com/raphielscape/AnyKernel2.git ${KERNELDIR}/chewy/aroma/anykernel
 fi
