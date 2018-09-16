@@ -1,0 +1,3 @@
+[submodule "nathan"]
+	path = nathan
+	url = git://github.com/nathanchance/scripts
