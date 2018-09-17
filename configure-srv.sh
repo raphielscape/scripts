@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
+#
 # Copyright (C) 2018 Raphielscape LLC.
-# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Licensed under the Raphielscape Public License, Version 1.0 (the "License");
+# you may not use this file except in compliance with the License.
+#
+# Server Initializations container
 
 source "${HOME}/scripts/env"
 

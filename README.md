@@ -1,1 +1,3 @@
-Do you want me to put Bad Apple lyric here?
+# Scripts
+
+It's pretty much stuffs that you see everyday, so why you're here?
