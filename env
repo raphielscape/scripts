@@ -80,19 +80,18 @@ keks="$(git rev-parse --abbrev-ref HEAD)"
 branch="$(echo $(git rev-parse --abbrev-ref HEAD))"
 
 if [[ ${branch} == miui-new ]]; then
-  header "You're working with MehUI now, feel the meme ahead" "$GREEN"
     export branch="MIUI"
 fi
 
 if [[ ${branch} == experimental-qc-deletthis ]]; then
-  header "You're working with QC branch now, BOI" "$GREEN"
     export branch="qc"
 fi
 
 if [[ ${branch} == */penkek ]]; then
-  header "Excooz me" "$GREEN"
     export branch="penkek"
 fi
+
+header "You're working with ${branch} now, Keks Ahead" "$GREEN"
 
 # AnyKernel and Aroma Location
 if [[ ${WORKER} == raphielbox ]]; then
@@ -151,7 +150,7 @@ if [[ ${CC} == Clang ]]; then
     header "We're building Clang bois" "${GREEN}"
 
     # Clang configurations
-    export CLANG_TCHAIN="clang"
+    export CLANG_TCHAIN="${HOME}/toolchains/clang-8.x/bin/clang"
     export TCHAIN_PATH="aarch64-linux-gnu-"
     export CLANG_TRIPLE="aarch64-linux-gnu-"
 
@@ -160,7 +159,7 @@ if [[ ${CC} == Clang ]]; then
     export CROSS_COMPILE="${TCHAIN_PATH}"
 
     # Export the make
-    export MAKE="make O=${OUTDIR} CC=clang"
+    export MAKE="make O=${OUTDIR} CC=${CLANG_TCHAIN}"
 
     # Scream out the Clang compiler used
     header "Using toolchain: $(${CLANG_TCHAIN} --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"

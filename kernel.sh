@@ -48,17 +48,7 @@ export TCVERSION2="$(${CROSS_COMPILE}gcc --version | head -1 |\
 awk -F ')' '{print $2}' | awk '{print tolower($1)}')"
 
 # Zipname
-if [[ ${branch} == MIUI ]]; then
-    export ZIPNAME="kat-miui-$(date +%Y%m%d-%H%M).zip"
-elif [[ ${branch} == qc ]]; then
-    export ZIPNAME="kat-QC-$(date +%Y%m%d-%H%M).zip"
-elif [[ ${CC} == Clang ]]; then
-    export ZIPNAME="kat-clang-oreo-$(date +%Y%m%d-%H%M).zip"
-elif [[ ${branch} == penkek ]]; then
-    export ZIPNAME="kat-clang-penkek-$(date +%Y%m%d-%H%M).zip"
-else
-    export ZIPNAME="kat-combo-oreo-$(date +%Y%m%d-%H%M).zip"
-fi
+export ZIPNAME="Kat-${CC}-${branch}-$(date +%Y%m%d-%H%M).zip"
 
 # Final Zip
 export FINAL_ZIP="${ZIP_DIR}/${ZIPNAME}"
