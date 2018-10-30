@@ -30,7 +30,7 @@ trap '{
 }' ERR
 
 # When the Cross-compiler is GCC
-if [[ ${CC} != Clang ]]; then
+if [[ ${CC} != Clang && ${WORKER} != raphielbox ]]; then
     check_gcc_toolchain
 fi
 
@@ -42,7 +42,8 @@ fi
 
 # How much jobs we need?
 if [[ -z "${JOBS}" ]]; then
-    export JOBS="$(grep -c '^processor' /proc/cpuinfo)"
+    COUNT="$(grep -c '^processor' /proc/cpuinfo)"
+    export JOBS="$((${COUNT} * 2))"
 fi
 
 # Toolchain Thrower
@@ -62,6 +63,8 @@ export FINAL_ZIP="${ZIP_DIR}/${ZIPNAME}"
 colorize "${RED}"
 [ ! -d "${ZIP_DIR}" ] && mkdir -pv ${ZIP_DIR}
 [ ! -d "${OUTDIR}" ] && mkdir -pv ${OUTDIR}
+sudo mount -t tmpfs -o size=4g tmpfs out
+sudo chown ${USER} out/ -R
 decolorize
 
 # Link out directory to cache directory as per Semaphore documentation
@@ -128,19 +131,10 @@ colorize ${YELLOW}
 decolorize
 
 # Copy the image to AnyKernel
-if [[ ${branch} == penkek ]]; then
 header "Copying kernel..." "${BLUE}"
     colorize ${LIGHTCYAN}
         copy "${IMAGE}" "${ANYKERNEL}"
     decolorize
-else
-header "Copying kernel image..." "${BLUE}"
-    colorize ${LIGHTCYAN}
-        copy "${IMAGE}" "${ANYKERNEL}/kernel"
-        copy "${DTB_TREBLE}" "${ANYKERNEL}/treble/${DTB_T}"
-        copy "${DTB_NONTREBLE}" "${ANYKERNEL}/nontreble/${DTB_NT}"
-    decolorize
-fi
 cd - >> /dev/null
 
 # Delett old modules if exists and it's MIUI

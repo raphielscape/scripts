@@ -80,20 +80,21 @@ export OUTDIR="${KERNELDIR}/out"
 
 # Re
 keks="$(git rev-parse --abbrev-ref HEAD)"
+anotherkeks="$(git config --get remote.origin.url)"
 
-# A little mantra for MIUI build
+# A little mantra for Pop Team Epic
 branch="$(echo $(git rev-parse --abbrev-ref HEAD))"
-
-if [[ ${branch} == miui-new ]]; then
-    export branch="MIUI"
-fi
-
-if [[ ${branch} == experimental-qc-deletthis ]]; then
-    export branch="qc"
-fi
 
 if [[ ${branch} == */penkek ]]; then
     export branch="penkek"
+fi
+
+if [[ ${anotherkeks} == *beryllium* && ${branch} == master ]]; then
+    export branch="beryllium/master"
+fi
+
+if [[ ${anotherkeks} == *beryllium* && ${branch} == staging ]]; then
+    export branch="beryllium/staging"
 fi
 
 header "You're working with ${branch} now, Keks Ahead" "$GREEN"
@@ -155,7 +156,8 @@ if [[ ${CC} == Clang ]]; then
     header "We're building Clang bois" "${GREEN}"
 
     # Clang configurations
-    export CLANG_TCHAIN="${HOME}/toolchains/clang-8.x/bin/clang"
+    export PATH=${HOME}/toolchains/clang-8.x/bin/:$PATH
+    export CLANG_TCHAIN="clang"
     export TCHAIN_PATH="aarch64-linux-gnu-"
     export CLANG_TRIPLE="aarch64-linux-gnu-"
 
@@ -294,6 +296,8 @@ function fin() {
 }
 
 # Toolchain Checks (GCC)
+# Our box complaint coz of some reason
+if [[ ${WORKER} != raphielbox ]]; then
 function check_gcc_toolchain() {
     export TC="$(find ${TOOLCHAIN}/bin -type f -name *-gcc)"
   if [[ -f "${TC}" ]]; then
@@ -307,6 +311,7 @@ function check_gcc_toolchain() {
     exit 1;
   fi
 }
+fi
 
 # Errored Prober
 function finerr() {
