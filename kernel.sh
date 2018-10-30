@@ -62,15 +62,12 @@ export FINAL_ZIP="${ZIP_DIR}/${ZIPNAME}"
 # Prepping
 colorize "${RED}"
 [ ! -d "${ZIP_DIR}" ] && mkdir -pv ${ZIP_DIR}
-[ ! -d "${OUTDIR}" ] && mkdir -pv ${OUTDIR}
-sudo mount -t tmpfs -o size=4g tmpfs out
-sudo chown ${USER} out/ -R
-decolorize
-
-# Link out directory to cache directory as per Semaphore documentation
-if [[ ${WORKER} == semaphore ]]; then
-  ln -s ${SEMAPHORE_CACHE_DIR}/out ${KERNELDIR}/out
+if [[ ! -d "${OUTDIR}" && ${WORKER} != semaphore ]]; then
+    mkdir -pv ${OUTDIR}
+    sudo mount -t tmpfs -o size=4g tmpfs out
+    sudo chown ${USER} out/ -R
 fi
+decolorize
 
 # Here we go
 cd "${SRCDIR}"
