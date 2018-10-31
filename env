@@ -141,6 +141,7 @@ function prepare_clang() {
 
     # Export compiler for announcer
     COMPILER_USED="$(${CLANG_TCHAIN} --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
+    CU=clang
 
     # Scream out the Clang compiler used
     header "Using toolchain: $(${CLANG_TCHAIN} --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
@@ -152,7 +153,7 @@ function prepare_gcc () {
 }
 
 # Then export the stuff
-export PATH COMPILER_USED CLANG_TCHAIN TCHAIN_PATH CLANG_TRIPLE KBUILD_COMPILER_STRING CROSS_COMPILE MAKE
+export PATH CU COMPILER_USED CLANG_TCHAIN TCHAIN_PATH CLANG_TRIPLE KBUILD_COMPILER_STRING CROSS_COMPILE MAKE
 
 # Caster configurations
 MAINGROUP_ID="-1001371047577"

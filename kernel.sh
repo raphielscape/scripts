@@ -69,7 +69,7 @@ export TCVERSION2="$(${CROSS_COMPILE}gcc --version | head -1 |\
 awk -F ')' '{print $2}' | awk '{print tolower($1)}')"
 
 # Zipname
-export ZIPNAME="Kat-${CC}-${branch}-$(date +%Y%m%d-%H%M).zip"
+export ZIPNAME="Kat-${DEVICE}-${CU}-${PARSE_BRANCH}-$(date +%Y%m%d-%H%M).zip"
 
 # Final Zip
 export FINAL_ZIP="${ZIP_DIR}/${ZIPNAME}"
