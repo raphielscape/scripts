@@ -178,7 +178,7 @@ function push() {
 
 # sendcast to group
 function tg_sendinfo() {
-    "${TELEGRAM}" -c ${MAINGROUP_ID} \
+    "${TELEGRAM}" -c ${MAINGROUP_ID} -H \
         "$(
             for POST in "${@}";
             do echo "${POST}"; 
@@ -188,7 +188,7 @@ function tg_sendinfo() {
 
 # sendcast to channel
 function tg_channelcast() {
-    "${TELEGRAM}" -c ${BUILDSCAPERER_ID} \
+    "${TELEGRAM}" -c ${BUILDSCAPERER_ID} -H \
         "$(
             for POST in "${@}";
             do echo "${POST}"; 
@@ -197,19 +197,19 @@ function tg_channelcast() {
 }
 
 function kickstart() {
-    tg_sendinfo "Compiler ${COMPILER_USED}" \
-                "Device ${DEVICE}" \
-                "Branch ${PARSE_BRANCH}" \
-                "Commit Point ${COMMIT_POINT}" \
-                "Under $(hostname)" \
-                "Started on $(whoami)"
+    tg_sendinfo "Compiler <code>${COMPILER_USED}</code>" \
+                "Device <b>${DEVICE}</b>" \
+                "Branch <code>${PARSE_BRANCH}</code>" \
+                "Commit Point <code>${COMMIT_POINT}</code>" \
+                "Under <code>$(hostname)</code>" \
+                "Started on <code>$(whoami)</code>"
 
-    tg_channelcast "Compiler ${COMPILER_USED}" \
-                "Device ${DEVICE}" \
-                "Branch ${PARSE_BRANCH}" \
-                "Commit Point ${COMMIT_POINT}" \
-                "Under $(hostname)" \
-                "Started on $(whoami)"
+    tg_channelcast "Compiler <code>${COMPILER_USED}</code>" \
+                "Device <b>${DEVICE}</b>" \
+                "Branch <code>${PARSE_BRANCH}</code>" \
+                "Commit Point <code>${COMMIT_POINT}</code>" \
+                "Under <code>$(hostname)</code>" \
+                "Started on <code>$(whoami)</code>"
 }
 
 
