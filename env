@@ -133,11 +133,14 @@ function prepare_clang() {
     CLANG_TRIPLE="aarch64-linux-gnu-"
 
     # Kbuild Sets
-    KBUILD_COMPILER_STRING="$(${CLANG_TCHAIN} --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')";
+    KBUILD_COMPILER_STRING="$(${CLANG_TCHAIN} --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
     CROSS_COMPILE="${TCHAIN_PATH}"
 
     # Export the make
     MAKE="make O=${OUTDIR} CC=${CLANG_TCHAIN}"
+
+    # Export compiler for announcer
+    COMPILER_USED="$(${CLANG_TCHAIN} --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
 
     # Scream out the Clang compiler used
     header "Using toolchain: $(${CLANG_TCHAIN} --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
@@ -145,10 +148,11 @@ function prepare_clang() {
 
 function prepare_gcc () {
     MAKE="make O=${OUTDIR}"
+    COMPILER_USED=GCC
 }
 
 # Then export the stuff
-export PATH CLANG_TCHAIN TCHAIN_PATH CLANG_TRIPLE KBUILD_COMPILER_STRING CROSS_COMPILE MAKE
+export PATH COMPILER_USED CLANG_TCHAIN TCHAIN_PATH CLANG_TRIPLE KBUILD_COMPILER_STRING CROSS_COMPILE MAKE
 
 # Caster configurations
 MAINGROUP_ID="-1001371047577"
@@ -191,14 +195,14 @@ function tg_channelcast() {
 }
 
 function kickstart() {
-    tg_sendinfo "Compiler ${CC}" \
+    tg_sendinfo "Compiler ${COMPILER_USED}" \
                 "Device ${DEVICE}" \
                 "Branch ${PARSE_BRANCH}" \
                 "Commit Point ${COMMIT_POINT}" \
                 "Under $(hostname)" \
                 "Started on $(whoami)"
 
-    tg_channelcast "Compiler ${CC}" \
+    tg_channelcast "Compiler ${COMPILER_USED}" \
                 "Device ${DEVICE}" \
                 "Branch ${PARSE_BRANCH}" \
                 "Commit Point ${COMMIT_POINT}" \
@@ -231,6 +235,7 @@ function tg_intstickmain() {
 function tg_senderror() {
     tg_sendinfo "Build Throwing Error(s)" \
                 "@raphielscape naaaaa"
+    tg_channelcast "Build Throwing Error(s)"
     [[ ! -z ${STATUS} ]] && \
     exit ${STATUS} || \
     exit 1
