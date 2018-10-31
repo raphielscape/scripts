@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# shellcheck source=/dev/null
+# shellcheck disable=SC1004
 #
 # Copyright (C) 2018 Raphielscape LLC.
 #
@@ -6,6 +8,23 @@
 # you may not use this file except in compliance with the License.
 #
 # Environment container
+
+# Export script directory at the beginning
+SCRIPTDIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+
+# Sourcedir
+SRCDIR="${KERNELDIR}"
+OUTDIR="${KERNELDIR}/out"
+
+# Parser
+PARSE_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+PARSE_ORIGIN="$(git config --get remote.origin.url)"
+COMMIT_POINT="$(git log --pretty=format:'%h : %s' -1)"
+
+TELEGRAM="${SCRIPTDIR}"/telegram/telegram
+TELEGRAM_TOKEN=${BOT_API_KEY}
+
+export TELEGRAM_TOKEN PARSE_BRANCH PARSE_ORIGIN COMMIT_POINT SRCDIR OUTDIR
 
 # tput colormap
 BLACK="0"
@@ -69,187 +88,122 @@ function header() {
     decolorize
 }
 
-# Default configurations
+# Device Identifier
+function mido() {
+    export DEVICE=mido
+}
 
-# For ccache (ANGERY)
-export PATH="/usr/lib/ccache/bin/:$PATH"
+function beryllium() {
+    export DEVICE=beryllium
+}
 
-# Sourcedir
-export SRCDIR="${KERNELDIR}"
-export OUTDIR="${KERNELDIR}/out"
 
-# Re
-keks="$(git rev-parse --abbrev-ref HEAD)"
-anotherkeks="$(git config --get remote.origin.url)"
-
-# A little mantra for Pop Team Epic
-branch="$(echo $(git rev-parse --abbrev-ref HEAD))"
-
-if [[ ${branch} == */penkek ]]; then
-    export branch="penkek"
+if [[ ${PARSE_BRANCH} == */penkek ]]; then
+    mido
 fi
 
-if [[ ${anotherkeks} == *beryllium* && ${branch} == master ]]; then
-    export branch="beryllium/master"
+if [[ ${PARSE_ORIGIN} == *beryllium* ]]; then
+    beryllium
 fi
 
-if [[ ${anotherkeks} == *beryllium* && ${branch} == staging ]]; then
-    export branch="beryllium/staging"
-fi
+function kernelbox() {
+    ANYKERNEL="${WORKDIR}/AnyKernel2"
+    ZIP_DIR="${HOME}/working/weeb_zip"
+}
 
-header "You're working with ${branch} now, Keks Ahead" "$GREEN"
+function semaphorebox() {
+    ANYKERNEL="${KERNELDIR}/chewy/aroma/anykernel"
+    ZIP_DIR="${KERNELDIR}/chewy/files"
+    KBUILD_BUILD_USER="raphielscape"
+    TOOLCHAIN="${HOME}/GNU/GCC"
+}
 
-# AnyKernel and Aroma Location
-if [[ ${WORKER} == raphielbox ]]; then
-    export ANYKERNEL="${WORKDIR}/AnyKernel2"
-else
-    export ANYKERNEL="${KERNELDIR}/chewy/aroma/anykernel"
-fi
-
-# Modules boi
-if [[ ${branch} == MIUI ]]; then
-    export MODULES="${HOME}/working/AnyKernel2/modules/system/lib/modules"
-fi
+export ANYKERNEL ZIP_DIR KBUILD_BUILD_USER TOOLCHAIN
 
 # Delett Old AnyKernel in Aroma dir if exists
 rm -rf ${ANYKERNEL_DONE}
 
-export ARCH="arm64"
-export SUBARCH="arm64"
-
-# Identifier
-if [[ ${WORKER} == semaphore ]]; then
-  export KBUILD_BUILD_USER="raphielscape"
-fi
-
-# Where's my damn Toolchain if it's Semaphore?
-if [[ ${WORKER} == semaphore ]]; then
-    export TOOLCHAIN="${HOME}/GNU/GCC"
-fi
-
-# Wot is my defconfig?
-export DEFCONFIG="raph_defconfig"
-
-# Where will the zip go?
-if [[ ${WORKER} == semaphore ]]; then
-    export ZIP_DIR="${KERNELDIR}/chewy/files"
-else
-    export ZIP_DIR="${HOME}/working/weeb_zip"
-fi
-
-# Image result
-if [[ ${branch} == penkek ]]; then
-  export IMAGE="${OUTDIR}/arch/${ARCH}/boot/Image.gz-dtb"
-else
-  export IMAGE="${OUTDIR}/arch/${ARCH}/boot/Image.gz"
-fi
-
-# DTB Locations
-export DTB=msm8953-qrd-sku3-mido
-export DTB_T=${DTB}-treble.dtb
-export DTB_NT=${DTB}-nontreble.dtb
-export DTB_TREBLE="${OUTDIR}/arch/${ARCH}/boot/dts/qcom/${DTB_T}"
-export DTB_NONTREBLE="${OUTDIR}/arch/${ARCH}/boot/dts/qcom/${DTB_NT}"
-
-# When it's Clang, do rolls
-if [[ ${CC} == Clang ]]; then
+function prepare_clang() {
     header "We're building Clang bois" "${GREEN}"
 
     # Clang configurations
-    export PATH=${HOME}/toolchains/clang-8.x/bin/:$PATH
-    export CLANG_TCHAIN="clang"
-    export TCHAIN_PATH="aarch64-linux-gnu-"
-    export CLANG_TRIPLE="aarch64-linux-gnu-"
+    PATH=${HOME}/toolchains/clang-8.x/bin/:$PATH
+    CLANG_TCHAIN="clang"
+    TCHAIN_PATH="aarch64-linux-gnu-"
+    CLANG_TRIPLE="aarch64-linux-gnu-"
 
     # Kbuild Sets
-    export KBUILD_COMPILER_STRING="$(${CLANG_TCHAIN} --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')";
-    export CROSS_COMPILE="${TCHAIN_PATH}"
+    KBUILD_COMPILER_STRING="$(${CLANG_TCHAIN} --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')";
+    CROSS_COMPILE="${TCHAIN_PATH}"
 
     # Export the make
-    export MAKE="make O=${OUTDIR} CC=${CLANG_TCHAIN}"
+    MAKE="make O=${OUTDIR} CC=${CLANG_TCHAIN}"
 
     # Scream out the Clang compiler used
     header "Using toolchain: $(${CLANG_TCHAIN} --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
-else
-    # We're using GCC, So throw normal make script
-    export MAKE="make O=${OUTDIR}"
-fi
+}
+
+function prepare_gcc () {
+    MAKE="make O=${OUTDIR}"
+}
+
+# Then export the stuff
+export PATH CLANG_TCHAIN TCHAIN_PATH CLANG_TRIPLE KBUILD_COMPILER_STRING CROSS_COMPILE MAKE
 
 # Caster configurations
-
-# Messageworks
-if [[ ${CC} == Clang ]]; then
-    MSG="I'm working with Clang at commit $(git log --pretty=format:'%h : %s' -1) at branch ${keks} Under $(hostname)"
-else
-    MSG="I'm working with GCC at commit $(git log --pretty=format:'%h : %s' -1) at branch ${keks} Under $(hostname)"
-fi
-
-# Technical difficultiescast file Location
-if [[ ${WORKER} == raphielbox ]]; then
-    BOI="$(cat ${HOME}/working/scripts/techdiff)"
-    DISCLAIMER="$(cat ${HOME}/working/scripts/disclaimer)"
-else
-    BOI="$(cat ${HOME}/scripts/techdiff)"
-    DISCLAIMER="$(cat ${HOME}/scripts/disclaimer)"
-fi
-
-# Memes
-MAIN="-1001371047577"
-BUILD="-1001153251064"
+MAINGROUP_ID="-1001371047577"
+BUILDSCAPERER_ID="-1001153251064"
 STICKER="CAADBAADNwADp8uuGBHV2tl40w7WAg"
 
-# Dropbox Thrower
-function transfer() {
-    zipname="$(echo $1 | awk -F '/' '{print $NF}')";
-      url="$(bash $KERNELDIR/chewy/scripts/dropbox_uploader.sh upload $1 /megalovania)";
-        printf '\n';
-        echo "Download ${zipname} at ${url}";
+export MAINGROUP_ID BUILDSCAPERER_ID STICKER
+
+# Sticc function
+function tg_sendstick() {
+    curl -s -X POST "https://api.telegram.org/bot$BOT_API_KEY/sendSticker" \
+         -d sticker="${STICKER}" \
+         -d chat_id=${BUILDSCAPERER_ID} >> /dev/null
 }
 
 # Push to Channel
 function push() {
-    curl -F document=@"${ZIP_DIR}/$ZIPNAME" "https://api.telegram.org/bot$BOT_API_KEY/sendDocument" \
-         -F chat_id="-1001153251064"
+    telegram -f "${ZIP_DIR}/$ZIPNAME" \
+             -c ${BUILDSCAPERER_ID}
 }
 
-# Send the Astolfo FTW Sticker
-function tg_sendstick() {
-    curl -s -X POST "https://api.telegram.org/bot$BOT_API_KEY/sendSticker" \
-         -d sticker="${STICKER}" \
-         -d chat_id=${BUILD} >> /dev/null
-}
-
-# Send the info up
+# sendcast to group
 function tg_sendinfo() {
-    curl -s "https://api.telegram.org/bot$BOT_API_KEY/sendMessage" \
-         -d "parse_mode=markdown" \
-         -d text="${1}" \
-         -d chat_id=${MAIN} \
-         -d "disable_web_page_preview=true"
+    "${TELEGRAM}" -c ${MAINGROUP_ID} \
+        "$(
+            for POST in "${@}";
+            do echo "${POST}"; 
+            done
+        )"
 }
 
-function techdiff() {
-    curl -s "https://api.telegram.org/bot$BOT_API_KEY/sendMessage" \
-         -d "parse_mode=markdown" \
-         -d text="${BOI}" \
-         -d chat_id=${MAIN} \
-         -d "disable_web_page_preview=true"
-}
-
-function disclaimer() {
-    curl -s "https://api.telegram.org/bot$BOT_API_KEY/sendMessage" \
-         -d "parse_mode=markdown" \
-         -d text="${DISCLAIMER}" \
-         -d chat_id=${BUILD} \
-         -d "disable_web_page_preview=true"
-}
-
-# Report progress to Channelcast
+# sendcast to channel
 function tg_channelcast() {
-    curl -s -X POST "https://api.telegram.org/bot$BOT_API_KEY/sendMessage" \
-         -d "parse_mode=markdown" \
-         -d text="${1}" \
-         -d chat_id=${BUILD} >> /dev/null
+    "${TELEGRAM}" -c ${BUILDSCAPERER_ID} \
+        "$(
+            for POST in "${@}";
+            do echo "${POST}"; 
+            done
+        )"
+}
+
+function kickstart() {
+    tg_sendinfo "Compiler ${CC}" \
+                "Device ${DEVICE}" \
+                "Branch ${PARSE_BRANCH}" \
+                "Commit Point ${COMMIT_POINT}" \
+                "Under $(hostname)" \
+                "Started on $(whoami)"
+
+    tg_channelcast "Compiler ${CC}" \
+                "Device ${DEVICE}" \
+                "Branch ${PARSE_BRANCH}" \
+                "Commit Point ${COMMIT_POINT}" \
+                "Under $(hostname)" \
+                "Started on $(whoami)"
 }
 
 
@@ -264,19 +218,19 @@ trap '{
 function tg_intstick() {
     curl -s -X POST https://api.telegram.org/bot$BOT_API_KEY/sendSticker \
          -d sticker="CAADAQADFQADlS0LHvIFwsaTaVjGAg" \
-         -d chat_id=${BUILD} >> /dev/null
+         -d chat_id=${BUILDSCAPERER_ID} >> /dev/null
 }
 
 function tg_intstickmain() {
     curl -s -X POST https://api.telegram.org/bot$BOT_API_KEY/sendSticker \
          -d sticker="CAADAQADFQADlS0LHvIFwsaTaVjGAg" \
-         -d chat_id=${MAIN} >> /dev/null
+         -d chat_id=${MAINGROUP_ID} >> /dev/null
 }
 
 # Whenever errors occured, report them
 function tg_senderror() {
-    tg_sendinfo "$(echo "Build Throwing Error(s)\n*put my regular badwords here*")"
-    tg_channelcast "$(echo "Build Throwing Error(s)\nBangsat...")"
+    tg_sendinfo "Build Throwing Error(s)" \
+                "@raphielscape naaaaa"
     [[ ! -z ${STATUS} ]] && \
     exit ${STATUS} || \
     exit 1
@@ -284,8 +238,8 @@ function tg_senderror() {
 
 # Announce the completion
 function tg_yay() {
-    tg_sendinfo "$(echo "Compilation Completed yay!~\n@raphielscape Will you give me cookies?")"
-    tg_channelcast "$(echo "Compilation Completed yay!~\nAnd I will got cookies!")"
+    tg_sendinfo "Compilation for ${DEVICE} Completed yay" \
+                "Haha yes"
 }
 
 # Fin Prober

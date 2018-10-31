@@ -7,20 +7,35 @@
 #
 # Kernel-building execution stager
 
-# Init da wae
-if [[ ${WORKER} == semaphore ]]; then
-    source "${HOME}/scripts/env"
+## Import environment container
+# shellcheck source=/dev/null
+. "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"/env
+
+# Init
+if [[ ${WORKER} == raphielbox ]]; then
+    kernelbox
 else
-    source "${HOME}/working/scripts/env"
+    semaphorebox
 fi
 
-# First-post works
-tg_sendstick
-tg_sendinfo "${MSG} started on $(whoami)~"
-tg_channelcast "${MSG} started on $(whoami)~"
-if [[ ${branch} == qc ]]; then
-disclaimer
+if [[ ${CC} == Clang ]]; then
+    prepare_clang
+else
+    prepare_gcc
 fi
+
+ARCH="arm64"
+SUBARCH="arm64"
+DEFCONFIG="raph_defconfig"
+IMAGE="${OUTDIR}/arch/${ARCH}/boot/Image.gz-dtb"
+
+export ARCH SUBARCH DEFCONFIG IMAGE
+
+header "You're working with $DEVICE on $PARSE_BRANCH" "$GREEN"
+
+# First-post works
+#tg_sendstick
+kickstart
 
 # Whenever build is errored, report it, and killplay
 trap '{
@@ -139,28 +154,6 @@ if [[ ${branch} == MIUI ]]; then
     delett "${MODULES}"
 fi
 
-# Copy modules used by MIUI
-if [[ ${branch} == MIUI ]]; then
-  header "Copying modules for MehUI..." "${BLUE}"
-    copy "${OUTDIR}/block/test-iosched.ko" "${MODULES}"
-    copy "${OUTDIR}/crypto/ansi_cprng.ko" "${MODULES}"
-    copy "${OUTDIR}/drivers/char/rdbg.ko" "${MODULES}"
-    copy "${OUTDIR}/drivers/input/evbug.ko" "${MODULES}"
-    copy "${OUTDIR}/drivers/mmc/card/mmc_block_test.ko" "${MODULES}"
-    copy "${OUTDIR}/drivers/mmc/card/mmc_test.ko" "${MODULES}"
-    copy "${OUTDIR}/drivers/net/wireless/ath/wil6210/wil6210.ko" "${MODULES}"
-    copy "${OUTDIR}/drivers/scsi/ufs/ufs_test.ko" "${MODULES}"
-    copy "${OUTDIR}/drivers/video/backlight/backlight.ko" "${MODULES}"
-    copy "${OUTDIR}/drivers/video/backlight/lcd.ko" "${MODULES}"
-    copy "${OUTDIR}/drivers/video/backlight/generic_bl.ko" "${MODULES}"
-    copy "${OUTDIR}/drivers/spi/spidev.ko" "${MODULES}"
-    copy "${OUTDIR}/net/bridge/br_netfilter.ko" "${MODULES}"
-    copy "${OUTDIR}/net/ipv4/tcp_htcp.ko" "${MODULES}"
-    copy "${OUTDIR}/drivers/staging/prima/wlan.ko" "${MODULES}"
-    mkdir "${MODULES}/pronto"
-    copy "${MODULES}/wlan.ko" "${MODULES}/pronto/pronto_wlan.ko"
-fi
-
 # Zip the wae
 header "Zipping AnyKernel..." "${BLUE}"
 cd ${ANYKERNEL}
@@ -172,8 +165,7 @@ cd - >> /dev/null
 # Finalize the zip down
 if [ -f "$FINAL_ZIP" ]; then
 if [[ ${ZIP_UPLOAD} == true ]]; then
-    header "Uploading ${ZIPNAME} to Dropbox" "${LIGHTGREEN}"
-    transfer "${FINAL_ZIP}"
+    header "Uploading ${ZIPNAME}" "${LIGHTGREEN}"
     push
 fi
     header "${ZIPNAME} can be found at ${FINAL_ZIP}" "${LIGHTGREEN}"
