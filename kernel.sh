@@ -34,7 +34,7 @@ export ARCH SUBARCH DEFCONFIG IMAGE
 header "You're working with $DEVICE on $PARSE_BRANCH" "$GREEN"
 
 # First-post works
-#tg_sendstick
+tg_sendstick
 kickstart
 
 # Whenever build is errored, report it, and killplay

@@ -112,8 +112,8 @@ function kernelbox() {
 }
 
 function semaphorebox() {
-    ANYKERNEL="${KERNELDIR}/chewy/aroma/anykernel"
-    ZIP_DIR="${KERNELDIR}/chewy/files"
+    ANYKERNEL="${KERNELDIR}/anykernel"
+    ZIP_DIR="${KERNELDIR}/files"
     KBUILD_BUILD_USER="raphielscape"
     TOOLCHAIN="${HOME}/GNU/GCC"
 }
@@ -150,6 +150,7 @@ function prepare_clang() {
 function prepare_gcc () {
     MAKE="make O=${OUTDIR}"
     COMPILER_USED=GCC
+    CU=GCC
 }
 
 # Then export the stuff

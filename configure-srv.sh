@@ -31,9 +31,9 @@ fi
 
 # Clone needed components
 if [[ ${branch} == staging/penkek ]]; then
-clone https://github.com/raphielscape/AnyKernel2.git --branch=penkek ${KERNELDIR}/chewy/aroma/anykernel
+clone https://github.com/raphielscape/AnyKernel2.git --branch=penkek ${KERNELDIR}/anykernel
 else
-clone https://github.com/raphielscape/AnyKernel2.git ${KERNELDIR}/chewy/aroma/anykernel
+clone https://github.com/raphielscape/AnyKernel2.git ${KERNELDIR}/anykernel
 fi
 clone https://github.com/krasCGQ/aarch64-linux-android.git --branch "opt-linaro-7.x" ${HOME}/GNU/GCC
 
