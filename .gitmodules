@@ -1,3 +1,6 @@
 [submodule "nathan"]
 	path = nathan
 	url = git://github.com/nathanchance/scripts
+[submodule "telegram"]
+	path = telegram
+	url = https://github.com/fabianonline/telegram.sh.git
