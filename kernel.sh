@@ -18,6 +18,14 @@ else
     semaphorebox
 fi
 
+if [[ ${PARSE_BRANCH} == */penkek ]]; then
+    mido
+fi
+
+if [[ ${PARSE_ORIGIN} == *beryllium* ]]; then
+    beryllium
+fi
+
 if [[ ${CC} == Clang ]]; then
     prepare_clang
 else
@@ -69,7 +77,7 @@ export TCVERSION2="$(${CROSS_COMPILE}gcc --version | head -1 |\
 awk -F ')' '{print $2}' | awk '{print tolower($1)}')"
 
 # Zipname
-export ZIPNAME="Kat-${DEVICE}-${CU}-${PARSE_BRANCH}-$(date +%Y%m%d-%H%M).zip"
+export ZIPNAME="Kat-${DEVICE}-${CU}-$(date +%Y%m%d-%H%M).zip"
 
 # Final Zip
 export FINAL_ZIP="${ZIP_DIR}/${ZIPNAME}"
@@ -149,16 +157,11 @@ header "Copying kernel..." "${BLUE}"
     decolorize
 cd - >> /dev/null
 
-# Delett old modules if exists and it's MIUI
-if [[ ${branch} == MIUI ]]; then
-    delett "${MODULES}"
-fi
-
 # Zip the wae
 header "Zipping AnyKernel..." "${BLUE}"
 cd ${ANYKERNEL}
    colorize "${CYAN}"
-   command zip -rT9 ${FINAL_ZIP} *
+        command zip -rT9 ${FINAL_ZIP} *
    decolorize
 cd - >> /dev/null
 

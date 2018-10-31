@@ -97,17 +97,8 @@ function beryllium() {
     export DEVICE=beryllium
 }
 
-
-if [[ ${PARSE_BRANCH} == */penkek ]]; then
-    mido
-fi
-
-if [[ ${PARSE_ORIGIN} == *beryllium* ]]; then
-    beryllium
-fi
-
 function kernelbox() {
-    ANYKERNEL="${WORKDIR}/AnyKernel2"
+    ANYKERNEL="${HOME}/working/AnyKernel2"
     ZIP_DIR="${HOME}/working/weeb_zip"
 }
 
