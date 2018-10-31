@@ -7,10 +7,12 @@
 #
 # Server Initializations container
 
-source "${HOME}/scripts/env"
+## Import environment container
+# shellcheck source=/dev/null
+. "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"/env
 
 # Export Kernel Directory
-export KERNELDIR=${HOME}/kat_kernel_reworks
+export KERNELDIR=${SEMAPHORE_PROJECT_DIR}
 
 # We're gonna upload this everytime
 export ZIP_UPLOAD=true
@@ -33,7 +35,7 @@ clone https://github.com/raphielscape/AnyKernel2.git --branch=penkek ${KERNELDIR
 else
 clone https://github.com/raphielscape/AnyKernel2.git ${KERNELDIR}/chewy/aroma/anykernel
 fi
-clone https://github.com/krasCGQ/aarch64-linux-android.git --branch "opt-linaro-7.x" ${TOOLCHAIN}
+clone https://github.com/krasCGQ/aarch64-linux-android.git --branch "opt-linaro-7.x" ${HOME}/GNU/GCC
 
 # Going to start
 cd ${KERNELDIR}
