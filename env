@@ -171,8 +171,8 @@ function tg_sendstick() {
 
 # Push to Channel
 function push() {
-    telegram -f "${ZIP_DIR}/$ZIPNAME" \
-             -c ${BUILDSCAPERER_ID}
+    "${TELEGRAM}" -f "${ZIP_DIR}/$ZIPNAME" \
+                  -c ${BUILDSCAPERER_ID}
 }
 
 # sendcast to group
