@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2199
 #
 # Copyright (C) 2018 Raphielscape LLC.
 #
@@ -13,23 +14,23 @@
 
 # Init
 if [[ ${WORKER} == raphielbox ]]; then
-    kernelbox
+	kernelbox
 else
-    semaphorebox
+	semaphorebox
 fi
 
 if [[ ${PARSE_BRANCH} == */penkek ]]; then
-    mido
+	mido
 fi
 
 if [[ ${PARSE_ORIGIN} == *beryllium* ]]; then
-    beryllium
+	beryllium
 fi
 
 if [[ ${CC} == Clang ]]; then
-    prepare_clang
+	prepare_clang
 else
-    prepare_gcc
+	prepare_gcc
 fi
 
 ARCH="arm64"
@@ -54,30 +55,32 @@ trap '{
 
 # When the Cross-compiler is GCC
 if [[ ${CC} != Clang && ${WORKER} != raphielbox ]]; then
-    check_gcc_toolchain
+	check_gcc_toolchain
 fi
 
 # Set Kerneldir Plox
 if [[ -z ${KERNELDIR} ]]; then
-    echo "Please set KERNELDIR"
-    exit 1
+	echo "Please set KERNELDIR"
+	exit 1
 fi
 
 # How much jobs we need?
 if [[ -z "${JOBS}" ]]; then
-    COUNT="$(grep -c '^processor' /proc/cpuinfo)"
-    export JOBS="$((${COUNT} * 2))"
+	COUNT="$(grep -c '^processor' /proc/cpuinfo)"
+	export JOBS="$((COUNT * 2))"
 fi
 
 # Toolchain Thrower
-export TCVERSION1="$(${CROSS_COMPILE}gcc --version | head -1 |\
-awk -F '(' '{print $2}' | awk '{print tolower($1)}')"
+TCVERSION1="$(${CROSS_COMPILE}gcc --version | head -1 |
+	awk -F '(' '{print $2}' | awk '{print tolower($1)}')"
 
-export TCVERSION2="$(${CROSS_COMPILE}gcc --version | head -1 |\
-awk -F ')' '{print $2}' | awk '{print tolower($1)}')"
+TCVERSION2="$(${CROSS_COMPILE}gcc --version | head -1 |
+	awk -F ')' '{print $2}' | awk '{print tolower($1)}')"
+
+export TCVERSION1 TCVERSION2
 
 # Zipname
-export ZIPNAME="Kat-${DEVICE}-${CU}-$(date +%Y%m%d-%H%M).zip"
+ZIPNAME="Kat-${DEVICE}-${CU}-$(date +%Y%m%d-%H%M).zip"
 
 # Final Zip
 export FINAL_ZIP="${ZIP_DIR}/${ZIPNAME}"
@@ -86,14 +89,14 @@ export FINAL_ZIP="${ZIP_DIR}/${ZIPNAME}"
 colorize "${RED}"
 [ ! -d "${ZIP_DIR}" ] && mkdir -pv ${ZIP_DIR}
 if [[ ! -d "${OUTDIR}" && ${WORKER} != semaphore ]]; then
-    mkdir -pv ${OUTDIR}
-    sudo mount -t tmpfs -o size=4g tmpfs out
-    sudo chown ${USER} out/ -R
+	mkdir -pv "${OUTDIR}"
+	sudo mount -t tmpfs -o size=4g tmpfs out
+	sudo chown "${USER}" out/ -R
 fi
 decolorize
 
 # Here we go
-cd "${SRCDIR}"
+cd "${SRCDIR}" || exit
 
 # Delett old image
 colorize "${RED}"
@@ -102,12 +105,12 @@ decolorize
 
 # How 2 be Mr.Proper 101
 if [[ "$@" =~ "mrproper" ]]; then
-    ${MAKE} mrproper
+	${MAKE} mrproper
 fi
 
 # How 2 cleanups things 101
 if [[ "$@" =~ "clean" ]]; then
-    ${MAKE} clean
+	${MAKE} clean
 fi
 
 # Relatable
@@ -123,59 +126,59 @@ ${MAKE} -j${JOBS}
 ${MAKE} -j${JOBS} dtbs
 decolorize
 
-exitCode="$?"
+export exitCode="$?"
 END=$(date +"%s")
 
-DIFF=$(($END - $START))
+DIFF=$((END - START))
 
 # AnyKernel cleanups
 header "Bringing-up AnyKernel~"
 colorize ${YELLOW}
-  if [[ ${WORKER} == raphielbox ]]; then
-    delett ${ANYKERNEL}
-      copy "${WORKDIR}/AnyKernel2-git" "${ANYKERNEL}"
-        cd ${ANYKERNEL} >> /dev/null
-          delett -v zImage
-          delett ".git"
-        cd ${ANYKERNEL}/patch >> /dev/null
-          delett *
-        cd - >> /dev/null
-  else
-    cd ${ANYKERNEL} >> /dev/null
-      delett zImage
-      delett ".git"
-    cd ${ANYKERNEL}/patch >> /dev/null
-      delett *
-    cd - >> /dev/null
-  fi
+if [[ ${WORKER} == raphielbox ]]; then
+	delett ${ANYKERNEL}
+	copy "${WORKDIR}/AnyKernel2-git" "${ANYKERNEL}"
+	cd ${ANYKERNEL} || return
+	delett -v zImage
+	delett ".git"
+	cd "${ANYKERNEL}/patch" || return
+	delett *
+	cd - || return
+else
+	cd "${ANYKERNEL}" || return
+	delett zImage
+	delett ".git"
+	cd "${ANYKERNEL}"/patch || return
+	delett *
+	cd - || return
+fi
 decolorize
 
 # Copy the image to AnyKernel
 header "Copying kernel..." "${BLUE}"
-    colorize ${LIGHTCYAN}
-        copy "${IMAGE}" "${ANYKERNEL}"
-    decolorize
-cd - >> /dev/null
+colorize ${LIGHTCYAN}
+copy "${IMAGE}" "${ANYKERNEL}"
+cd - || return
+decolorize
 
 # Zip the wae
 header "Zipping AnyKernel..." "${BLUE}"
-cd ${ANYKERNEL}
-   colorize "${CYAN}"
-        command zip -rT9 ${FINAL_ZIP} *
-   decolorize
-cd - >> /dev/null
+cd ${ANYKERNEL} || return
+colorize "${CYAN}"
+command zip -rT9 ${FINAL_ZIP} *
+cd - || return
+decolorize
 
 # Finalize the zip down
 if [ -f "$FINAL_ZIP" ]; then
-if [[ ${ZIP_UPLOAD} == true ]]; then
-    header "Uploading ${ZIPNAME}" "${LIGHTGREEN}"
-    push
-fi
-    header "${ZIPNAME} can be found at ${FINAL_ZIP}" "${LIGHTGREEN}"
-    fin
-# Oh no
+	if [[ ${ZIP_UPLOAD} == true ]]; then
+		header "Uploading ${ZIPNAME}" "${LIGHTGREEN}"
+		push
+	fi
+	header "${ZIPNAME} can be found at ${FINAL_ZIP}" "${LIGHTGREEN}"
+	fin
+	# Oh no
 else
-    header "Zip Creation Failed =("
-    die "My works took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds\nbut it's error..."
-    finerr
+	header "Zip Creation Failed =("
+	die "My works took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds\\nbut it's error..."
+	finerr
 fi

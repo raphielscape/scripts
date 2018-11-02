@@ -42,106 +42,112 @@ LIGHTPURPLE="92"
 YELLOW="11"
 WHITE="15"
 
+export BLACK GREEN CYAN RED PURPLE LIGHTBLUE LIGHTGREEN LIGHTCYAN LIGHTRED \
+	LIGHTPURPLE YELLOW WHITE DARKGRAY LIGHTGRAY
+
 # Alias echo as teller
 function echo() {
-  command echo -e "${@}"
+	command echo -e "${@}"
 }
 
 function bold() {
-  command tput bold
+	command tput bold
 }
 
 function colorize() {
-  command tput setaf "${@}"
+	command tput setaf "${@}"
 }
 
 function decolorize() {
-  command tput sgr0
+	command tput sgr0
 }
 
 # Colorize errors
 function display_error() {
-    echo
-    echo "$(tputaf ${RED})${1}$(tputz)"
-    [[ -z ${2} ]] && echo
+	echo
+	echo "$(tputaf ${RED})${1}$(tputz)"
+	[[ -z ${2} ]] && echo
 }
 
 # Throw errors in red
 function die() {
-    display_error "${@}"
-    exit
+	display_error "${@}"
+	exit
 }
 
 # Header colorizer
 function header() {
-    if [[ -n ${2} ]]; then
-        COLOR=${2}
-    else
-        COLOR=${RED}
-    fi
-    colorize "${COLOR}"
-    echo "====$(for i in $(seq ${#1}); do echo "=\c"; done)===="
-    echo "==  ${1}  =="
-    # SC2034: i appears unused. Verify it or export it.
-    # shellcheck disable=SC2034
-    echo "====$(for i in $(seq ${#1}); do echo "=\c"; done)===="
-    decolorize
+	if [[ -n ${2} ]]; then
+		COLOR=${2}
+	else
+		COLOR=${RED}
+	fi
+	colorize "${COLOR}"
+	echo "====$(for i in $(seq ${#1}); do echo "=\\c"; done)===="
+	echo "==  ${1}  =="
+	# SC2034: i appears unused. Verify it or export it.
+	# shellcheck disable=SC2034
+	echo "====$(for i in $(seq ${#1}); do echo "=\\c"; done)===="
+	decolorize
 }
 
 # Device Identifier
 function mido() {
-    export DEVICE=mido
+	export DEVICE=mido
 }
 
 function beryllium() {
-    export DEVICE=beryllium
+	export DEVICE=beryllium
 }
 
 function kernelbox() {
-    ANYKERNEL="${HOME}/working/AnyKernel2"
-    ZIP_DIR="${HOME}/working/weeb_zip"
+	ANYKERNEL="${HOME}/working/AnyKernel2"
+	ZIP_DIR="${HOME}/working/weeb_zip"
 }
 
 function semaphorebox() {
-    ANYKERNEL="${KERNELDIR}/anykernel"
-    ZIP_DIR="${KERNELDIR}/files"
-    KBUILD_BUILD_USER="raphielscape"
-    TOOLCHAIN="${HOME}/GNU/GCC"
+	ANYKERNEL="${KERNELDIR}/anykernel"
+	ZIP_DIR="${KERNELDIR}/files"
+	KBUILD_BUILD_USER="raphielscape"
+	TOOLCHAIN="${HOME}/GNU/GCC"
 }
 
 export ANYKERNEL ZIP_DIR KBUILD_BUILD_USER TOOLCHAIN
 
 # Delett Old AnyKernel in Aroma dir if exists
-rm -rf ${ANYKERNEL_DONE}
+rm -rf "${ANYKERNEL_DONE}"
 
 function prepare_clang() {
-    header "We're building Clang bois" "${GREEN}"
+	header "We're building Clang bois" "${GREEN}"
 
-    # Clang configurations
-    PATH=${HOME}/toolchains/clang-8.x/bin/:$PATH
-    CLANG_TCHAIN="clang"
-    TCHAIN_PATH="aarch64-linux-gnu-"
-    CLANG_TRIPLE="aarch64-linux-gnu-"
+	# Clang configurations
+	PATH=${HOME}/toolchains/clang-8.x/bin/:$PATH
+	CLANG_TCHAIN="clang"
+	TCHAIN_PATH="aarch64-linux-gnu-"
+	CLANG_TRIPLE="aarch64-linux-gnu-"
 
-    # Kbuild Sets
-    KBUILD_COMPILER_STRING="$(${CLANG_TCHAIN} --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
-    CROSS_COMPILE="${TCHAIN_PATH}"
+	# Kbuild Sets
+	KBUILD_COMPILER_STRING="$(${CLANG_TCHAIN} --version | head -n 1 |
+		perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
+	CROSS_COMPILE="${TCHAIN_PATH}"
 
-    # Export the make
-    MAKE="make O=${OUTDIR} CC=${CLANG_TCHAIN}"
+	# Export the make
+	MAKE="make O=${OUTDIR} CC=${CLANG_TCHAIN}"
 
-    # Export compiler for announcer
-    COMPILER_USED="$(${CLANG_TCHAIN} --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
-    CU=clang
+	# Export compiler for announcer
+	COMPILER_USED="$(${CLANG_TCHAIN} --version | head -n 1 |
+		perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
+	CU=clang
 
-    # Scream out the Clang compiler used
-    header "Using toolchain: $(${CLANG_TCHAIN} --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
+	# Scream out the Clang compiler used
+	header "Using toolchain: $(${CLANG_TCHAIN} --version | head -n 1 |
+		perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
 }
 
-function prepare_gcc () {
-    MAKE="make O=${OUTDIR}"
-    COMPILER_USED=GCC
-    CU=GCC
+function prepare_gcc() {
+	MAKE="make O=${OUTDIR}"
+	COMPILER_USED=GCC
+	CU=GCC
 }
 
 # Then export the stuff
@@ -156,53 +162,47 @@ export MAINGROUP_ID BUILDSCAPERER_ID STICKER
 
 # Sticc function
 function tg_sendstick() {
-    curl -s -X POST "https://api.telegram.org/bot$BOT_API_KEY/sendSticker" \
-         -d sticker="${STICKER}" \
-         -d chat_id=${BUILDSCAPERER_ID} >> /dev/null
+	curl -s -X POST "https://api.telegram.org/bot$BOT_API_KEY/sendSticker" \
+		-d sticker="${STICKER}" \
+		-d chat_id=${BUILDSCAPERER_ID} >>/dev/null
 }
 
 # Push to Channel
 function push() {
-    "${TELEGRAM}" -f "${ZIP_DIR}/$ZIPNAME" \
-                  -c ${BUILDSCAPERER_ID}
+	"${TELEGRAM}" -f "${ZIP_DIR}/$ZIPNAME" \
+		-c ${BUILDSCAPERER_ID}
 }
 
 # sendcast to group
 function tg_sendinfo() {
-    "${TELEGRAM}" -c ${MAINGROUP_ID} -H \
-        "$(
-            for POST in "${@}";
-            do echo "${POST}"; 
-            done
-        )"
+	"${TELEGRAM}" -c ${MAINGROUP_ID} -H \
+		"$(
+			for POST in "${@}"; do
+				echo "${POST}"
+			done
+		)"
 }
 
 # sendcast to channel
 function tg_channelcast() {
-    "${TELEGRAM}" -c ${BUILDSCAPERER_ID} -H \
-        "$(
-            for POST in "${@}";
-            do echo "${POST}"; 
-            done
-        )"
+	"${TELEGRAM}" -c ${BUILDSCAPERER_ID} -H \
+		"$(
+			for POST in "${@}"; do
+				echo "${POST}"
+			done
+		)"
 }
 
 function kickstart() {
-    tg_sendinfo "Compiler <code>${COMPILER_USED}</code>" \
-                "Device <b>${DEVICE}</b>" \
-                "Branch <code>${PARSE_BRANCH}</code>" \
-                "Commit Point <code>${COMMIT_POINT}</code>" \
-                "Under <code>$(hostname)</code>" \
-                "Started on <code>$(whoami)</code>"
+	tg_sendinfo "Compilation Started!"
 
-    tg_channelcast "Compiler <code>${COMPILER_USED}</code>" \
-                "Device <b>${DEVICE}</b>" \
-                "Branch <code>${PARSE_BRANCH}</code>" \
-                "Commit Point <code>${COMMIT_POINT}</code>" \
-                "Under <code>$(hostname)</code>" \
-                "Started on <code>$(whoami)</code>"
+	tg_channelcast "Compiler <code>${COMPILER_USED}</code>" \
+		"Device <b>${DEVICE}</b>" \
+		"Branch <code>${PARSE_BRANCH}</code>" \
+		"Commit Point <code>${COMMIT_POINT}</code>" \
+		"Under <code>$(hostname)</code>" \
+		"Started on <code>$(whoami)</code>"
 }
-
 
 # Whenever build is interrupted by purpose, report it
 trap '{
@@ -213,71 +213,71 @@ trap '{
 
 # Interruption Happen, report with sticker
 function tg_intstick() {
-    curl -s -X POST https://api.telegram.org/bot$BOT_API_KEY/sendSticker \
-         -d sticker="CAADAQADFQADlS0LHvIFwsaTaVjGAg" \
-         -d chat_id=${BUILDSCAPERER_ID} >> /dev/null
+	curl -s -X POST "https://api.telegram.org/bot$BOT_API_KEY/sendSticker" \
+		-d sticker="CAADAQADFQADlS0LHvIFwsaTaVjGAg" \
+		-d chat_id=${BUILDSCAPERER_ID} >>/dev/null
 }
 
 function tg_intstickmain() {
-    curl -s -X POST https://api.telegram.org/bot$BOT_API_KEY/sendSticker \
-         -d sticker="CAADAQADFQADlS0LHvIFwsaTaVjGAg" \
-         -d chat_id=${MAINGROUP_ID} >> /dev/null
+	curl -s -X POST "https://api.telegram.org/bot$BOT_API_KEY/sendSticker" \
+		-d sticker="CAADAQADFQADlS0LHvIFwsaTaVjGAg" \
+		-d chat_id=${MAINGROUP_ID} >>/dev/null
 }
 
 # Whenever errors occured, report them
 function tg_senderror() {
-    tg_sendinfo "Build Throwing Error(s)" \
-                "@raphielscape naaaaa"
-    tg_channelcast "Build Throwing Error(s)"
-    [[ ! -z ${STATUS} ]] && \
-    exit ${STATUS} || \
-    exit 1
+	tg_sendinfo "Build Throwing Error(s)" \
+		"@raphielscape naaaaa"
+	tg_channelcast "Build Throwing Error(s)"
+	[[ ! -z ${STATUS} ]] &&
+		exit "${STATUS}" ||
+		exit 1
 }
 
 # Announce the completion
 function tg_yay() {
-    tg_sendinfo "Compilation for ${DEVICE} Completed yay" \
-                "Haha yes"
+	tg_sendinfo "Compilation for ${DEVICE} Completed yay" \
+		"Haha yes"
 }
 
 # Fin Prober
 function fin() {
-    header "Yay! My works took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds.~"
-    tg_sendinfo "$(echo "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds.")"
-    tg_yay
+	header "Yay! My works took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds.~"
+	tg_sendinfo "Build took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds"
+	tg_yay
 }
 
 # Toolchain Checks (GCC)
 # Our box complaint coz of some reason
 if [[ ${WORKER} != raphielbox ]]; then
-function check_gcc_toolchain() {
-    export TC="$(find ${TOOLCHAIN}/bin -type f -name *-gcc)"
-  if [[ -f "${TC}" ]]; then
-    export CROSS_COMPILE="${TOOLCHAIN}/bin/$(echo ${TC} | \
-        awk -F '/' '{print $NF'} | \
-        sed -e 's/gcc//')"
-    echo "Using toolchain: $(${CROSS_COMPILE}gcc --version | head -1)";
-  else
-    echo "No suitable toolchain found in ${TOOLCHAIN}"
-    tg_senderror
-    exit 1;
-  fi
-}
+	function check_gcc_toolchain() {
+		TC="$(find "${TOOLCHAIN}"/bin -type f -name "*-gcc")"
+		if [[ -f "${TC}" ]]; then
+			CROSS_COMPILE="${TOOLCHAIN}/bin/$(echo "${TC}" |
+				awk -F '/' '{print $NF}' |
+				sed -e 's/gcc//')"
+			echo "Using toolchain: $("${CROSS_COMPILE}"gcc --version | head -1)"
+		else
+			echo "No suitable toolchain found in ${TOOLCHAIN}"
+			tg_senderror
+			exit 1
+		fi
+	}
 fi
 
 # Errored Prober
 function finerr() {
-    header "My works took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds but it's error..."
-    tg_sendinfo "$(echo -e "Build took $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds\nbut it's error...")"
-    tg_senderror
-    exit 1
+	header "My works took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds but it's error..."
+	tg_sendinfo "$(echo -e "Build took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds\\nbut it's error...")"
+	tg_senderror
+	exit 1
 }
 
 # Some Relatable Aliases
 function copy() {
-  command cp -vR "${@}"
+	command cp -vR "${@}"
 }
 
 function delett() {
-  command rm -vrf "${@}"
+	command rm -vrf "${@}"
 }

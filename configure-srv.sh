@@ -19,26 +19,22 @@ export ZIP_UPLOAD=true
 
 # Some alias
 function clone() {
-  command git clone --depth 1 "${@}"
+	command git clone --depth 1 "${@}"
 }
 
 # Validate things for proper configurations
 if [[ ${WORKER} == semaphore ]]; then
-  install-package ccache bc bash libncurses5-dev git-core gnupg flex bison gperf build-essential \
-  zip curl libc6-dev ncurses-dev binfmt-support libllvm-3.6-ocaml-dev llvm-3.6 llvm-3.6-dev llvm-3.6-runtime \
-  cmake automake autogen autoconf autotools-dev libtool shtool python m4 gcc libtool zlib1g-dev
+	install-package ccache bc bash libncurses5-dev git-core gnupg flex bison gperf build-essential \
+		zip curl libc6-dev ncurses-dev binfmt-support libllvm-3.6-ocaml-dev llvm-3.6 llvm-3.6-dev llvm-3.6-runtime \
+		cmake automake autogen autoconf autotools-dev libtool shtool python m4 gcc libtool zlib1g-dev
 fi
 
 # Clone needed components
-if [[ ${branch} == staging/penkek ]]; then
-clone https://github.com/raphielscape/AnyKernel2.git --branch=penkek ${KERNELDIR}/anykernel
-else
-clone https://github.com/raphielscape/AnyKernel2.git ${KERNELDIR}/anykernel
-fi
-clone https://github.com/krasCGQ/aarch64-linux-android.git --branch "opt-linaro-7.x" ${HOME}/GNU/GCC
+clone https://github.com/raphielscape/AnyKernel2.git "${KERNELDIR}"/anykernel
+clone https://github.com/krasCGQ/aarch64-linux-android.git --branch "opt-linaro-7.x" "${HOME}"/GNU/GCC
 
 # Going to start
-cd ${KERNELDIR}
+cd "${KERNELDIR}" || exit
 
 # Play Wires bois
-${HOME}/scripts/kernel.sh
+"${HOME}"/scripts/kernel.sh
