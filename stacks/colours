@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# shellcheck source=/dev/null
+#
+# Copyright (C) 2018 Raphielscape LLC.
+#
+# Licensed under the Raphielscape Public License, Version 1.0 (the "License");
+# you may not use this file except in compliance with the License.
+#
+# Colour Mapping container
+
+BLACK="0"
+GREEN="2"
+CYAN="6"
+RED="1"
+PURPLE="5"
+LIGHTGRAY="8"
+DARKGRAY="233"
+LIGHTBLUE="33"
+LIGHTGREEN="10"
+LIGHTCYAN="51"
+LIGHTRED="198"
+LIGHTPURPLE="92"
+YELLOW="11"
+WHITE="15"
+
+export BLACK GREEN CYAN RED PURPLE LIGHTBLUE LIGHTGREEN LIGHTCYAN LIGHTRED \
+	LIGHTPURPLE YELLOW WHITE DARKGRAY LIGHTGRAY

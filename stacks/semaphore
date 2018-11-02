@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# shellcheck source=/dev/null
+#
+# Copyright (C) 2018 Raphielscape LLC.
+#
+# Licensed under the Raphielscape Public License, Version 1.0 (the "License");
+# you may not use this file except in compliance with the License.
+#
+# Semaphore Environment container
+
+function semaphorebox() {
+    KERNELDIR=${SEMAPHORE_PROJECT_DIR}
+	ANYKERNEL="${KERNELDIR}/anykernel"
+	ZIP_DIR="${KERNELDIR}/files"
+	KBUILD_BUILD_USER="raphielscape"
+	TOOLCHAIN="${HOME}/GNU/GCC"
+    ZIP_UPLOAD=true
+}
+
+# Some alias
+function clone() {
+	command git clone --depth 1 "${@}"
+}
+
+# Toolchain Checks (GCC)
+# Our box complaint coz of some reason
+if [[ ${WORKER} != raphielbox ]]; then
+	function check_gcc_toolchain() {
+		TC="$(find "${TOOLCHAIN}"/bin -type f -name "*-gcc")"
+		if [[ -f "${TC}" ]]; then
+			CROSS_COMPILE="${TOOLCHAIN}/bin/$(echo "${TC}" |
+				awk -F '/' '{print $NF}' |
+				sed -e 's/gcc//')"
+			echo "Using toolchain: $("${CROSS_COMPILE}"gcc --version | head -1)"
+		else
+			echo "No suitable toolchain found in ${TOOLCHAIN}"
+			tg_senderror
+			exit 1
+		fi
+	}
+fi
+
+export ANYKERNEL ZIP_DIR KBUILD_BUILD_USER TOOLCHAIN KERNELDIR ZIP_UPLOAD

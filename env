@@ -12,6 +12,9 @@
 # Export script directory at the beginning
 SCRIPTDIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 
+# Import stack
+. "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"/stacks/stackies
+
 # Sourcedir
 SRCDIR="${KERNELDIR}"
 OUTDIR="${KERNELDIR}/out"
@@ -25,25 +28,6 @@ TELEGRAM="${SCRIPTDIR}"/telegram/telegram
 TELEGRAM_TOKEN=${BOT_API_KEY}
 
 export TELEGRAM_TOKEN PARSE_BRANCH PARSE_ORIGIN COMMIT_POINT SRCDIR OUTDIR
-
-# tput colormap
-BLACK="0"
-GREEN="2"
-CYAN="6"
-RED="1"
-PURPLE="5"
-LIGHTGRAY="8"
-DARKGRAY="233"
-LIGHTBLUE="33"
-LIGHTGREEN="10"
-LIGHTCYAN="51"
-LIGHTRED="198"
-LIGHTPURPLE="92"
-YELLOW="11"
-WHITE="15"
-
-export BLACK GREEN CYAN RED PURPLE LIGHTBLUE LIGHTGREEN LIGHTCYAN LIGHTRED \
-	LIGHTPURPLE YELLOW WHITE DARKGRAY LIGHTGRAY
 
 # Alias echo as teller
 function echo() {
@@ -103,13 +87,6 @@ function beryllium() {
 function kernelbox() {
 	ANYKERNEL="${HOME}/working/AnyKernel2"
 	ZIP_DIR="${HOME}/working/weeb_zip"
-}
-
-function semaphorebox() {
-	ANYKERNEL="${KERNELDIR}/anykernel"
-	ZIP_DIR="${KERNELDIR}/files"
-	KBUILD_BUILD_USER="raphielscape"
-	TOOLCHAIN="${HOME}/GNU/GCC"
 }
 
 export ANYKERNEL ZIP_DIR KBUILD_BUILD_USER TOOLCHAIN
@@ -246,24 +223,6 @@ function fin() {
 	tg_sendinfo "Build took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds"
 	tg_yay
 }
-
-# Toolchain Checks (GCC)
-# Our box complaint coz of some reason
-if [[ ${WORKER} != raphielbox ]]; then
-	function check_gcc_toolchain() {
-		TC="$(find "${TOOLCHAIN}"/bin -type f -name "*-gcc")"
-		if [[ -f "${TC}" ]]; then
-			CROSS_COMPILE="${TOOLCHAIN}/bin/$(echo "${TC}" |
-				awk -F '/' '{print $NF}' |
-				sed -e 's/gcc//')"
-			echo "Using toolchain: $("${CROSS_COMPILE}"gcc --version | head -1)"
-		else
-			echo "No suitable toolchain found in ${TOOLCHAIN}"
-			tg_senderror
-			exit 1
-		fi
-	}
-fi
 
 # Errored Prober
 function finerr() {

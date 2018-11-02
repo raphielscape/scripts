@@ -19,7 +19,7 @@ else
 	semaphorebox
 fi
 
-if [[ ${PARSE_BRANCH} == */penkek ]]; then
+if [[ ${PARSE_ORIGIN} == *reworks* ]]; then
 	mido
 fi
 
