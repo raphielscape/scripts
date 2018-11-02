@@ -11,6 +11,9 @@
 # shellcheck source=/dev/null
 . "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"/env
 
+# Semaphore drunk without this
+export KERNELDIR=${SEMAPHORE_PROJECT_DIR}
+
 # Validate things for proper configurations
 if [[ ${WORKER} == semaphore ]]; then
 	install-package ccache bc bash libncurses5-dev git-core gnupg flex bison gperf build-essential \

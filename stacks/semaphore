@@ -9,7 +9,6 @@
 # Semaphore Environment container
 
 function semaphorebox() {
-    KERNELDIR=${SEMAPHORE_PROJECT_DIR}
 	ANYKERNEL="${KERNELDIR}/anykernel"
 	ZIP_DIR="${KERNELDIR}/files"
 	KBUILD_BUILD_USER="raphielscape"
@@ -40,4 +39,4 @@ if [[ ${WORKER} != raphielbox ]]; then
 	}
 fi
 
-export ANYKERNEL ZIP_DIR KBUILD_BUILD_USER TOOLCHAIN KERNELDIR ZIP_UPLOAD
+export ANYKERNEL ZIP_DIR KBUILD_BUILD_USER TOOLCHAIN ZIP_UPLOAD CROSS_COMPILE
