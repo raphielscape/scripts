@@ -97,24 +97,24 @@ rm -rf "${ANYKERNEL_DONE}"
 function prepare_clang() {
 	header "We're building Clang bois" "${GREEN}"
 
-	# Clang configurations
-	PATH=${HOME}/toolchains/clang-8.x/bin/:$PATH
-	CLANG_TCHAIN="clang"
-	TCHAIN_PATH="aarch64-linux-gnu-"
-	CLANG_TRIPLE="aarch64-linux-gnu-"
+		# Clang configurations
+		PATH=${HOME}/toolchains/clang-8.x/bin/:$PATH
+		CLANG_TCHAIN="clang"
+		TCHAIN_PATH="aarch64-linux-gnu-"
+		CLANG_TRIPLE="aarch64-linux-gnu-"
 
-	# Kbuild Sets
-	KBUILD_COMPILER_STRING="$(${CLANG_TCHAIN} --version | head -n 1 |
-		perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
-	CROSS_COMPILE="${TCHAIN_PATH}"
+		# Kbuild Sets
+		KBUILD_COMPILER_STRING="$(${CLANG_TCHAIN} --version | head -n 1 |
+			perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
+		CROSS_COMPILE="${TCHAIN_PATH}"
 
-	# Export the make
-	MAKE="make O=${OUTDIR} CC=${CLANG_TCHAIN}"
+		# Export the make
+		MAKE="make O=${OUTDIR} CC=${CLANG_TCHAIN}"
 
-	# Export compiler for announcer
-	COMPILER_USED="$(${CLANG_TCHAIN} --version | head -n 1 |
-		perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
-	CU=clang
+		# Export compiler for announcer
+		COMPILER_USED="$(${CLANG_TCHAIN} --version | head -n 1 |
+			perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
+		CU=clang
 
 	# Scream out the Clang compiler used
 	header "Using toolchain: $(${CLANG_TCHAIN} --version | head -n 1 |
