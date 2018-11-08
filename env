@@ -49,7 +49,7 @@ function decolorize() {
 # Colorize errors
 function display_error() {
 	echo
-	echo "$(tputaf ${RED})${1}$(tputz)"
+	echo "$(tputaf "${RED}")${1}$(tputz)"
 	[[ -z ${2} ]] && echo
 }
 
