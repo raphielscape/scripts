@@ -12,7 +12,7 @@
 . "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"/env
 
 # Semaphore drunk without this
-export KERNELDIR=${SEMAPHORE_PROJECT_DIR}
+export KERNELDIR=${SEMAPHORE_GIT_DIR}
 
 # Validate things for proper configurations
 if [[ ${WORKER} == semaphore ]]; then
