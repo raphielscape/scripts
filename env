@@ -127,7 +127,7 @@ function prepare_gcc() {
 	fi
 
 	header "Using toolchain: $("${CROSS_COMPILE}"gcc --version | head -1)"
-	COMPILER_USED=$("${CROSS_COMPILE}"gcc --version | head -1)
+	COMPILER_USED=GCC
 	MAKE="make O=${OUTDIR}"
 
 	# Compilation announcer stuff
