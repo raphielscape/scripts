@@ -19,7 +19,7 @@ else
 	semaphorebox
 fi
 
-if [[ ${PARSE_ORIGIN} == *reworks* ]]; then
+if [[ ${PARSE_ORIGIN} == *msm8953* ]]; then
 	mido
 fi
 

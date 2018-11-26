@@ -30,7 +30,6 @@ if [[ ${WORKER} != raphielbox ]]; then
 			CROSS_COMPILE="${TOOLCHAIN}/bin/$(echo "${TC}" |
 				awk -F '/' '{print $NF}' |
 				sed -e 's/gcc//')"
-			header "Using toolchain: $("${CROSS_COMPILE}"gcc --version | head -1)"
 		else
 			tg_senderror
 			die "No suitable toolchain found in ${TOOLCHAIN}"
