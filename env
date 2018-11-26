@@ -122,8 +122,15 @@ function prepare_clang() {
 }
 
 function prepare_gcc() {
+	if [[ ${WORKER} == raphielbox ]]; then
+		export CROSS_COMPILE="aarch64-linux-gnu-"
+	fi
+
+	header "Using toolchain: GCC $(${CROSS_COMPILE}gcc -dumpversion)"
 	MAKE="make O=${OUTDIR}"
-	COMPILER_USED=GCC
+
+	# Compilation announcer stuff
+	COMPILER_USED="GCC $(${CROSS_COMPILE}gcc -dumpversion)"
 	CU=GCC
 }
 
