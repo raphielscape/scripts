@@ -164,7 +164,7 @@ decolorize
 header "Zipping AnyKernel..." "${BLUE}"
 cd ${ANYKERNEL} || return
 colorize "${CYAN}"
-command zip -rT9 ${FINAL_ZIP} *
+command zip -rT9 "${FINAL_ZIP}" *
 cd - || return
 decolorize
 

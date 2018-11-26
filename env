@@ -126,12 +126,11 @@ function prepare_gcc() {
 		export CROSS_COMPILE="aarch64-linux-gnu-"
 	fi
 
-	header "Using toolchain: GCC $(${CROSS_COMPILE}gcc -dumpversion)"
 	MAKE="make O=${OUTDIR}"
 
 	# Compilation announcer stuff
-	COMPILER_USED="GCC $(${CROSS_COMPILE}gcc -dumpversion)"
-	CU=GCC
+	COMPILER_USED=$("${CROSS_COMPILE}"gcc --version | head -1)
+	CU=gcc
 }
 
 # Then export the stuff
