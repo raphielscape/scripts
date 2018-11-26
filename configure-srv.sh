@@ -15,18 +15,15 @@
 export KERNELDIR=${SEMAPHORE_GIT_DIR}
 
 # Validate things for proper configurations
-if [[ ${WORKER} == semaphore ]]; then
-	install-package --update-new ccache bc bash git-core gnupg build-essential \
+sudo install-package --update-new ccache bc bash git-core gnupg build-essential \
 		zip curl make automake autogen autoconf autotools-dev libtool shtool python \
 		m4 gcc libtool zlib1g-dev
-fi
 
 # Clone needed components
 clone https://github.com/raphielscape/AnyKernel2.git "${KERNELDIR}"/anykernel
-clone https://github.com/krasCGQ/aarch64-linux-android.git --branch "opt-linaro-7.x" "${HOME}"/GNU/GCC
+clone https://github.com/krasCGQ/aarch64-linux-android.git --branch "opt-linaro-7.x" "${HOME}/GNU/GCC"
 
-# Going to start
-cd "${KERNELDIR}" || exit
+cd "$KERNELDIR" || exit
 
 # Play Wires bois
-"${HOME}"/scripts/kernel.sh
+"${HOME}/scripts/kernel.sh"
