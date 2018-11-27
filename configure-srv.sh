@@ -12,7 +12,7 @@
 . "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"/env
 
 # Semaphore drunk without this
-export KERNELDIR=${SEMAPHORE_GIT_DIR}
+export KERNELDIR=${SEMAPHORE_PROJECT_DIR}
 
 # Validate things for proper configurations
 sudo install-package --update-new ccache bc bash git-core gnupg build-essential \
