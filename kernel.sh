@@ -80,7 +80,7 @@ TCVERSION2="$(${CROSS_COMPILE}gcc --version | head -1 |
 export TCVERSION1 TCVERSION2
 
 # Zipname
-ZIPNAME="Kat-${DEVICE}-${CU}-$(date +%Y%m%d-%H%M).zip"
+ZIPNAME="Bash-${DEVICE}-${CU}-$(date +%Y%m%d-%H%M).zip"
 
 # Final Zip
 export FINAL_ZIP="${ZIP_DIR}/${ZIPNAME}"
