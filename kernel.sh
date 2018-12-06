@@ -35,7 +35,6 @@ fi
 
 ARCH="arm64"
 SUBARCH="arm64"
-DEFCONFIG="raph_defconfig"
 IMAGE="${OUTDIR}/arch/${ARCH}/boot/Image.gz-dtb"
 
 export ARCH SUBARCH DEFCONFIG IMAGE

@@ -78,10 +78,12 @@ function header() {
 # Device Identifier
 function mido() {
 	export DEVICE=mido
+	export DEFCONFIG="raph_defconfig"
 }
 
 function beryllium() {
 	export DEVICE=beryllium
+	export DEFCONFIG="raph_beryllium_defconfig"
 }
 
 function kernelbox() {
