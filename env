@@ -86,6 +86,11 @@ function beryllium() {
 	export DEFCONFIG="raph_beryllium_defconfig"
 }
 
+function dipper() {
+	export DEVICE=dipper
+	export DEFCONFIG="raph_dipper_defconfig"
+}
+
 function kernelbox() {
 	ANYKERNEL="${HOME}/working/AnyKernel2"
 	ZIP_DIR="${HOME}/working/weeb_zip"

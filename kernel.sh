@@ -27,6 +27,10 @@ if [[ ${PARSE_ORIGIN} == *beryllium* ]]; then
 	beryllium
 fi
 
+if [[ ${EXEC} == dipper ]]; then
+	dipper
+fi
+
 if [[ ${CC} == Clang ]]; then
 	prepare_clang
 else
