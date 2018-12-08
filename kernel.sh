@@ -23,12 +23,12 @@ if [[ ${PARSE_ORIGIN} == *msm8953* ]]; then
 	mido
 fi
 
-if [[ ${PARSE_ORIGIN} == *beryllium* ]]; then
+if [[ ${EXEC} == beryllium ]]; then
 	beryllium
 fi
 
 if [[ ${EXEC} == dipper ]]; then
-	dipper
+    dipper
 fi
 
 if [[ ${CC} == Clang ]]; then

@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# shellcheck source=/dev/null
+#
+# Copyright (C) 2018 Raphielscape LLC.
+#
+# Licensed under the Raphielscape Public License, Version 1.0 (the "License");
+# you may not use this file except in compliance with the License.
+#
+# Device Environment container
+
+function mido() {
+	export DEVICE=mido
+	export DEFCONFIG="raph_defconfig"
+}
+
+function beryllium() {
+	export DEVICE=beryllium
+	export DEFCONFIG="raph_beryllium_defconfig"
+}
+
+function dipper() {
+	export DEVICE=dipper
+	export DEFCONFIG="raph_dipper_defconfig"
+}
