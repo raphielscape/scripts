@@ -16,8 +16,8 @@ function semaphorebox() {
     ZIP_UPLOAD=true
 	BRANCH_ID_MSM8953=2190083
 	BRANCH_ID_SDM845=2313683
-	BUILDURL=$(debuginfo|sed -e 's/^"//' -e 's/"$//'|jq '.build_url')
-	START=$(debuginfo|sed -e 's/^"//' -e 's/"$//'|jq '.started_at')
+	BUILDURL=$(debuginfo|jq '.build_url'|sed -e 's/^"//' -e 's/"$//')
+	START=$(debuginfo|jq '.started_at'|sed -e 's/^"//' -e 's/"$//')
 }
 
 # Some alias
