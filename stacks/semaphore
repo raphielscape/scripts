@@ -14,6 +14,10 @@ function semaphorebox() {
 	KBUILD_BUILD_USER="raphielscape"
 	TOOLCHAIN="${HOME}/GNU/GCC"
     ZIP_UPLOAD=true
+	BRANCH_ID_MSM8953=2190083
+	BRANCH_ID_SDM845=2313683
+	BUILDURL=$(debuginfo|sed -e 's/^"//' -e 's/"$//'|jq '.build_url')
+	START=$(debuginfo|sed -e 's/^"//' -e 's/"$//'|jq '.started_at')
 }
 
 # Some alias
@@ -21,21 +25,32 @@ function clone() {
 	command git clone --depth 1 "${@}"
 }
 
-# Toolchain Checks (GCC)
-# Our box complaint coz of some reason
-if [[ ${WORKER} != raphielbox ]]; then
-	function check_gcc_toolchain() {
-		TC="$(find "${TOOLCHAIN}"/bin -type f -name "*-gcc")"
-		if [[ -f "${TC}" ]]; then
-			CROSS_COMPILE="${TOOLCHAIN}/bin/$(echo "${TC}" |
-				awk -F '/' '{print $NF}' |
-				sed -e 's/gcc//')"
-				header "Using toolchain: $("${CROSS_COMPILE}"gcc --version | head -1)"
-		else
-			tg_senderror
-			die "No suitable toolchain found in ${TOOLCHAIN}"
-		fi
+function check_gcc_toolchain() {
+	TC="$(find "${TOOLCHAIN}"/bin -type f -name "*-gcc")"
+	if [[ -f "${TC}" ]]; then
+		CROSS_COMPILE="${TOOLCHAIN}/bin/$(echo "${TC}" |
+			awk -F '/' '{print $NF}' |
+			sed -e 's/gcc//')"
+			header "Using toolchain: $("${CROSS_COMPILE}"gcc --version | head -1)"
+	else
+		tg_senderror
+		die "No suitable toolchain found in ${TOOLCHAIN}"
+	fi
+}
+
+if [[ ${SDM845} == true ]]; then
+	function debuginfo {
+		curl -s -X GET "https://semaphoreci.com/api/v1/projects/$PROJECT_ID/$BRANCH_ID_SDM845/status?auth_token=$AUTH_TOKEN"
+	}
+else
+	function debuginfo {
+		curl -s -X GET "https://semaphoreci.com/api/v1/projects/$PROJECT_ID/$BRANCH_ID_MSM8953/status?auth_token=$AUTH_TOKEN"
 	}
 fi
 
-export ANYKERNEL ZIP_DIR KBUILD_BUILD_USER TOOLCHAIN ZIP_UPLOAD CROSS_COMPILE
+function debugtap {
+	tg_debugcast "Build Link : ${BUILDURL}" \
+		"Started at : <b>${START}</b>"
+}
+
+export ANYKERNEL ZIP_DIR KBUILD_BUILD_USER TOOLCHAIN ZIP_UPLOAD CROSS_COMPILE BUILDURL START

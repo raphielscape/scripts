@@ -131,6 +131,7 @@ export PATH CU COMPILER_USED CLANG_TCHAIN TCHAIN_PATH CLANG_TRIPLE KBUILD_COMPIL
 # Caster configurations
 MAINGROUP_ID="-1001371047577"
 BUILDSCAPERER_ID="-1001153251064"
+DEBUG_ID="-1001279397127"
 STICKER="CAADBAADNwADp8uuGBHV2tl40w7WAg"
 
 export MAINGROUP_ID BUILDSCAPERER_ID STICKER
@@ -161,6 +162,16 @@ function tg_sendinfo() {
 # sendcast to channel
 function tg_channelcast() {
 	"${TELEGRAM}" -c ${BUILDSCAPERER_ID} -H \
+		"$(
+			for POST in "${@}"; do
+				echo "${POST}"
+			done
+		)"
+}
+
+# Debugcasting
+function tg_debugcast() {
+	"${TELEGRAM}" -c ${DEBUG_ID} -H \
 		"$(
 			for POST in "${@}"; do
 				echo "${POST}"

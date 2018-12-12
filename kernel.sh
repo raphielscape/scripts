@@ -48,6 +48,7 @@ header "You're working with $DEVICE on $PARSE_BRANCH" "$GREEN"
 # First-post works
 tg_sendstick
 kickstart
+debugtap
 
 # Whenever build is errored, report it, and killplay
 trap '{

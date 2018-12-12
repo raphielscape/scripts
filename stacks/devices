@@ -16,9 +16,11 @@ function mido() {
 function beryllium() {
 	export DEVICE=beryllium
 	export DEFCONFIG="raph_beryllium_defconfig"
+	export SDM845=true
 }
 
 function dipper() {
 	export DEVICE=dipper
 	export DEFCONFIG="raph_dipper_defconfig"
+	export SDM845=true
 }
