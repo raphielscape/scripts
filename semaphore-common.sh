@@ -31,7 +31,11 @@ if [[ "$@" =~ "mido" ]]; then
 fi
 
 # Well, fuck
-export CC=GCC
+if [[ "$@" =~ "clang" ]]; then
+	export CC=Clang
+else
+	export CC=GCC
+fi
 
 # Validate things for proper configurations
 sudo install-package --update-new ccache bc bash git-core gnupg build-essential \
