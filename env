@@ -120,8 +120,12 @@ prepare_clang() {
 
 prepare_gcc() {
 	if [ "${WORKER}" = raphielbox ]; then
-		export CROSS_COMPILE="${SCRIPTDIR}/ccachewrapper aarch64-linux-gnu-"
-		header "Using toolchain: $("${CROSS_COMPILE}"gcc --version | head -1)"
+		CROSS_COMPILE="${SCRIPTDIR}/ccachewrapper aarch64-linux-gnu-"
+		header "Using toolchain: $(aarch64-linux-gnu-gcc --version | head -1)"
+	else
+		PATH=${HOME}/GNU/GCC/bin:$PATH
+		CROSS_COMPILE="${SCRIPTDIR}/ccachewrapper aarch64-linux-android-"
+		header "Using toolchain: $(aarch64-linux-android-gcc --version | head -1)"
 	fi
 
 	COMPILER_USED=GCC
