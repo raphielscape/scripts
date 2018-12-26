@@ -96,7 +96,7 @@ prepare_clang() {
 			CLANG_TRIPLE="aarch64-linux-gnu-"
 		else
 			PATH=${HOME}/LLVM/CLANG/bin:$PATH
-			CROSS_COMPILE=${HOME}/GNU/GCC/aarch64-linux-android-
+			CROSS_COMPILE=${HOME}/GNU/GCC/bin/aarch64-linux-android-
 			CLANG_TRIPLE="aarch64-linux-gnu-"
 		fi
 
