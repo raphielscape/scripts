@@ -89,10 +89,16 @@ prepare_clang() {
 	header "We're building Clang bois" "${GREEN}"
 
 		# Clang configurations
+		if [ "${WORKER}" = raphielbox ]; then
 		PATH=${HOME}/toolchains/clang-8.x/bin/:$PATH
+		HOSTLD="ld.lld"
+		TCHAIN_PATH=aarch64-linux-gnu-
+		else
+		PATH=${HOME}/LLVM/CLANG/bin:$PATH
+		TCHAIN_PATH=${HOME}/GNU/GCC/aarch64-linux-android-
+		fi
+
 		CLANG_TCHAIN="${SCRIPTDIR}/ccachewrapper clang"
-		HOSTLD=ld.lld
-		TCHAIN_PATH="aarch64-linux-gnu-"
 		CLANG_TRIPLE="aarch64-linux-gnu-"
 
 		# Kbuild Sets

@@ -25,6 +25,9 @@ if [[ "$@" =~ "beryllium" ]]; then
 	export EXEC=beryllium
 fi
 
+# Declare that we're using Clang now
+export CC=Clang
+
 # Validate things for proper configurations
 sudo install-package --update-new ccache bc bash git-core gnupg build-essential \
 		zip curl make automake autogen autoconf autotools-dev libtool shtool python \
@@ -37,6 +40,7 @@ else
 	clone https://github.com/raphielscape/AnyKernel2.git "${KERNELDIR}"/anykernel
 fi
 
-clone https://github.com/VRanger/aarch64-linux-gnu.git "${HOME}/GNU/GCC"
+clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 "${HOME}/GNU/GCC"
+clone https://github.com/VRanger/clang.git "${HOME}/LLVM/CLANG"
 
 cd "$KERNELDIR" && "${HOME}/scripts/kernel.sh"
