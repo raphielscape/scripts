@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env dash
 # shellcheck source=/dev/null
 #
 # Copyright (C) 2018 Raphielscape LLC.
@@ -8,7 +8,7 @@
 #
 # Semaphore Environment container
 
-function semaphorebox() {
+semaphorebox() {
 	ANYKERNEL="${KERNELDIR}/anykernel"
 	ZIP_DIR="${KERNELDIR}/files"
 	KBUILD_BUILD_USER="raphielscape"
@@ -21,13 +21,13 @@ function semaphorebox() {
 }
 
 # Some alias
-function clone() {
+clone() {
 	command git clone --depth 1 "${@}"
 }
 
-function check_gcc_toolchain() {
+check_gcc_toolchain() {
 	TC="$(find "${TOOLCHAIN}"/bin -type f -name "*-gcc")"
-	if [[ -f "${TC}" ]]; then
+	if [ -f "${TC}" ]; then
 		CROSS_COMPILE="${TOOLCHAIN}/bin/$(echo "${TC}" |
 			awk -F '/' '{print $NF}' |
 			sed -e 's/gcc//')"
@@ -38,17 +38,17 @@ function check_gcc_toolchain() {
 	fi
 }
 
-if [[ ${SDM845} == true ]]; then
-	function debuginfo {
+if [ "${SDM845}" = true ]; then
+	debuginfo() {
 		curl -s -X GET "https://semaphoreci.com/api/v1/projects/$PROJECT_ID/$BRANCH_ID_SDM845/status?auth_token=$AUTH_TOKEN"
 	}
 else
-	function debuginfo {
+	debuginfo() {
 		curl -s -X GET "https://semaphoreci.com/api/v1/projects/$PROJECT_ID/$BRANCH_ID_MSM8953/status?auth_token=$AUTH_TOKEN"
 	}
 fi
 
-function debugtap {
+debugtap() {
 	tg_debugcast "Build Link : ${BUILDURL}" \
 		"Started at : <b>${START}</b>"
 }

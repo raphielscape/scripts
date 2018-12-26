@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env dash
 # shellcheck source=/dev/null
 #
 # Copyright (C) 2018 Raphielscape LLC.
@@ -8,7 +8,7 @@
 #
 # Server stack container
 
-function upnet_check() {
+upnet_check() {
     if [ "$(ping -c 1 1.1.1.1)" != "0" ]; then
         echo "Upstream interface is up!";
     else
@@ -16,7 +16,7 @@ function upnet_check() {
     fi
 }
 
-function localnet_check() {
+localnet_check() {
     if [ "$(ping -c 1 raphielscape.llc)" != "0" ]; then
         echo "Local interface is up!";
     else
@@ -24,11 +24,11 @@ function localnet_check() {
     fi
 }
 
-function localupdate() {
+localupdate() {
     sudo pacman -Syuq --noconfirm
 }
 
-function kubeupdate() {
+kubeupdate() {
     # Rolling update pods
     kubectl rolling-update frontend-v1 -f frontend-v2.json
     # Rename resources and update
@@ -56,10 +56,10 @@ function kubeupdate() {
     kubectl autoscale deployment nekokube --min=2 --max=10
 }
 
-function escapedeath() {
+escapedeath() {
     kubectl delete pod "${@}"
 }
 
-function holyfuckingdead() {
+holyfuckingdead() {
     kubectl delete pods "${@}" --grace-period=0 --force
 }

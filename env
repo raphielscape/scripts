@@ -30,38 +30,38 @@ TELEGRAM_TOKEN=${BOT_API_KEY}
 export TELEGRAM_TOKEN PARSE_BRANCH PARSE_ORIGIN COMMIT_POINT SRCDIR OUTDIR
 
 # Alias echo as teller
-function echo() {
+echo() {
 	command echo -e "${@}"
 }
 
-function bold() {
+bold() {
 	command tput bold
 }
 
-function colorize() {
+colorize() {
 	command tput setaf "${@}"
 }
 
-function decolorize() {
+decolorize() {
 	command tput sgr0
 }
 
 # Colorize errors
-function display_error() {
+display_error() {
 	echo
 	echo "$(tputaf "${RED}")${1}$(tputz)"
-	[[ -z ${2} ]] && echo
+	[ -z "${2}" ] && echo
 }
 
 # Throw errors in red
-function die() {
+die() {
 	display_error "${@}"
 	exit
 }
 
 # Header colorizer
-function header() {
-	if [[ -n ${2} ]]; then
+header() {
+	if [ -n "${2}" ]; then
 		COLOR=${2}
 	else
 		COLOR=${RED}
@@ -75,7 +75,7 @@ function header() {
 	decolorize
 }
 
-function kernelbox() {
+kernelbox() {
 	ANYKERNEL="${HOME}/working/AnyKernel2"
 	ZIP_DIR="${HOME}/working/weeb_zip"
 }
@@ -85,12 +85,13 @@ export ANYKERNEL ZIP_DIR KBUILD_BUILD_USER TOOLCHAIN
 # Delett Old AnyKernel in Aroma dir if exists
 rm -rf "${ANYKERNEL_DONE}"
 
-function prepare_clang() {
+prepare_clang() {
 	header "We're building Clang bois" "${GREEN}"
 
 		# Clang configurations
 		PATH=${HOME}/toolchains/clang-8.x/bin/:$PATH
-		CLANG_TCHAIN="clang"
+		CLANG_TCHAIN="${SCRIPTDIR}/ccachewrapper clang"
+		HOSTLD=ld.lld
 		TCHAIN_PATH="aarch64-linux-gnu-"
 		CLANG_TRIPLE="aarch64-linux-gnu-"
 
@@ -98,9 +99,6 @@ function prepare_clang() {
 		KBUILD_COMPILER_STRING="$(${CLANG_TCHAIN} --version | head -n 1 |
 			perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
 		CROSS_COMPILE="${TCHAIN_PATH}"
-
-		# Export the make
-		MAKE="make O=${OUTDIR} CC=${CLANG_TCHAIN}"
 
 		# Export compiler for announcer
 		COMPILER_USED="$(${CLANG_TCHAIN} --version | head -n 1 |
@@ -112,10 +110,10 @@ function prepare_clang() {
 		perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
 }
 
-function prepare_gcc() {
-	if [[ ${WORKER} == raphielbox ]]; then
-		export CROSS_COMPILE="aarch64-linux-gnu-"
-		header "Using toolchain: $("${CROSS_COMPILE}"gcc --version | head -1)"
+prepare_gcc() {
+	if [ "${WORKER}" = raphielbox ]; then
+		export CROSS_COMPILE="${SCRIPTDIR}/ccachewrapper aarch64-linux-gnu-"
+		header "Using toolchain: $(aarch64-linux-gnu-gcc --version | head -1)"
 	fi
 
 	COMPILER_USED=GCC
@@ -123,6 +121,19 @@ function prepare_gcc() {
 
 	# Compilation announcer stuff
 	CU=gcc
+}
+
+build() {
+	CPU="$(grep -c '^processor' /proc/cpuinfo)"
+	JOBS="$((CPU * 2))"
+
+	make ARCH=arm64 O=out "${DEFCONFIG}"
+
+	if [ $CU = clang ]; then
+		make -j${JOBS} O="${OUTDIR}" CC="${CLANG_TCHAIN}" HOSTCC="${CLANG_TCHAIN}" HOSTLD="${HOSTLD}"
+	else
+		make -j${JOBS} O="${OUTDIR}"
+	fi
 }
 
 # Then export the stuff
@@ -137,20 +148,20 @@ STICKER="CAADBAADNwADp8uuGBHV2tl40w7WAg"
 export MAINGROUP_ID BUILDSCAPERER_ID STICKER
 
 # Sticc function
-function tg_sendstick() {
+tg_sendstick() {
 	curl -s -X POST "https://api.telegram.org/bot$BOT_API_KEY/sendSticker" \
 		-d sticker="${STICKER}" \
 		-d chat_id=${BUILDSCAPERER_ID} >>/dev/null
 }
 
 # Push to Channel
-function push() {
+push() {
 	"${TELEGRAM}" -f "${ZIP_DIR}/$ZIPNAME" \
 		-c ${BUILDSCAPERER_ID}
 }
 
 # sendcast to group
-function tg_sendinfo() {
+tg_sendinfo() {
 	"${TELEGRAM}" -c ${MAINGROUP_ID} -H \
 		"$(
 			for POST in "${@}"; do
@@ -160,7 +171,7 @@ function tg_sendinfo() {
 }
 
 # sendcast to channel
-function tg_channelcast() {
+tg_channelcast() {
 	"${TELEGRAM}" -c ${BUILDSCAPERER_ID} -H \
 		"$(
 			for POST in "${@}"; do
@@ -170,7 +181,7 @@ function tg_channelcast() {
 }
 
 # Debugcasting
-function tg_debugcast() {
+tg_debugcast() {
 	"${TELEGRAM}" -c ${DEBUG_ID} -H \
 		"$(
 			for POST in "${@}"; do
@@ -179,7 +190,7 @@ function tg_debugcast() {
 		)"
 }
 
-function kickstart() {
+kickstart() {
 	tg_sendinfo "Compilation Started!"
 
 	tg_channelcast "Compiler <code>${COMPILER_USED}</code>" \
@@ -198,43 +209,43 @@ trap '{
 }' INT
 
 # Interruption Happen, report with sticker
-function tg_intstick() {
+tg_intstick() {
 	curl -s -X POST "https://api.telegram.org/bot$BOT_API_KEY/sendSticker" \
 		-d sticker="CAADAQADFQADlS0LHvIFwsaTaVjGAg" \
 		-d chat_id=${BUILDSCAPERER_ID} >>/dev/null
 }
 
-function tg_intstickmain() {
+tg_intstickmain() {
 	curl -s -X POST "https://api.telegram.org/bot$BOT_API_KEY/sendSticker" \
 		-d sticker="CAADAQADFQADlS0LHvIFwsaTaVjGAg" \
 		-d chat_id=${MAINGROUP_ID} >>/dev/null
 }
 
 # Whenever errors occured, report them
-function tg_senderror() {
+tg_senderror() {
 	tg_sendinfo "Build Throwing Error(s)" \
 		"@raphielscape naaaaa"
 	tg_channelcast "Build Throwing Error(s)"
-	[[ ! -z ${STATUS} ]] &&
+	[ -n "${STATUS}" ] &&
 		exit "${STATUS}" ||
 		exit 1
 }
 
 # Announce the completion
-function tg_yay() {
+tg_yay() {
 	tg_sendinfo "Compilation for ${DEVICE} Completed yay" \
 		"Haha yes"
 }
 
 # Fin Prober
-function fin() {
+fin() {
 	header "Yay! My works took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds.~"
 	tg_sendinfo "Build took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds"
 	tg_yay
 }
 
 # Errored Prober
-function finerr() {
+finerr() {
 	header "My works took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds but it's error..."
 	tg_sendinfo "$(echo -e "Build took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds\\nbut it's error...")"
 	tg_senderror
@@ -242,10 +253,10 @@ function finerr() {
 }
 
 # Some Relatable Aliases
-function copy() {
+copy() {
 	command cp -vR "${@}"
 }
 
-function delett() {
+delett() {
 	command rm -vrf "${@}"
 }

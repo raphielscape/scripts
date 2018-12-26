@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env dash
 # shellcheck source=/dev/null
 #
 # Copyright (C) 2018 Raphielscape LLC.
@@ -8,19 +8,22 @@
 #
 # Device Environment container
 
-function mido() {
-	export DEVICE=mido
-	export DEFCONFIG="raph_defconfig"
+mido() {
+	DEVICE=mido
+	DEFCONFIG="raph_defconfig"
+	SDM845=false
 }
 
-function beryllium() {
-	export DEVICE=beryllium
-	export DEFCONFIG="raph_beryllium_defconfig"
-	export SDM845=true
+beryllium() {
+	DEVICE=beryllium
+	DEFCONFIG="raph_beryllium_defconfig"
+	SDM845=true
 }
 
-function dipper() {
-	export DEVICE=dipper
-	export DEFCONFIG="raph_dipper_defconfig"
-	export SDM845=true
+dipper() {
+	DEVICE=dipper
+	DEFCONFIG="raph_dipper_defconfig"
+	SDM845=true
 }
+
+export DEFCONFIG DEVICE SDM845

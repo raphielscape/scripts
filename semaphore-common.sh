@@ -28,7 +28,7 @@ fi
 # Validate things for proper configurations
 sudo install-package --update-new ccache bc bash git-core gnupg build-essential \
 		zip curl make automake autogen autoconf autotools-dev libtool shtool python \
-		m4 gcc libtool zlib1g-dev
+		m4 gcc libtool zlib1g-dev dash
 
 # Clone needed components
 if [[ "$@" =~ "sdm845" ]]; then
@@ -39,7 +39,4 @@ fi
 
 clone https://github.com/krasCGQ/aarch64-linux-android.git --branch "opt-linaro-7.x" "${HOME}/GNU/GCC"
 
-cd "$KERNELDIR" || exit
-
-# Play Wires bois
-"${HOME}/scripts/kernel.sh"
+cd "$KERNELDIR" && "${HOME}/scripts/kernel.sh"

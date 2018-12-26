@@ -13,25 +13,25 @@
 . "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"/env
 
 # Init
-if [[ ${WORKER} == raphielbox ]]; then
+if [ "${WORKER}" = raphielbox ]; then
 	kernelbox
 else
 	semaphorebox
 fi
 
-if [[ ${PARSE_ORIGIN} == *msm8953* ]]; then
+if [[ "${PARSE_ORIGIN}" = *msm8953* ]]; then
 	mido
 fi
 
-if [[ ${EXEC} == beryllium ]]; then
+if [ "${EXEC}" = beryllium ]; then
 	beryllium
 fi
 
-if [[ ${EXEC} == dipper ]]; then
+if [ "${EXEC}" = dipper ]; then
     dipper
 fi
 
-if [[ ${CC} == Clang ]]; then
+if [ "${CC}" = Clang ]; then
 	prepare_clang
 else
 	prepare_gcc
@@ -41,7 +41,7 @@ ARCH="arm64"
 SUBARCH="arm64"
 IMAGE="${OUTDIR}/arch/${ARCH}/boot/Image.gz-dtb"
 
-export ARCH SUBARCH DEFCONFIG IMAGE
+export ARCH SUBARCH IMAGE
 
 header "You're working with $DEVICE on $PARSE_BRANCH" "$GREEN"
 
@@ -58,26 +58,22 @@ trap '{
 }' ERR
 
 # When the Cross-compiler is GCC
-if [[ ${CC} != Clang && ${WORKER} != raphielbox ]]; then
+if [ "${CC}" != Clang ] && [ "${WORKER}" != raphielbox ]; then
 	check_gcc_toolchain
 fi
 
 # Set Kerneldir Plox
-if [[ -z ${KERNELDIR} ]]; then
+if [ ! "${KERNELDIR}" ]; then
 	echo "Please set KERNELDIR"
 	exit 1
 fi
 
-# How much jobs we need?
-if [[ -z "${JOBS}" ]]; then
-	COUNT="$(grep -c '^processor' /proc/cpuinfo)"
-	export JOBS="$((COUNT * 2))"
-fi
-
 # Toolchain Thrower
+# shellcheck disable=SC2086
 TCVERSION1="$(${CROSS_COMPILE}gcc --version | head -1 |
 	awk -F '(' '{print $2}' | awk '{print tolower($1)}')"
 
+# shellcheck disable=SC2086
 TCVERSION2="$(${CROSS_COMPILE}gcc --version | head -1 |
 	awk -F ')' '{print $2}' | awk '{print tolower($1)}')"
 
@@ -91,11 +87,9 @@ export FINAL_ZIP="${ZIP_DIR}/${ZIPNAME}"
 
 # Prepping
 colorize "${RED}"
-[ ! -d "${ZIP_DIR}" ] && mkdir -pv ${ZIP_DIR}
-if [[ ! -d "${OUTDIR}" && ${WORKER} != semaphore ]]; then
+[ ! -d "${ZIP_DIR}" ] && mkdir -pv "${ZIP_DIR}"
+if [ ! -d "${OUTDIR}" ] && [ "${WORKER}" != semaphore ]; then
 	mkdir -pv "${OUTDIR}"
-	sudo mount -t tmpfs -o size=4g tmpfs out
-	sudo chown "${USER}" out/ -R
 fi
 decolorize
 
@@ -104,30 +98,17 @@ cd "${SRCDIR}" || exit
 
 # Delett old image
 colorize "${RED}"
-delett ${IMAGE}
-decolorize
-
-# How 2 be Mr.Proper 101
-if [[ "$@" =~ "mrproper" ]]; then
-	${MAKE} mrproper
-fi
-
-# How 2 cleanups things 101
-if [[ "$@" =~ "clean" ]]; then
-	${MAKE} clean
-fi
-
-# Relatable
-colorize "${CYAN}"
-${MAKE} $DEFCONFIG
+delett "${IMAGE}"
 decolorize
 
 START=$(date +"%s")
 header "Using ${JOBS} threads to compile" "${LIGHTCYAN}"
 
-colorize ${LIGHTRED}
-${MAKE} -j${JOBS}
-${MAKE} -j${JOBS} dtbs
+colorize "${LIGHTRED}"
+build 
+
+# FIXME : We don't need DTBs for now
+# build dtbs
 decolorize
 
 export exitCode="$?"
@@ -137,44 +118,54 @@ DIFF=$((END - START))
 
 # AnyKernel cleanups
 header "Bringing-up AnyKernel~"
-colorize ${YELLOW}
-if [[ ${WORKER} == raphielbox ]]; then
-	delett ${ANYKERNEL}
-	copy "${WORKDIR}/AnyKernel2-git" "${ANYKERNEL}"
-	cd ${ANYKERNEL} || return
-	delett -v zImage
-	delett ".git"
-	cd "${ANYKERNEL}/patch" || return
-	delett *
+colorize "${YELLOW}"
+if [ "${WORKER}" = raphielbox ]; then
+	if [ "${SDM845}" = true ]; then
+		cd "${WORKDIR}/AnyKernel2-git" || return
+		header "It's sdm845, checking out..."
+		git checkout sdm845
+	else
+		cd "${WORKDIR}/AnyKernel2-git" || return
+		header "It's common, checking out..."
+		git checkout master
+	fi
+	
+	delett "${ANYKERNEL}"
+		copy "${WORKDIR}/AnyKernel2-git" "${ANYKERNEL}"
+			cd "${ANYKERNEL}" || return
+			delett -v zImage
+			delett ".git"
+		cd "${ANYKERNEL}/patch" || return
+			delett -- *
 	cd - || return
 else
 	cd "${ANYKERNEL}" || return
-	delett zImage
-	delett ".git"
-	cd "${ANYKERNEL}"/patch || return
-	delett *
+		delett zImage
+		delett ".git"
+		cd "${ANYKERNEL}"/patch || return
+			delett -- *
 	cd - || return
 fi
 decolorize
 
 # Copy the image to AnyKernel
 header "Copying kernel..." "${BLUE}"
-colorize ${LIGHTCYAN}
-copy "${IMAGE}" "${ANYKERNEL}"
-cd - || return
+colorize "${LIGHTCYAN}"
+		copy "${IMAGE}" "${ANYKERNEL}"
+	cd - || return
 decolorize
 
 # Zip the wae
 header "Zipping AnyKernel..." "${BLUE}"
-cd ${ANYKERNEL} || return
+cd "${ANYKERNEL}" || return
 colorize "${CYAN}"
-command zip -rT9 "${FINAL_ZIP}" *
-cd - || return
+		command zip -rT9 "${FINAL_ZIP}" -- *
+	cd - || return
 decolorize
 
 # Finalize the zip down
 if [ -f "$FINAL_ZIP" ]; then
-	if [[ ${ZIP_UPLOAD} == true ]]; then
+	if [ "${ZIP_UPLOAD}" = true ]; then
 		header "Uploading ${ZIPNAME}" "${LIGHTGREEN}"
 		push
 	fi
