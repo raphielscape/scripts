@@ -30,8 +30,8 @@ if [[ "$@" =~ "mido" ]]; then
 	export EXEC=mido
 fi
 
-# Declare that we're using Clang now
-export CC=Clang
+# Well, fuck
+export CC=GCC
 
 # Validate things for proper configurations
 sudo install-package --update-new ccache bc bash git-core gnupg build-essential \

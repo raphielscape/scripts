@@ -57,11 +57,6 @@ trap '{
     finerr
 }' ERR
 
-# When the Cross-compiler is GCC
-if [ "${CC}" != Clang ] && [ "${WORKER}" != raphielbox ]; then
-	check_gcc_toolchain
-fi
-
 # Set Kerneldir Plox
 if [ ! "${KERNELDIR}" ]; then
 	echo "Please set KERNELDIR"
