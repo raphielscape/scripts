@@ -37,6 +37,6 @@ else
 	clone https://github.com/raphielscape/AnyKernel2.git "${KERNELDIR}"/anykernel
 fi
 
-clone https://github.com/krasCGQ/aarch64-linux-android.git --branch "opt-linaro-7.x" "${HOME}/GNU/GCC"
+clone https://github.com/VRanger/aarch64-linux-gnu.git "${HOME}/GNU/GCC"
 
 cd "$KERNELDIR" && "${HOME}/scripts/kernel.sh"
