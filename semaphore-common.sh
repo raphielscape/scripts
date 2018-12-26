@@ -25,6 +25,11 @@ if [[ "$@" =~ "beryllium" ]]; then
 	export EXEC=beryllium
 fi
 
+# Separated mido exec
+if [[ "$@" =~ "mido" ]]; then
+	export EXEC=mido
+fi
+
 # Declare that we're using Clang now
 export CC=Clang
 

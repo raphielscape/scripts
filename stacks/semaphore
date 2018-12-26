@@ -12,10 +12,9 @@ semaphorebox() {
 	ANYKERNEL="${KERNELDIR}/anykernel"
 	ZIP_DIR="${KERNELDIR}/files"
 	KBUILD_BUILD_USER="raphielscape"
-	TOOLCHAIN="${HOME}/GNU/GCC"
     ZIP_UPLOAD=true
-	BRANCH_ID_MSM8953=2190083
-	BRANCH_ID_SDM845=2313683
+	BRANCH_ID_MSM8953=2318733
+	BRANCH_ID_SDM845=2421824
 	BUILDURL=$(debuginfo|jq '.build_url'|sed -e 's/^"//' -e 's/"$//')
 	START=$(debuginfo|jq '.started_at'|sed -e 's/^"//' -e 's/"$//')
 }
@@ -23,19 +22,6 @@ semaphorebox() {
 # Some alias
 clone() {
 	command git clone --depth 1 "${@}"
-}
-
-check_gcc_toolchain() {
-	TC="$(find "${TOOLCHAIN}"/bin -type f -name "*-gcc")"
-	if [ -f "${TC}" ]; then
-		CROSS_COMPILE="${TOOLCHAIN}/bin/$(echo "${TC}" |
-			awk -F '/' '{print $NF}' |
-			sed -e 's/gcc//')"
-			header "Using toolchain: $("${CROSS_COMPILE}"gcc --version | head -1)"
-	else
-		tg_senderror
-		die "No suitable toolchain found in ${TOOLCHAIN}"
-	fi
 }
 
 if [ "${SDM845}" = true ]; then

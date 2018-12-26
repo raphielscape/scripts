@@ -19,7 +19,7 @@ else
 	semaphorebox
 fi
 
-if [[ "${PARSE_ORIGIN}" = *msm8953* ]]; then
+if [ "${EXEC}" = mido ]; then
 	mido
 fi
 
@@ -102,13 +102,12 @@ delett "${IMAGE}"
 decolorize
 
 START=$(date +"%s")
-header "Using ${JOBS} threads to compile" "${LIGHTCYAN}"
 
 colorize "${LIGHTRED}"
-build 
-
-# FIXME : We don't need DTBs for now
-# build dtbs
+	build "${DEFCONFIG}"
+	build 
+	# FIXME : We don't need DTBs for now
+	# build dtbs
 decolorize
 
 export exitCode="$?"

@@ -91,12 +91,12 @@ prepare_clang() {
 		# Clang configurations
 		if [ "${WORKER}" = raphielbox ]; then
 			PATH=${HOME}/toolchains/clang-8.x/bin/:$PATH
-			HOSTLD="ld.lld"
 			CROSS_COMPILE=aarch64-linux-gnu-
 			CLANG_TRIPLE="aarch64-linux-gnu-"
 		else
 			PATH=${HOME}/LLVM/CLANG/bin:$PATH
-			CROSS_COMPILE=${HOME}/GNU/GCC/bin/aarch64-linux-android-
+			PATH=${HOME}/GNU/GCC/bin:$PATH
+			CROSS_COMPILE=aarch64-linux-android-
 			CLANG_TRIPLE="aarch64-linux-gnu-"
 		fi
 
@@ -114,17 +114,17 @@ prepare_clang() {
 	# Scream out the Clang compiler used
 	header "Using toolchain: $(${CLANG_TCHAIN} --version | head -n 1 |
 		perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
+
+	header "Using cross-compiler: $("${CROSS_COMPILE}"gcc --version | head -1)"
 }
 
 prepare_gcc() {
 	if [ "${WORKER}" = raphielbox ]; then
 		export CROSS_COMPILE="${SCRIPTDIR}/ccachewrapper aarch64-linux-gnu-"
-		header "Using toolchain: $(aarch64-linux-gnu-gcc --version | head -1)"
+		header "Using toolchain: $("${CROSS_COMPILE}"gcc --version | head -1)"
 	fi
 
 	COMPILER_USED=GCC
-	MAKE="make O=${OUTDIR}"
-
 	# Compilation announcer stuff
 	CU=gcc
 }
@@ -133,12 +133,10 @@ build() {
 	CPU="$(grep -c '^processor' /proc/cpuinfo)"
 	JOBS="$((CPU * 2))"
 
-	make ARCH=arm64 O=out "${DEFCONFIG}"
-
 	if [ $CU = clang ]; then
-		make -j${JOBS} O="${OUTDIR}" CC="${CLANG_TCHAIN}"
+		make -j${JOBS} O="${OUTDIR}" CC="${CLANG_TCHAIN}" "$@"
 	else
-		make -j${JOBS} O="${OUTDIR}"
+		make -j${JOBS} O="${OUTDIR}" "$@"
 	fi
 }
 
