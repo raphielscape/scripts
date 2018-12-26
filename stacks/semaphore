@@ -13,8 +13,6 @@ semaphorebox() {
 	ZIP_DIR="${KERNELDIR}/files"
 	KBUILD_BUILD_USER="raphielscape"
     ZIP_UPLOAD=true
-	BRANCH_ID_MSM8953=2318733
-	BRANCH_ID_SDM845=2421824
 	BUILDURL=$(debuginfo|jq '.build_url'|sed -e 's/^"//' -e 's/"$//')
 	START=$(debuginfo|jq '.started_at'|sed -e 's/^"//' -e 's/"$//')
 }
@@ -24,19 +22,8 @@ clone() {
 	command git clone --depth 1 "${@}"
 }
 
-if [ "${SDM845}" = true ]; then
-	debuginfo() {
-		curl -s -X GET "https://semaphoreci.com/api/v1/projects/$PROJECT_ID/$BRANCH_ID_SDM845/status?auth_token=$AUTH_TOKEN"
-	}
-else
-	debuginfo() {
-		curl -s -X GET "https://semaphoreci.com/api/v1/projects/$PROJECT_ID/$BRANCH_ID_MSM8953/status?auth_token=$AUTH_TOKEN"
-	}
-fi
-
 debugtap() {
-	tg_debugcast "Build Link : ${BUILDURL}" \
-		"Started at : <b>${START}</b>"
+	tg_debugcast "$(whoami)"
 }
 
 export ANYKERNEL ZIP_DIR KBUILD_BUILD_USER TOOLCHAIN ZIP_UPLOAD CROSS_COMPILE BUILDURL START
