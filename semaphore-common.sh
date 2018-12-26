@@ -41,6 +41,6 @@ else
 fi
 
 clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 "${HOME}/GNU/GCC"
-clone https://github.com/VRanger/clang.git "${HOME}/LLVM/CLANG"
+clone https://github.com/RaphielGang/aosp-clang.git "${HOME}/LLVM/CLANG"
 
 cd "$KERNELDIR" && "${HOME}/scripts/kernel.sh"
