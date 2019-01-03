@@ -90,7 +90,7 @@ prepare_gcc() {
         PATH=${HOME}/GNU/GCC/bin:$PATH
         COMPILER_USED="$(aarch64-linux-gnu-gcc --version | head -1)"
         CROSS_COMPILE="${SCRIPTDIR}/ccachewrapper aarch64-linux-gnu-"
-        header "Using toolchain: $(aarch64-linux-android-gcc --version | head -1)"
+        header "Using toolchain: $(aarch64-linux-gnu-gcc --version | head -1)"
     fi
     
     # Well
