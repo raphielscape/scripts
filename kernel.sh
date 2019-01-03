@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2199
 #
 # Copyright (C) 2018 Raphielscape LLC.
 #
@@ -37,12 +36,16 @@ else
 	prepare_gcc
 fi
 
+# Export the kernel architecture
 ARCH="arm64"
 SUBARCH="arm64"
+
+# Image location
 IMAGE="${OUTDIR}/arch/${ARCH}/boot/Image.gz-dtb"
 
 export ARCH SUBARCH IMAGE
 
+# Announce what device we works on
 header "You're working with $DEVICE on $PARSE_BRANCH" "$GREEN"
 
 # First-post works
@@ -57,22 +60,11 @@ trap '{
     finerr
 }' ERR
 
-# Set Kerneldir Plox
+# Set Kernel Building Directory
 if [ ! "${KERNELDIR}" ]; then
 	echo "Please set KERNELDIR"
 	exit 1
 fi
-
-# Toolchain Thrower
-# shellcheck disable=SC2086
-TCVERSION1="$(${CROSS_COMPILE}gcc --version | head -1 |
-	awk -F '(' '{print $2}' | awk '{print tolower($1)}')"
-
-# shellcheck disable=SC2086
-TCVERSION2="$(${CROSS_COMPILE}gcc --version | head -1 |
-	awk -F ')' '{print $2}' | awk '{print tolower($1)}')"
-
-export TCVERSION1 TCVERSION2
 
 # Zipname
 ZIPNAME="Bash-${DEVICE}-${CU}-$(date +%Y%m%d-%H%M).zip"
@@ -80,18 +72,26 @@ ZIPNAME="Bash-${DEVICE}-${CU}-$(date +%Y%m%d-%H%M).zip"
 # Final Zip
 export FINAL_ZIP="${ZIP_DIR}/${ZIPNAME}"
 
-# Prepping
+
 colorize "${RED}"
+
+# Create zip directory if it's not exists
 [ ! -d "${ZIP_DIR}" ] && mkdir -pv "${ZIP_DIR}"
+
+# Delete out directory
+# !!! INFO INFO INFO INFO !!!
+# Don't out directory if it's build running
+# On Semaphore CI
 if [ ! -d "${OUTDIR}" ] && [ "${WORKER}" != semaphore ]; then
 	mkdir -pv "${OUTDIR}"
 fi
+
 decolorize
 
 # Here we go
 cd "${SRCDIR}" || exit
 
-# Delett old image
+# Delete old image if exists
 colorize "${RED}"
 delett "${IMAGE}"
 decolorize
@@ -99,10 +99,10 @@ decolorize
 START=$(date +"%s")
 
 colorize "${LIGHTRED}"
+	# Start the compilation
 	build "${DEFCONFIG}"
-	build 
-	# FIXME : We don't need DTBs for now
-	# build dtbs
+		build 
+		build dtbs
 decolorize
 
 export exitCode="$?"

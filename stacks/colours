@@ -23,5 +23,42 @@ LIGHTPURPLE="92"
 YELLOW="11"
 WHITE="15"
 
+colorize() {
+	command tput setaf "${@}"
+}
+
+decolorize() {
+	command tput sgr0
+}
+
+# Colorize errors
+display_error() {
+	echo
+	echo "$(tputaf "${RED}")${1}$(tputz)"
+	[ -z "${2}" ] && echo
+}
+
+# Throw errors in red
+die() {
+	display_error "${@}"
+	exit
+}
+
+# Header colorizer
+header() {
+	if [ -n "${2}" ]; then
+		COLOR=${2}
+	else
+		COLOR=${RED}
+	fi
+	colorize "${COLOR}"
+	echo "====$(for i in $(seq ${#1}); do echo "=\\c"; done)===="
+	echo "==  ${1}  =="
+	# SC2034: i appears unused. Verify it or export it.
+	# shellcheck disable=SC2034
+	echo "====$(for i in $(seq ${#1}); do echo "=\\c"; done)===="
+	decolorize
+}
+
 export BLACK GREEN CYAN RED PURPLE LIGHTBLUE LIGHTGREEN LIGHTCYAN LIGHTRED \
 	LIGHTPURPLE YELLOW WHITE DARKGRAY LIGHTGRAY

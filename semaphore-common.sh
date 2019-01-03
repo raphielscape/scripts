@@ -49,7 +49,7 @@ else
 	clone https://github.com/raphielscape/AnyKernel2.git "${KERNELDIR}"/anykernel
 fi
 
-clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 "${HOME}/GNU/GCC"
+clone https://github.com/RaphielGang/aarch64-linux-gnu-8.x.git "${HOME}/GNU/GCC"
 clone https://github.com/RaphielGang/aosp-clang.git "${HOME}/LLVM/CLANG"
 
 cd "$KERNELDIR" && "${HOME}/scripts/kernel.sh"
