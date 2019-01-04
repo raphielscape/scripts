@@ -50,6 +50,9 @@ else
 fi
 
 clone https://github.com/RaphielGang/aarch64-linux-gnu-8.x.git "${HOME}/GNU/GCC"
-clone https://github.com/RaphielGang/aosp-clang.git "${HOME}/LLVM/CLANG"
+
+if [[ "$@" =~ "clang" ]]; then
+	clone https://github.com/RaphielGang/aosp-clang.git "${HOME}/LLVM/CLANG"
+fi
 
 cd "$KERNELDIR" && "${HOME}/scripts/kernel.sh"
