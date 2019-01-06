@@ -53,13 +53,13 @@ prepare_clang() {
     # Clang configurations
     if [ "${WORKER}" = raphielbox ]; then
         PATH=${HOME}/toolchains/clang-8.x/bin/:$PATH
-		PATH=${HOME}/toolchains/GCC4/bin/:$PATH
-        CROSS_COMPILE="aarch64-linux-gnu-"
+		PATH=${HOME}/x-tools/aarch64-raph-linux-android/bin:$PATH
+        CROSS_COMPILE="aarch64-raph-linux-android-"
         CLANG_TRIPLE="aarch64-linux-gnu-"
     else
         PATH=${HOME}/LLVM/CLANG/bin:$PATH
         PATH=${HOME}/GNU/GCC/bin:$PATH
-        CROSS_COMPILE="aarch64-linux-android-"
+        CROSS_COMPILE="aarch64-raph-linux-android-"
         CLANG_TRIPLE="aarch64-linux-gnu-"
     fi
     
@@ -88,9 +88,9 @@ prepare_gcc() {
         header "Using toolchain: $(aarch64-linux-gnu-gcc --version | head -1)"
     else
         PATH=${HOME}/GNU/GCC/bin:$PATH
-        COMPILER_USED="$(aarch64-linux-android-gcc --version | head -1)"
-        CROSS_COMPILE="${SCRIPTDIR}/ccachewrapper aarch64-linux-android-"
-        header "Using toolchain: $(aarch64-linux-android-gcc --version | head -1)"
+        COMPILER_USED="$(aarch64-raph-linux-android-gcc --version | head -1)"
+        CROSS_COMPILE="${SCRIPTDIR}/ccachewrapper aarch64-raph-linux-android-"
+        header "Using toolchain: $(aarch64-raph-linux-android-gcc --version | head -1)"
     fi
     
     # Well
