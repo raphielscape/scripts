@@ -1,0 +1,86 @@
+#!/usr/bin/env dash
+# shellcheck source=/dev/null
+#
+# Copyright (C) 2018 Raphielscape LLC.
+#
+# Licensed under the Raphielscape Public License, Version 1.0 (the "License");
+# you may not use this file except in compliance with the License.
+#
+# Telegram command container
+
+TELEGRAM="${SCRIPTDIR}"/telegram/telegram
+
+# Caster configurations
+MAINGROUP_ID="-1001371047577"
+BUILDSCAPERER_ID="-1001153251064"
+DEBUG_ID="-1001279397127"
+STICKER="CAADBAADNwADp8uuGBHV2tl40w7WAg"
+
+export MAINGROUP_ID BUILDSCAPERER_ID STICKER
+
+# Sticc function
+tg_sendstick() {
+    curl -s -X POST "https://api.telegram.org/bot$BOT_API_KEY/sendSticker" \
+    -d sticker="${STICKER}" \
+    -d chat_id=${BUILDSCAPERER_ID} >>/dev/null
+}
+
+# Push to Channel
+push() {
+    "${TELEGRAM}" -f "${ZIP_DIR}/$ZIPNAME" \
+    -c ${BUILDSCAPERER_ID}
+}
+
+# sendcast to group
+tg_sendinfo() {
+    "${TELEGRAM}" -c ${MAINGROUP_ID} -H \
+    "$(
+		for POST in "${@}"; do
+			echo "${POST}"
+		done
+    )"
+}
+
+# sendcast to channel
+tg_channelcast() {
+    "${TELEGRAM}" -c ${BUILDSCAPERER_ID} -H \
+    "$(
+		for POST in "${@}"; do
+			echo "${POST}"
+		done
+    )"
+}
+
+# Debugcasting
+tg_debugcast() {
+    "${TELEGRAM}" -c ${DEBUG_ID} -H \
+    "$(
+		for POST in "${@}"; do
+			echo "${POST}"
+		done
+    )"
+}
+
+kickstart() {
+    tg_sendinfo "Compilation Started!"
+    
+    tg_channelcast "Compiler <code>${COMPILER_USED}</code>" \
+    "Device <b>${DEVICE}</b>" \
+    "Branch <code>${PARSE_BRANCH}</code>" \
+    "Commit Point <code>${COMMIT_POINT}</code>" \
+    "Under <code>$(hostname)</code>" \
+    "Started on <code>$(whoami)</code>"
+}
+
+# Interruption Happen, report with sticker
+tg_intstick() {
+    curl -s -X POST "https://api.telegram.org/bot$BOT_API_KEY/sendSticker" \
+    -d sticker="CAADAQADFQADlS0LHvIFwsaTaVjGAg" \
+    -d chat_id=${BUILDSCAPERER_ID} >>/dev/null
+}
+
+tg_intstickmain() {
+    curl -s -X POST "https://api.telegram.org/bot$BOT_API_KEY/sendSticker" \
+    -d sticker="CAADAQADFQADlS0LHvIFwsaTaVjGAg" \
+    -d chat_id=${MAINGROUP_ID} >>/dev/null
+}

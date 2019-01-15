@@ -23,19 +23,9 @@ PARSE_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 PARSE_ORIGIN="$(git config --get remote.origin.url)"
 COMMIT_POINT="$(git log --pretty=format:'%h : %s' -1)"
 
-TELEGRAM="${SCRIPTDIR}"/telegram/telegram
 TELEGRAM_TOKEN=${BOT_API_KEY}
 
 export TELEGRAM_TOKEN PARSE_BRANCH PARSE_ORIGIN COMMIT_POINT SRCDIR OUTDIR
-
-# Alias echo as teller
-echo() {
-    command echo -e "${@}"
-}
-
-bold() {
-    command tput bold
-}
 
 kernelbox() {
     ANYKERNEL="${HOME}/working/AnyKernel2"
@@ -53,8 +43,12 @@ prepare_clang() {
     # Clang configurations
     if [ "${WORKER}" = raphielbox ]; then
         PATH=${HOME}/toolchains/clang-8.x/bin/:$PATH
-		PATH=${HOME}/x-tools/aarch64-raph-linux-android/bin:$PATH
-        CROSS_COMPILE="aarch64-raph-linux-android-"
+            if [ "${SELFGCC}" = true ]; then
+		        PATH=${HOME}/x-tools/aarch64-raph-linux-android/bin:$PATH
+                CROSS_COMPILE="aarch64-raph-linux-android-"
+            else
+                CROSS_COMPILE="aarch64-linux-gnu-"
+            fi
         CLANG_TRIPLE="aarch64-linux-gnu-"
     else
         PATH=${HOME}/LLVM/CLANG/bin:$PATH
@@ -113,87 +107,12 @@ build() {
 # Then export the stuff
 export PATH CU COMPILER_USED CLANG_TCHAIN TCHAIN_PATH CLANG_TRIPLE KBUILD_COMPILER_STRING CROSS_COMPILE MAKE
 
-# Caster configurations
-MAINGROUP_ID="-1001371047577"
-BUILDSCAPERER_ID="-1001153251064"
-DEBUG_ID="-1001279397127"
-STICKER="CAADBAADNwADp8uuGBHV2tl40w7WAg"
-
-export MAINGROUP_ID BUILDSCAPERER_ID STICKER
-
-# Sticc function
-tg_sendstick() {
-    curl -s -X POST "https://api.telegram.org/bot$BOT_API_KEY/sendSticker" \
-    -d sticker="${STICKER}" \
-    -d chat_id=${BUILDSCAPERER_ID} >>/dev/null
-}
-
-# Push to Channel
-push() {
-    "${TELEGRAM}" -f "${ZIP_DIR}/$ZIPNAME" \
-    -c ${BUILDSCAPERER_ID}
-}
-
-# sendcast to group
-tg_sendinfo() {
-    "${TELEGRAM}" -c ${MAINGROUP_ID} -H \
-    "$(
-		for POST in "${@}"; do
-			echo "${POST}"
-		done
-    )"
-}
-
-# sendcast to channel
-tg_channelcast() {
-    "${TELEGRAM}" -c ${BUILDSCAPERER_ID} -H \
-    "$(
-		for POST in "${@}"; do
-			echo "${POST}"
-		done
-    )"
-}
-
-# Debugcasting
-tg_debugcast() {
-    "${TELEGRAM}" -c ${DEBUG_ID} -H \
-    "$(
-		for POST in "${@}"; do
-			echo "${POST}"
-		done
-    )"
-}
-
-kickstart() {
-    tg_sendinfo "Compilation Started!"
-    
-    tg_channelcast "Compiler <code>${COMPILER_USED}</code>" \
-    "Device <b>${DEVICE}</b>" \
-    "Branch <code>${PARSE_BRANCH}</code>" \
-    "Commit Point <code>${COMMIT_POINT}</code>" \
-    "Under <code>$(hostname)</code>" \
-    "Started on <code>$(whoami)</code>"
-}
-
 # Whenever build is interrupted by purpose, report it
 trap '{
     tg_intstick
     tg_intstickmain
     exit 130
 }' INT
-
-# Interruption Happen, report with sticker
-tg_intstick() {
-    curl -s -X POST "https://api.telegram.org/bot$BOT_API_KEY/sendSticker" \
-    -d sticker="CAADAQADFQADlS0LHvIFwsaTaVjGAg" \
-    -d chat_id=${BUILDSCAPERER_ID} >>/dev/null
-}
-
-tg_intstickmain() {
-    curl -s -X POST "https://api.telegram.org/bot$BOT_API_KEY/sendSticker" \
-    -d sticker="CAADAQADFQADlS0LHvIFwsaTaVjGAg" \
-    -d chat_id=${MAINGROUP_ID} >>/dev/null
-}
 
 # Whenever errors occured, report them
 tg_senderror() {
@@ -224,13 +143,4 @@ finerr() {
     tg_sendinfo "$(echo -e "Build took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds\\nbut it's error...")"
     tg_senderror
     exit 1
-}
-
-# Some Relatable Aliases
-copy() {
-    command cp -vR "${@}"
-}
-
-delett() {
-    command rm -vrf "${@}"
 }

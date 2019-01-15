@@ -23,6 +23,10 @@ LIGHTPURPLE="92"
 YELLOW="11"
 WHITE="15"
 
+bold() {
+    command tput bold
+}
+
 colorize() {
 	command tput setaf "${@}"
 }

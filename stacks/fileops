@@ -1,0 +1,23 @@
+#!/usr/bin/env dash
+# shellcheck source=/dev/null
+#
+# Copyright (C) 2018 Raphielscape LLC.
+#
+# Licensed under the Raphielscape Public License, Version 1.0 (the "License");
+# you may not use this file except in compliance with the License.
+#
+# File operations command container
+
+# Some Relatable Aliases
+copy() {
+    command cp -vR "${@}"
+}
+
+delett() {
+    command rm -vrf "${@}"
+}
+
+# Alias echo as teller
+echo() {
+    command echo -e "${@}"
+}
