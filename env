@@ -44,7 +44,7 @@ prepare_clang() {
     if [ "${WORKER}" = raphielbox ]; then
         PATH=${HOME}/toolchains/clang-8.x/bin/:$PATH
             if [ "${SELFGCC}" = true ]; then
-		        PATH=${HOME}/x-tools/aarch64-raph-linux-android/bin:$PATH
+                PATH=${HOME}/x-tools/aarch64-raph-linux-android/bin:$PATH
                 CROSS_COMPILE="aarch64-raph-linux-android-"
             else
                 CROSS_COMPILE="aarch64-linux-gnu-"
@@ -58,6 +58,7 @@ prepare_clang() {
     fi
     
     CLANG_TCHAIN="${SCRIPTDIR}/ccachewrapper clang"
+    CLANG_LD=aarch64-linux-gnu-ld.bfd
     
     # Kbuild Sets
     KBUILD_COMPILER_STRING="$(${CLANG_TCHAIN} --version | head -n 1 |
@@ -98,7 +99,9 @@ JOBS="$((CPU * 2))"
 
 build() {
     if [ $CU = clang ]; then
-        make -j${JOBS} O="${OUTDIR}" CC="${CLANG_TCHAIN}" "$@"
+        make -j${JOBS} O="${OUTDIR}" CC="${CLANG_TCHAIN}" \
+        LD="${CLANG_LD}" HOSTCC="${CLANG_TCHAIN}" \
+        HOSTLD="${CLANG_LD}" "$@"
     else
         make -j${JOBS} O="${OUTDIR}" "$@"
     fi
