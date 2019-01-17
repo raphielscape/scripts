@@ -83,6 +83,9 @@ prepare_gcc() {
         # Set Cross Compile
         CROSS_COMPILE="${SCRIPTDIR}/ccachewrapper aarch64-linux-gnu-"
 
+        # Use bfd for local only
+        GCC_LD=aarch64-linux-gnu-ld.bfd
+
         # Announce what compiler we use
         header "Using toolchain: $(aarch64-linux-gnu-gcc --version | head -1)"
     else
@@ -96,9 +99,6 @@ prepare_gcc() {
         # Announce what compiler we use
         header "Using toolchain: $(aarch64-raph-linux-android-gcc --version | head -1)"
     fi
-    
-    # Use aarch64-bfd as linker
-    GCC_LD=aarch64-linux-gnu-ld.bfd
 
     # Announce that our current compiler is GCC
     CU=gcc
@@ -115,7 +115,11 @@ build() {
         LD="${CLANG_LD}" HOSTCC="${CLANG_TCHAIN}" \
         HOSTLD="${CLANG_LD}" "$@"
     else
-        make -j${JOBS} O="${OUTDIR}" LD="${GCC_LD}" "$@"
+        if [ "${WORKER}" = raphielbox ]; then
+            make -j${JOBS} O="${OUTDIR}" LD="${GCC_LD}" "$@"
+        else
+            make -j${JOBS} O="${OUTDIR}" "$@"
+        fi
     fi
 }
 
