@@ -128,8 +128,8 @@ export PATH CU COMPILER_USED CLANG_TCHAIN TCHAIN_PATH CLANG_TRIPLE KBUILD_COMPIL
 
 # Whenever build is interrupted by purpose, report it
 trap '{
-    tg_intstick
-    tg_intstickmain
+    tg_intgif
+    tg_intgifmain
     exit 130
 }' INT
 

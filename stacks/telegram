@@ -14,15 +14,36 @@ TELEGRAM="${SCRIPTDIR}"/telegram/telegram
 MAINGROUP_ID="-1001371047577"
 BUILDSCAPERER_ID="-1001153251064"
 DEBUG_ID="-1001279397127"
-STICKER="CAADBAADNwADp8uuGBHV2tl40w7WAg"
 
-export MAINGROUP_ID BUILDSCAPERER_ID STICKER
+# Graphics Interchange Format Assets
+Start_Asset="CAADBQADPQIAAp_oJQqaAAHES5FWFaoC"
+Stop_Asset="https://i.imgur.com/Q6nllGX.gif"
+Jump_Asset="https://i.imgur.com/BO0HlYB.gif"
 
-# Sticc function
-tg_sendstick() {
-    curl -s -X POST "https://api.telegram.org/bot$BOT_API_KEY/sendSticker" \
-    -d sticker="${STICKER}" \
-    -d chat_id=${BUILDSCAPERER_ID} >>/dev/null
+# GIF Stuff
+tg_build_sendsticker() {
+    curl -s -X POST "https://api.telegram.org/bot$BOT_API_KEY/SendSticker" \
+    -d sticker="${Start_Asset}" \
+    -d chat_id=${BUILDSCAPERER_ID}
+}
+
+tg_buildmain_sendgif() {
+    curl -s -X POST "https://api.telegram.org/bot$BOT_API_KEY/SendAnimation" \
+    -d animation="${Jump_Asset}" \
+    -d chat_id=${MAINGROUP_ID}
+}
+
+# Interruption Happen, report with GIF
+tg_intgif() {
+    curl -s -X POST "https://api.telegram.org/bot$BOT_API_KEY/SendAnimation" \
+    -d animation="${Stop_Asset}" \
+    -d chat_id=${BUILDSCAPERER_ID}
+}
+
+tg_intgifmain() {
+    curl -s -X POST "https://api.telegram.org/bot$BOT_API_KEY/SendAnimation" \
+    -d animation="${Stop_Asset}" \
+    -d chat_id=${MAINGROUP_ID}
 }
 
 # Push to Channel
@@ -62,7 +83,8 @@ tg_debugcast() {
 }
 
 kickstart() {
-    tg_sendinfo "Compilation Started!"
+    tg_buildmain_sendgif
+    tg_build_sendsticker
     
     tg_channelcast "Compiler <code>${COMPILER_USED}</code>" \
     "Device <b>${DEVICE}</b>" \
@@ -70,17 +92,4 @@ kickstart() {
     "Commit Point <code>${COMMIT_POINT}</code>" \
     "Under <code>$(hostname)</code>" \
     "Started on <code>$(whoami)</code>"
-}
-
-# Interruption Happen, report with sticker
-tg_intstick() {
-    curl -s -X POST "https://api.telegram.org/bot$BOT_API_KEY/sendSticker" \
-    -d sticker="CAADAQADFQADlS0LHvIFwsaTaVjGAg" \
-    -d chat_id=${BUILDSCAPERER_ID} >>/dev/null
-}
-
-tg_intstickmain() {
-    curl -s -X POST "https://api.telegram.org/bot$BOT_API_KEY/sendSticker" \
-    -d sticker="CAADAQADFQADlS0LHvIFwsaTaVjGAg" \
-    -d chat_id=${MAINGROUP_ID} >>/dev/null
 }
