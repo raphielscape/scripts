@@ -10,11 +10,11 @@
 
 # Some Relatable Aliases
 copy() {
-    command cp -vR "${@}"
+    command cp -R "${@}"
 }
 
 delett() {
-    command rm -vrf "${@}"
+    command rm -rf "${@}"
 }
 
 # Alias echo as teller

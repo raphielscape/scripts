@@ -77,7 +77,9 @@ colorize "${RED}"
 # Create zip directory if it's not exists
 [ ! -d "${ZIP_DIR}" ] && mkdir -pv "${ZIP_DIR}"
 
-# Delete out directory
+[ -f "${OUTDIR}" ] && delett "${OUTDIR}"
+
+# Make new out dir if it's not exists
 # !!! INFO INFO INFO INFO !!!
 # Don't out directory if it's build running
 # On Semaphore CI
@@ -116,11 +118,11 @@ if [ "${WORKER}" = raphielbox ]; then
 	if [ "${SDM845}" = true ]; then
 		cd "${WORKDIR}/AnyKernel2-git" || return
 		header "It's sdm845, checking out..."
-		git checkout sdm845
+		git checkout sdm845 >> /dev/null
 	else
 		cd "${WORKDIR}/AnyKernel2-git" || return
 		header "It's common, checking out..."
-		git checkout master
+		git checkout master >> /dev/null
 	fi
 	
 	delett "${ANYKERNEL}"
