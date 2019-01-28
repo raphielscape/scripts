@@ -77,7 +77,7 @@ colorize "${RED}"
 # Create zip directory if it's not exists
 [ ! -d "${ZIP_DIR}" ] && mkdir -pv "${ZIP_DIR}"
 
-[ -f "${OUTDIR}" ] && delett "${OUTDIR}"
+[ -d "${OUTDIR}" ] && delett "${OUTDIR}"
 
 # Make new out dir if it's not exists
 # !!! INFO INFO INFO INFO !!!
