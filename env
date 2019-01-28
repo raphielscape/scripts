@@ -42,7 +42,7 @@ prepare_clang() {
     
     # Clang configurations
     if [ "${WORKER}" = raphielbox ]; then
-        PATH=${HOME}/toolchains/clang-8.x/bin/:$PATH
+        PATH=${HOME}/toolchains/clang-9.x/bin/:$PATH
             if [ "${SELFGCC}" = true ]; then
                 PATH=${HOME}/x-tools/aarch64-raph-linux-android/bin:$PATH
                 CROSS_COMPILE="aarch64-raph-linux-android-"
