@@ -49,8 +49,11 @@ export ARCH SUBARCH IMAGE
 header "You're working with $DEVICE on $PARSE_BRANCH" "$GREEN"
 
 # First-post works
-kickstart
-debugtap
+if [ "${ZIP_UPLOAD}" = true ]; then
+	kickstart_pub
+else
+	kickstart_priv
+fi
 
 # Whenever build is errored, report it, and killplay
 trap '{

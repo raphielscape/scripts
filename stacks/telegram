@@ -82,7 +82,7 @@ tg_debugcast() {
     )"
 }
 
-kickstart() {
+kickstart_pub() {
     tg_buildmain_sendgif
     tg_build_sendsticker
     
@@ -92,4 +92,18 @@ kickstart() {
     "Commit Point <code>${COMMIT_POINT}</code>" \
     "Under <code>$(hostname)</code>" \
     "Started on <code>$(whoami)</code>"
+}
+
+kickstart_priv() {
+    tg_buildmain_sendgif
+
+    tg_debugcast "Compiler <code>${COMPILER_USED}</code>" \
+    "Device <b>${DEVICE}</b>" \
+    "Branch <code>${PARSE_BRANCH}</code>" \
+    "Commit Point <code>${COMMIT_POINT}</code>" \
+    "Under <code>$(hostname)</code>" \
+    "Started on <code>$(whoami)</code>"
+
+    tg_debugcast "This ${COMPILER_USED} build will not producing any binaries" \
+                "This is internal build"
 }

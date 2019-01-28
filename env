@@ -61,12 +61,11 @@ prepare_clang() {
     CLANG_LD=aarch64-linux-gnu-ld.bfd
     
     # Kbuild Sets
-    KBUILD_COMPILER_STRING="$(${CLANG_TCHAIN} --version | head -n 1 |
-    perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
+    # KBUILD_COMPILER_STRING="$(${CLANG_TCHAIN} --version | head -n 1 |
+    # perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
     
     # Export compiler for announcer
-    COMPILER_USED="$(${CLANG_TCHAIN} --version | head -n 1 |
-    perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
+    COMPILER_USED="$(${CLANG_TCHAIN} --version)"
     CU=clang
     
     # Scream out the Clang compiler used
@@ -137,7 +136,13 @@ trap '{
 tg_senderror() {
     tg_sendinfo "Build Throwing Error(s)" \
     "@raphielscape naaaaa"
-    tg_channelcast "Build Throwing Error(s)"
+
+    if [ "${ZIP_UPLOAD}" = true ]; then
+        tg_channelcast "Build Throwing Error(s)"
+    else
+        tg_debugcast "Build Throwing Error(s)"
+    fi
+
     [ -n "${STATUS}" ] &&
     exit "${STATUS}" ||
     exit 1
@@ -152,14 +157,18 @@ tg_yay() {
 # Fin Prober
 fin() {
     header "Yay! My works took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds.~"
-    tg_sendinfo "Build took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds"
+    tg_sendinfo "Build for ${DEVICE} with ${COMPILER_USED} took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds"
+    if [ "${ZIP_UPLOAD}" = true ]; then
+        tg_channelcast "Build for ${DEVICE} with ${COMPILER_USED} took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds"
+    fi
     tg_yay
 }
 
 # Errored Prober
 finerr() {
     header "My works took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds but it's error..."
-    tg_sendinfo "$(echo -e "Build took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds\\nbut it's error...")"
+    tg_sendinfo "Build for ${DEVICE} with ${COMPILER_USED} took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds" \
+                "but it is having error anyways xd"
     tg_senderror
     exit 1
 }
