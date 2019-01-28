@@ -4,3 +4,6 @@
 [submodule "telegram"]
 	path = telegram
 	url = https://github.com/fabianonline/telegram.sh.git
+[submodule "patches"]
+	path = patches
+	url = https://github.com/krasCGQ/patches.git
