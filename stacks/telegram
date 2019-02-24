@@ -11,7 +11,7 @@
 TELEGRAM="${SCRIPTDIR}"/telegram/telegram
 
 # Caster configurations
-MAINGROUP_ID="-1001371047577"
+MAINGROUP_ID="-1001140871591"
 BUILDSCAPERER_ID="-1001153251064"
 DEBUG_ID="-1001279397127"
 
@@ -25,7 +25,7 @@ tg_build_sendsticker() {
     curl -s -X POST "https://api.telegram.org/bot$BOT_API_KEY/SendSticker" \
     -d sticker="${Start_Asset}" \
     -d chat_id=${BUILDSCAPERER_ID} >> /dev/null
-} 
+}
 
 tg_buildmain_sendgif() {
     curl -s -X POST "https://api.telegram.org/bot$BOT_API_KEY/SendAnimation" \
@@ -85,7 +85,7 @@ tg_debugcast() {
 kickstart_pub() {
     tg_buildmain_sendgif
     tg_build_sendsticker
-    
+
     tg_channelcast "Compiler <code>${COMPILER_USED}</code>" \
     "Device <b>${DEVICE}</b>" \
     "Branch <code>${PARSE_BRANCH}</code>" \
