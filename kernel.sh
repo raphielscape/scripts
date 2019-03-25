@@ -105,7 +105,7 @@ START=$(date +"%s")
 colorize "${LIGHTRED}"
 	# Start the compilation
 	build "${DEFCONFIG}"
-		build 
+		build
 		build dtbs
 decolorize
 
@@ -127,7 +127,7 @@ if [ "${WORKER}" = raphielbox ]; then
 		header "It's common, checking out..."
 		git checkout master >> /dev/null
 	fi
-	
+
 	delett "${ANYKERNEL}"
 		copy "${WORKDIR}/AnyKernel2-git" "${ANYKERNEL}"
 			cd "${ANYKERNEL}" || return

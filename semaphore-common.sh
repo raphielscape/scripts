@@ -49,6 +49,7 @@ else
 	clone https://github.com/raphielscape/AnyKernel2.git "${KERNELDIR}"/anykernel
 fi
 
+clone https://github.com/RaphielGang/arm-linux-gnueabi-8.x.git "${HOME}/GNU/ARMGCC"
 clone https://github.com/RaphielGang/aarch64-raph-linux-android.git "${HOME}/GNU/GCC"
 
 if [[ "$@" =~ "clang" ]]; then

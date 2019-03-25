@@ -43,16 +43,20 @@ prepare_clang() {
     # Clang configurations
     if [ "${WORKER}" = raphielbox ]; then
         PATH=${HOME}/toolchains/clang-9.x/bin/:$PATH
+        PATH=${HOME}/working/arm-linux-gnueabi-8.x/bin:$PATH
             if [ "${SELFGCC}" = true ]; then
                 PATH=${HOME}/x-tools/aarch64-raph-linux-android/bin:$PATH
                 CROSS_COMPILE="aarch64-raph-linux-android-"
             else
                 CROSS_COMPILE="aarch64-linux-gnu-"
             fi
+        CROSS_COMPILE_ARM32="${SCRIPTDIR}/ccachewrapper arm-linux-gnueabi-"
         CLANG_TRIPLE="aarch64-linux-gnu-"
     else
         PATH=${HOME}/LLVM/CLANG/bin:$PATH
         PATH=${HOME}/GNU/GCC/bin:$PATH
+        PATH=${HOME}/GNU/ARMGCC/bin:$PATH
+        CROSS_COMPILE_ARM32="${SCRIPTDIR}/ccachewrapper arm-linux-gnueabi-"
         CROSS_COMPILE="aarch64-raph-linux-android-"
         CLANG_TRIPLE="aarch64-linux-gnu-"
     fi
@@ -77,23 +81,26 @@ prepare_clang() {
 
 prepare_gcc() {
     if [ "${WORKER}" = raphielbox ]; then
-        PATH=${HOME}/toolchains/GCC4/bin/:$PATH
-        COMPILER_USED="$(aarch64-linux-android-gcc --version | head -1)"
+        PATH=${HOME}/working/arm-linux-gnueabi-8.x/bin:$PATH
+        COMPILER_USED="$(aarch64-linux-gnu-gcc --version | head -1)"
 
         # Set Cross Compile
-        CROSS_COMPILE="${SCRIPTDIR}/ccachewrapper aarch64-linux-android-"
+        CROSS_COMPILE_ARM32="${SCRIPTDIR}/ccachewrapper arm-linux-gnueabi-"
+        CROSS_COMPILE="${SCRIPTDIR}/ccachewrapper aarch64-linux-gnu-"
 
         # Use bfd for local only
         GCC_LD=aarch64-linux-gnu-ld.bfd
 
         # Announce what compiler we use
-        header "Using toolchain: $(aarch64-linux-android-gcc --version | head -1)"
+        header "Using toolchain: $(aarch64-linux-gnu-gcc --version | head -1)"
     else
         # Set path for Semaphore GCC location
         PATH=${HOME}/GNU/GCC/bin:$PATH
+        PATH=${HOME}/GNU/ARMGCC/bin:$PATH
         COMPILER_USED="$(aarch64-raph-linux-android-gcc --version | head -1)"
 
         # Set Cross Compile
+        CROSS_COMPILE_ARM32="${SCRIPTDIR}/ccachewrapper arm-linux-gnueabi-"
         CROSS_COMPILE="${SCRIPTDIR}/ccachewrapper aarch64-raph-linux-android-"
 
         # Announce what compiler we use
