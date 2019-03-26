@@ -50,7 +50,7 @@ prepare_clang() {
             else
                 CROSS_COMPILE="aarch64-linux-gnu-"
             fi
-        CROSS_COMPILE_ARM32="${SCRIPTDIR}/ccachewrapper arm-linux-gnueabi-"
+        CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
         CLANG_TRIPLE="aarch64-linux-gnu-"
     else
         PATH=${HOME}/LLVM/CLANG/bin:$PATH
@@ -85,7 +85,7 @@ prepare_gcc() {
         COMPILER_USED="$(aarch64-linux-gnu-gcc --version | head -1)"
 
         # Set Cross Compile
-        CROSS_COMPILE_ARM32="${SCRIPTDIR}/ccachewrapper arm-linux-gnueabi-"
+        CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
         CROSS_COMPILE="${SCRIPTDIR}/ccachewrapper aarch64-linux-gnu-"
 
         # Use bfd for local only
@@ -100,7 +100,7 @@ prepare_gcc() {
         COMPILER_USED="$(aarch64-raph-linux-android-gcc --version | head -1)"
 
         # Set Cross Compile
-        CROSS_COMPILE_ARM32="${SCRIPTDIR}/ccachewrapper arm-linux-gnueabi-"
+        CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
         CROSS_COMPILE="${SCRIPTDIR}/ccachewrapper aarch64-raph-linux-android-"
 
         # Announce what compiler we use
@@ -114,7 +114,7 @@ prepare_gcc() {
 # Examine our compilation threads
 # 2x of our available CPUs
 CPU="$(grep -c '^processor' /proc/cpuinfo)"
-JOBS="$((CPU * 2))"
+JOBS="${CPU}"
 
 build() {
     if [ $CU = clang ]; then
@@ -131,7 +131,7 @@ build() {
 }
 
 # Then export the stuff
-export PATH CU COMPILER_USED CLANG_TCHAIN TCHAIN_PATH CLANG_TRIPLE KBUILD_COMPILER_STRING CROSS_COMPILE MAKE
+export PATH CU COMPILER_USED CLANG_TCHAIN TCHAIN_PATH CLANG_TRIPLE KBUILD_COMPILER_STRING CROSS_COMPILE CROSS_COMPILE_ARM32 MAKE
 
 # Whenever build is interrupted by purpose, report it
 trap '{
