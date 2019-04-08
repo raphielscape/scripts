@@ -100,7 +100,7 @@ prepare_gcc() {
 
         # Set Cross Compile
         CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
-        CROSS_COMPILE="${SCRIPTDIR}/ccachewrapper aarch64-raphiel-linux-"
+        CROSS_COMPILE="${SCRIPTDIR}/ccachewrapper aarch64-raphiel-linux-gnu-"
 
         GCC_LD=aarch64-raphiel-linux-gnu-ld.bfd
 
