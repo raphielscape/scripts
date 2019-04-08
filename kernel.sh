@@ -102,6 +102,15 @@ decolorize
 
 START=$(date +"%s")
 
+# HAX HAX HAX HAX
+# Semaphore always fricking run out of space
+# Mitigate this by removing .git folder
+# In compilation
+# HAX HAX HAX HAX
+if [ "${WORKER}" = semaphore ]; then
+	delett .git
+fi
+
 colorize "${LIGHTRED}"
 	# Start the compilation
 	build "${DEFCONFIG}"
