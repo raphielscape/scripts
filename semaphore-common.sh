@@ -40,7 +40,7 @@ fi
 # Validate things for proper configurations
 sudo install-package --update-new ccache bc bash git-core gnupg build-essential \
 		zip curl make automake autogen autoconf autotools-dev libtool shtool python \
-		m4 gcc libtool zlib1g-dev dash
+		m4 gcc libtool zlib1g-dev dash pigz
 
 # Clone needed components
 if [[ "$@" =~ "sdm845" ]]; then
