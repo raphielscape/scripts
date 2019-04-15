@@ -83,7 +83,7 @@ tg_debugcast() {
 }
 
 kickstart_pub() {
-    tg_buildmain_sendgif
+    tg_sendinfo "Compilation Rolled! Clocked at $(date +%Y%m%d-%H%M)"
     tg_build_sendsticker
 
     tg_channelcast "Compiler <code>${COMPILER_USED}</code>" \
@@ -91,6 +91,7 @@ kickstart_pub() {
     "Branch <code>${PARSE_BRANCH}</code>" \
     "Commit Point <code>${COMMIT_POINT}</code>" \
     "Under <code>$(hostname)</code>" \
+    "Clocked at <code>$(date +%Y%m%d-%H%M)</code>" \
     "Started on <code>$(whoami)</code>"
 }
 
@@ -102,6 +103,7 @@ kickstart_priv() {
     "Branch <code>${PARSE_BRANCH}</code>" \
     "Commit Point <code>${COMMIT_POINT}</code>" \
     "Under <code>$(hostname)</code>" \
+    "Clocked at <code>$(date +%Y%m%d-%H%M)</code>" \
     "Started on <code>$(whoami)</code>"
 
     tg_debugcast "This ${COMPILER_USED} build will not producing any binaries" \
