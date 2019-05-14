@@ -69,7 +69,8 @@ prepare_clang() {
     # perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
 
     # Export compiler for announcer
-    COMPILER_USED="$(${CLANG_TCHAIN} --version)"
+    COMPILER_USED="$(${CLANG_TCHAIN} --version | head -n 1 |
+    perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
     CU=clang
 
     # Scream out the Clang compiler used
@@ -83,7 +84,7 @@ prepare_gcc() {
     if [ "${WORKER}" = raphielbox ]; then
         PATH=${HOME}/working/arm-linux-gnueabi-8.x/bin:$PATH
         PATH=${HOME}/x-tools/aarch64-raphiel-linux-gnu/bin:$PATH
-        COMPILER_USED="$(aarch64-linux-gnu-gcc --version | head -1)"
+        COMPILER_USED="$(aarch64-raphiel-linux-gnu --version | head -1)"
 
         # Set Cross Compile
         CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
@@ -92,7 +93,7 @@ prepare_gcc() {
         GCC_LD=aarch64-raphiel-linux-gnu-ld.bfd
 
         # Announce what compiler we use
-        header "Using toolchain: $(aarch64-linux-gnu-gcc --version | head -1)"
+        header "Using toolchain: $(aarch64-raphiel-linux-gnu-gcc --version | head -1)"
     else
         # Set path for Semaphore GCC location
         PATH=${HOME}/GNU/GCC/bin:$PATH
@@ -137,44 +138,3 @@ trap '{
     tg_intgifmain
     exit 130
 }' INT
-
-# Whenever errors occured, report them
-tg_senderror() {
-    tg_sendinfo "Build Throwing Error(s)" \
-    "@raphielscape naaaaa"
-
-    if [ "${ZIP_UPLOAD}" = true ]; then
-        tg_channelcast "Build Throwing Error(s)"
-    else
-        tg_debugcast "Build Throwing Error(s)"
-    fi
-
-    [ -n "${STATUS}" ] &&
-    exit "${STATUS}" ||
-    exit 1
-}
-
-# Announce the completion
-tg_yay() {
-    tg_sendinfo "Compilation for ${DEVICE} Completed yay" \
-    "Haha yes"
-}
-
-# Fin Prober
-fin() {
-    header "Yay! My works took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds.~"
-    tg_sendinfo "Build for ${DEVICE} with ${COMPILER_USED} took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds"
-    if [ "${ZIP_UPLOAD}" = true ]; then
-        tg_channelcast "Build for ${DEVICE} with ${COMPILER_USED} took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds"
-    fi
-    tg_yay
-}
-
-# Errored Prober
-finerr() {
-    header "My works took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds but it's error..."
-    tg_sendinfo "Build for ${DEVICE} with ${COMPILER_USED} took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds" \
-                "but it is having error anyways xd"
-    tg_senderror
-    exit 1
-}

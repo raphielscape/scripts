@@ -17,8 +17,8 @@ DEBUG_ID="-1001279397127"
 
 # Graphics Interchange Format Assets
 Start_Asset="CAADBQADPQIAAp_oJQqaAAHES5FWFaoC"
-Stop_Asset="https://i.imgur.com/Q6nllGX.gif"
-Jump_Asset="https://i.imgur.com/BO0HlYB.gif"
+Stop_Asset="https://thumbs.gfycat.com/ChiefComplexInganue-size_restricted.gif"
+Jump_Asset="https://thumbs.gfycat.com/ChiefComplexInganue-size_restricted.gif"
 
 # GIF Stuff
 tg_build_sendsticker() {
@@ -97,6 +97,7 @@ kickstart_pub() {
 
 kickstart_priv() {
     tg_buildmain_sendgif
+    tg_sendinfo "Compilation Rolled! Clocked at $(date +%Y%m%d-%H%M)"
 
     tg_debugcast "Compiler <code>${COMPILER_USED}</code>" \
     "Device <b>${DEVICE}</b>" \
@@ -108,4 +109,61 @@ kickstart_priv() {
 
     tg_debugcast "This ${COMPILER_USED} build will not producing any binaries" \
                 "This is internal build"
+}
+
+kickstart_release() {
+    tg_buildmain_sendgif
+    tg_sendinfo "Release Beeld Rolled! Clocked at $(date +%Y%m%d-%H%M)"
+
+    tg_channelcast "Compiler <code>${COMPILER_USED}</code>" \
+    "Device <b>${DEVICE}</b>" \
+    "Branch <code>${PARSE_BRANCH}</code>" \
+    "Commit Point <code>${COMMIT_POINT}</code>" \
+    "Under <code>$(hostname)</code>" \
+    "Clocked at <code>$(date +%Y%m%d-%H%M)</code>" \
+    "Started on <code>$(whoami)</code>"
+
+    tg_sendinfo "This ${COMPILER_USED} build will be pushed separately under Release tag" \
+                "You can sleep until I done lewding Hat Kid"
+}
+
+# Whenever errors occured, report them
+tg_senderror() {
+    tg_sendinfo "Build Throwing Error(s)" \
+    "@raphielscape naaaaa"
+
+    if [ "${ZIP_UPLOAD}" = true ]; then
+        tg_channelcast "Build Throwing Error(s)"
+    else
+        tg_debugcast "Build Throwing Error(s)"
+    fi
+
+    [ -n "${STATUS}" ] &&
+    exit "${STATUS}" ||
+    exit 1
+}
+
+# Announce the completion
+tg_yay() {
+    tg_sendinfo "Compilation for ${DEVICE} Completed yay" \
+    "Haha yes"
+}
+
+# Fin Prober
+fin() {
+    header "Yay! My works took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds.~"
+    tg_sendinfo "Build for ${DEVICE} with ${COMPILER_USED} took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds"
+    if [ "${ZIP_UPLOAD}" = true ]; then
+        tg_channelcast "Build for ${DEVICE} with ${COMPILER_USED} took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds"
+    fi
+    tg_yay
+}
+
+# Errored Prober
+finerr() {
+    header "My works took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds but it's error..."
+    tg_sendinfo "Build for ${DEVICE} with ${COMPILER_USED} took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds" \
+                "but it is having error anyways xd"
+    tg_senderror
+    exit 1
 }

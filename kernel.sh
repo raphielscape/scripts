@@ -52,7 +52,11 @@ header "You're working with $DEVICE on $PARSE_BRANCH" "$GREEN"
 if [ "${ZIP_UPLOAD}" = true ]; then
 	kickstart_pub
 else
-	kickstart_priv
+	if [ "${RELEASE}" = true ]; then
+		kickstart_release
+	else
+		kickstart_priv
+	fi
 fi
 
 # Whenever build is errored, report it, and killplay
@@ -69,11 +73,15 @@ if [ ! "${KERNELDIR}" ]; then
 fi
 
 # Zipname
-ZIPNAME="Bash-${DEVICE}-${CU}-$(date +%Y%m%d-%H%M).zip"
+ZIPNAME="NightlyHat-${DEVICE}-${CU}-$(date +%Y%m%d-%H%M).zip"
+ZIPNAMEREL="Disrupt-${DEVICE}-${CU}-$(date +%Y%m%d-%H%M).zip"
 
 # Final Zip
-export FINAL_ZIP="${ZIP_DIR}/${ZIPNAME}"
-
+if [ "${RELEASE}" = true ]; then
+	export FINAL_ZIP="${ZIP_DIR}/${ZIPNAMEREL}"
+else
+	export FINAL_ZIP="${ZIP_DIR}/${ZIPNAME}"
+fi
 
 colorize "${RED}"
 
