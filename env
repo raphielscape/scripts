@@ -96,17 +96,14 @@ prepare_gcc() {
         header "Using toolchain: $(aarch64-raphiel-elf-gcc --version | head -1)"
     else
         # Set path for Semaphore GCC location
-        ARM64CC=$(pwd)/GNU/GCC/bin/aarch64-raphiel-linux-gnu-
-        COMPILER_USED="$(./GNU/GCC/bin/aarch64-raphiel-linux-gnu-gcc--version | head -1)"
+        ARM64CC=/GNU/GCC/bin/aarch64-raphiel-linux-gnu-
+        COMPILER_USED=$(${ARM64CC}gcc --version | head -1)
 
         # Set Cross Compile
-        CROSS_COMPILE_ARM32="$(pwd)/GNU/ARMGCC/bin/arm-linux-gnueabi-"
+        CROSS_COMPILE_ARM32="/GNU/ARMGCC/bin/arm-linux-gnueabi-"
         CROSS_COMPILE="${SCRIPTDIR}/ccachewrapper" ${ARM64CC}
 
-        GCC_LD=$(pwd)/GNU/GCC/aarch64-raphiel-linux-gnu-ld.bfd
-
-        # Announce what compiler we use
-        header "Using toolchain: $(./GNU/GCC/bin/aarch64-raphiel-linux-gnu-gcc--version | head -1)"
+        GCC_LD=/GNU/GCC/aarch64-raphiel-linux-gnu-ld.bfd
     fi
 
     # Announce that our current compiler is GCC
