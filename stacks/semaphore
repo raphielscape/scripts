@@ -9,12 +9,10 @@
 # Semaphore Environment container
 
 semaphorebox() {
-	ANYKERNEL="${KERNELDIR}/anykernel"
-	ZIP_DIR="${KERNELDIR}/files"
+	ANYKERNEL="$(pwd)/anykernel"
+	ZIP_DIR="$(pwd)/files"
 	KBUILD_BUILD_USER="raphielscape"
     ZIP_UPLOAD=true
-	BUILDURL=$(debuginfo|jq '.build_url'|sed -e 's/^"//' -e 's/"$//')
-	START=$(debuginfo|jq '.started_at'|sed -e 's/^"//' -e 's/"$//')
 }
 
 # Some alias
@@ -26,4 +24,4 @@ debugtap() {
 	tg_debugcast "$(whoami)"
 }
 
-export ANYKERNEL ZIP_DIR KBUILD_BUILD_USER TOOLCHAIN ZIP_UPLOAD CROSS_COMPILE BUILDURL START
+export ANYKERNEL ZIP_DIR KBUILD_BUILD_USER TOOLCHAIN ZIP_UPLOAD CROSS_COMPILE
