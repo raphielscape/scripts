@@ -95,8 +95,8 @@ prepare_gcc() {
         # Announce what compiler we use
         header "Using toolchain: $(aarch64-raphiel-elf-gcc --version | head -1)"
     else
-        PATH=/GNU/ARMGCC/bin:$PATH
-        PATH=/GNU/GCC/bin/:$PATH
+        PATH=/drone/src/armcc/bin:$PATH
+        PATH=/drone/src/arm64cc/bin:$PATH
         # Set path for Semaphore GCC location
         COMPILER_USED=$(aarch64-raphiel-linux-gnu-gcc --version | head -1)
 
