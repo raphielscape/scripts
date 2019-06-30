@@ -13,6 +13,7 @@ semaphorebox() {
 	ZIP_DIR="$(pwd)/files"
 	KBUILD_BUILD_USER="raphielscape"
     ZIP_UPLOAD=true
+	TERM="xterm-256color"
 }
 
 # Some alias
