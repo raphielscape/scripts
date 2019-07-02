@@ -53,9 +53,9 @@ prepare_clang() {
         CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
         CLANG_TRIPLE="aarch64-linux-gnu-"
     else
-        PATH=$(pwd)/LLVM/CLANG/bin:$PATH
-        PATH=$(pwd)/GNU/GCC/bin:$PATH
-        PATH=$(pwd)/GNU/ARMGCC/bin:$PATH
+        PATH=$(KERNELDIR)/LLVM/CLANG/bin:$PATH
+        PATH=$(KERNELDIR)/GNU/GCC/bin:$PATH
+        PATH=$(KERNELDIR)/GNU/ARMGCC/bin:$PATH
         CROSS_COMPILE_ARM32="${SCRIPTDIR}/ccachewrapper arm-linux-gnueabi-"
         CROSS_COMPILE="aarch64-raphiel-linux-"
         CLANG_TRIPLE="aarch64-linux-gnu-"
@@ -63,10 +63,6 @@ prepare_clang() {
 
     CLANG_TCHAIN="${SCRIPTDIR}/ccachewrapper clang"
     CLANG_LD=aarch64-raphiel-linux-gnu-ld.bfd
-
-    # Kbuild Sets
-    # KBUILD_COMPILER_STRING="$(${CLANG_TCHAIN} --version | head -n 1 |
-    # perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
 
     # Export compiler for announcer
     COMPILER_USED="$(${CLANG_TCHAIN} --version | head -n 1 |

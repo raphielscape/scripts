@@ -54,12 +54,10 @@ if [ "${ZIP_UPLOAD}" = true ]; then
 else
 	if [ "${RELEASE}" = true ]; then
 		kickstart_release
-	else
-		kickstart_priv
 	fi
 fi
 
-# Whenever build is errored, report it, and killplay
+# Whenever build is errored, report it.
 trap '{
     STATUS=${?}
     tg_senderror
@@ -83,41 +81,18 @@ else
 	export FINAL_ZIP="${ZIP_DIR}/${ZIPNAME}"
 fi
 
-colorize "${RED}"
-
 # Create zip directory if it's not exists
 [ ! -d "${ZIP_DIR}" ] && mkdir -pv "${ZIP_DIR}"
-
-[ -d "${OUTDIR}" ] && delett "${OUTDIR}"
-
-# Make new out dir if it's not exists
-# !!! INFO INFO INFO INFO !!!
-# Don't out directory if it's build running
-# On Semaphore CI
-if [ ! -d "${OUTDIR}" ] && [ "${WORKER}" != semaphore ]; then
-	mkdir -pv "${OUTDIR}"
-fi
-
-decolorize
 
 # Here we go
 cd "${SRCDIR}" || exit
 
 # Delete old image if exists
 colorize "${RED}"
-delett "${IMAGE}"
+	delett "${IMAGE}"
 decolorize
 
 START=$(date +"%s")
-
-# HAX HAX HAX HAX
-# Semaphore always fricking run out of space
-# Mitigate this by removing .git folder
-# In compilation
-# HAX HAX HAX HAX
-if [ "${WORKER}" = semaphore ]; then
-	delett .git
-fi
 
 colorize "${LIGHTRED}"
 	# Start the compilation
@@ -186,7 +161,6 @@ if [ -f "$FINAL_ZIP" ]; then
 	fi
 	header "${ZIPNAME} can be found at ${FINAL_ZIP}" "${LIGHTGREEN}"
 	fin
-	# Oh no
 else
 	header "Zip Creation Failed =("
 	die "My works took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds\\nbut it's error..."
