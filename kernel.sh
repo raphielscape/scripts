@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
-# Copyright (C) 2018 Raphielscape LLC.
+# Copyright (C) 2019 Raphielscape LLC.
 #
-# Licensed under the Raphielscape Public License, Version 1.0 (the "License");
+# Licensed under the Raphielscape Public License, Version 1.c (the "License");
 # you may not use this file except in compliance with the License.
 #
 # Kernel-building execution stager
