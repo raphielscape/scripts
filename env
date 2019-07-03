@@ -80,28 +80,21 @@ prepare_gcc() {
     if [ "${WORKER}" = raphielbox ]; then
         PATH=${HOME}/working/arm-linux-gnueabi-8.x/bin:$PATH
         PATH=${HOME}/x-tools/aarch64-raphiel-elf/bin:$PATH
-        COMPILER_USED="$(aarch64-raphiel-elf-gcc --version | head -1)"
-
-        # Set Cross Compile
-        CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
-        CROSS_COMPILE="${SCRIPTDIR}/ccachewrapper aarch64-raphiel-elf-"
-
-        GCC_LD=aarch64-raphiel-elf-ld.bfd
-
-        # Announce what compiler we use
-        header "Using toolchain: $(aarch64-raphiel-elf-gcc --version | head -1)"
     else
         PATH=/drone/src/armcc/bin:$PATH
         PATH=/drone/src/arm64cc/bin:$PATH
-        # Set path for Semaphore GCC location
-        COMPILER_USED=$(aarch64-raphiel-linux-gnu-gcc --version | head -1)
-
-        # Set Cross Compile
-        CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
-        CROSS_COMPILE="${SCRIPTDIR}/ccachewrapper aarch64-raphiel-linux-gnu-"
-
-        GCC_LD=aarch64-raphiel-linux-gnu-ld.bfd
     fi
+
+    COMPILER_USED="$(aarch64-raphiel-elf-gcc --version | head -1)"
+
+    # Set Cross Compile
+    CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
+    CROSS_COMPILE="${SCRIPTDIR}/ccachewrapper aarch64-raphiel-elf-"
+
+    GCC_LD=aarch64-raphiel-elf-ld.bfd
+
+    # Announce what compiler we use
+    header "Using toolchain: $(aarch64-raphiel-elf-gcc --version | head -1)"
 
     # Announce that our current compiler is GCC
     CU=gcc
