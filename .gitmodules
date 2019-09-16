@@ -9,4 +9,5 @@
 	url = https://github.com/krasCGQ/patches.git
 [submodule "clang-build"]
 	path = clang-build
-	url = https://github.com/ClangBuiltLinux/tc-build.git
+	url = https://github.com/nathanchance/tc-build.git
+	branch = personal

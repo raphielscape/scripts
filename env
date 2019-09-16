@@ -25,7 +25,10 @@ COMMIT_POINT="$(git log --pretty=format:'%h : %s' -1)"
 
 TELEGRAM_TOKEN=${BOT_API_KEY}
 
-export TELEGRAM_TOKEN PARSE_BRANCH PARSE_ORIGIN COMMIT_POINT SRCDIR OUTDIR
+# ClangBuiltLinux's tc-build build directory
+CBL_DIR=$HOME/scripts/clang-build
+
+export TELEGRAM_TOKEN PARSE_BRANCH PARSE_ORIGIN COMMIT_POINT SRCDIR OUTDIR CBL_DIR
 
 kernelbox() {
     ANYKERNEL="${HOME}/working/AnyKernel2"
@@ -37,32 +40,34 @@ export ANYKERNEL ZIP_DIR KBUILD_BUILD_USER TOOLCHAIN
 # Delett Old AnyKernel in Aroma dir if exists
 rm -rf "${ANYKERNEL_DONE}"
 
+# Setup GCC Cross-compiler
+if [ "${WORKER}" = raphielbox ]; then
+    PATH=${HOME}/working/arm-linux-gnueabi-8.x/bin:$PATH
+    PATH=${HOME}/x-tools/aarch64-raphiel-elf/bin:$PATH
+    PATH=${HOME}/toolchains/clang/bin/:$PATH
+else
+    PATH=/drone/src/armcc/bin:$PATH
+    PATH=/drone/src/arm64cc/bin:$PATH
+    PATH=$(KERNELDIR)/LLVM/CLANG/bin:$PATH
+fi
+
 prepare_clang() {
     header "We're building Clang bois" "${GREEN}"
 
     # Clang configurations
     if [ "${WORKER}" = raphielbox ]; then
-        PATH=${HOME}/toolchains/clang-9.x/bin/:$PATH
-        PATH=${HOME}/working/arm-linux-gnueabi-8.x/bin:$PATH
-            if [ "${SELFGCC}" = true ]; then
-                PATH=${HOME}/x-tools/aarch64-raphiel-linux-gnu/bin:$PATH
-                CROSS_COMPILE="aarch64-raphiel-linux-gnu-"
-            else
-                CROSS_COMPILE="aarch64-linux-gnu-"
-            fi
+        CROSS_COMPILE="aarch64-raphiel-elf-"
         CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
         CLANG_TRIPLE="aarch64-linux-gnu-"
+        CLANG_LD="aarch64-raphiel-elf-ld.bfd"
     else
-        PATH=$(KERNELDIR)/LLVM/CLANG/bin:$PATH
-        PATH=$(KERNELDIR)/GNU/GCC/bin:$PATH
-        PATH=$(KERNELDIR)/GNU/ARMGCC/bin:$PATH
-        CROSS_COMPILE_ARM32="${SCRIPTDIR}/ccachewrapper arm-linux-gnueabi-"
         CROSS_COMPILE="aarch64-raphiel-linux-"
+        CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
         CLANG_TRIPLE="aarch64-linux-gnu-"
+        CLANG_LD="aarch64-raphiel-linux-gnu-ld.bfd"
     fi
 
     CLANG_TCHAIN="${SCRIPTDIR}/ccachewrapper clang"
-    CLANG_LD=aarch64-raphiel-linux-gnu-ld.bfd
 
     # Export compiler for announcer
     COMPILER_USED="$(${CLANG_TCHAIN} --version | head -n 1 |
@@ -73,39 +78,33 @@ prepare_clang() {
     header "Using toolchain: $(${CLANG_TCHAIN} --version | head -n 1 |
     perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
 
-    header "Using cross-compiler: $("${CROSS_COMPILE}"gcc --version | head -1)"
+    header "Using cross-compiler: $(${CROSS_COMPILE}gcc --version | head -1)"
 }
 
 prepare_gcc() {
-    if [ "${WORKER}" = raphielbox ]; then
-        PATH=${HOME}/working/arm-linux-gnueabi-8.x/bin:$PATH
-        PATH=${HOME}/x-tools/aarch64-raphiel-elf/bin:$PATH
-    else
-        PATH=/drone/src/armcc/bin:$PATH
-        PATH=/drone/src/arm64cc/bin:$PATH
-    fi
-
-    COMPILER_USED="$(aarch64-raphiel-elf-gcc --version | head -1)"
-
     # Set Cross Compile
     CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
     CROSS_COMPILE="${SCRIPTDIR}/ccachewrapper aarch64-raphiel-elf-"
+    COMPILER_USED="$(${CROSS_COMPILE}gcc --version | head -1)"
 
     GCC_LD=aarch64-raphiel-elf-ld.bfd
 
     # Announce what compiler we use
-    header "Using toolchain: $(aarch64-raphiel-elf-gcc --version | head -1)"
+    header "Using cross-compiler: $(${CROSS_COMPILE}gcc --version | head -1)"
 
     # Announce that our current compiler is GCC
     CU=gcc
 }
 
-# Examine our compilation threads
-# 2x of our available CPUs
-CPU="$(grep -c '^processor' /proc/cpuinfo)"
-JOBS="$(( ${CPU} * 2 ))"
+# Then export the stuff
+export PATH CU COMPILER_USED CLANG_TCHAIN TCHAIN_PATH CLANG_TRIPLE KBUILD_COMPILER_STRING CROSS_COMPILE CROSS_COMPILE_ARM32 MAKE
 
 build() {
+    # Examine our compilation threads
+    # 2x of our available CPUs
+    CPU="$(grep -c '^processor' /proc/cpuinfo)"
+    JOBS="$(( ${CPU} * 2 ))"
+
     if [ $CU = clang ]; then
         make -j${JOBS} O="${OUTDIR}" CC="${CLANG_TCHAIN}" \
         LD="${CLANG_LD}" HOSTCC="${CLANG_TCHAIN}" \
@@ -115,8 +114,29 @@ build() {
     fi
 }
 
-# Then export the stuff
-export PATH CU COMPILER_USED CLANG_TCHAIN TCHAIN_PATH CLANG_TRIPLE KBUILD_COMPILER_STRING CROSS_COMPILE CROSS_COMPILE_ARM32 MAKE
+# ClangBuiltLinux's build-llvm.py wrapper
+build-clang() {
+    local ARCH INSTALL_DIR
+    ARCH="AArch64;ARM;X86"
+    INSTALL_DIR=${HOME}/toolchains/clang
+
+    [[ ! -f $SCRIPTDIR/clang-build/.git ]] && { warn "Please init the submodule before continuing."; return 1; }
+    [[ -d $INSTALL_DIR ]] && { rm -rf ${INSTALL_DIR}-old; mv -f $INSTALL_DIR{,-old}; }
+
+    "$SCRIPTDIR"/clang-build/build-llvm.py -B "$CBL_DIR" -I $INSTALL_DIR -t $ARCH --lto thin -u
+}
+
+# ClangBuiltLinux's build-binutils.py wrapper
+build-binutils() {
+    local ARCH INSTALL_DIR
+    ARCH=( aarch64 arm x86_64 )
+    INSTALL_DIR=${HOME}/toolchains/binutils
+
+    [[ ! -f $SCRIPTDIR/clang-build/.git ]] && { warn "Please init the submodule before continuing."; return 1; }
+    [[ -d $INSTALL_DIR ]] && { rm -rf ${INSTALL_DIR}-old; mv -f $INSTALL_DIR{,-old}; }
+
+    "$SCRIPTDIR"/clang-build/build-binutils.py -B "$CBL_DIR" -I $INSTALL_DIR -t ${ARCH[@]} -u
+}
 
 # Whenever build is interrupted by purpose, report it
 trap '{
