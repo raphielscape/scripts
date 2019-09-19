@@ -45,10 +45,9 @@ if [ "${WORKER}" = raphielbox ]; then
     PATH=${HOME}/working/arm-linux-gnueabi-8.x/bin:$PATH
     PATH=${HOME}/x-tools/aarch64-raphiel-elf/bin:$PATH
     PATH=${HOME}/toolchains/clang/bin/:$PATH
-else
+elif [ "${CC}" != Clang ]; then
     PATH=/drone/src/armcc/bin:$PATH
     PATH=/drone/src/arm64cc/bin:$PATH
-    PATH=/drone/src/clang/bin:$PATH
 fi
 
 prepare_clang() {
@@ -58,13 +57,16 @@ prepare_clang() {
     if [ "${WORKER}" = raphielbox ]; then
         CROSS_COMPILE="aarch64-raphiel-elf-"
         CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
-        CLANG_TRIPLE="aarch64-linux-gnu-"
         CLANG_LD="aarch64-raphiel-elf-ld.bfd"
+        CLANG_LD="${CROSS_COMPILE}ld.bfd"
+        CLANG_AS="${CROSS_COMPILE}as"
+        CLANG_TRIPLE="aarch64-linux-gnu-"
     else
-        CROSS_COMPILE="aarch64-raphiel-elf-"
-        CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
+        CROSS_COMPILE="/drone/src/arm64cc/bin/aarch64-raphiel-elf-"
+        CROSS_COMPILE_ARM32="/drone/src/armcc/bin/arm-linux-gnueabi-"
+        CLANG_LD="${CROSS_COMPILE}ld.bfd"
+        CLANG_AS="${CROSS_COMPILE}as"
         CLANG_TRIPLE="aarch64-linux-gnu-"
-        CLANG_LD="aarch64-raphiel-elf-ld.bfd"
     fi
 
     CLANG_TCHAIN="${SCRIPTDIR}/ccachewrapper clang"
@@ -85,12 +87,12 @@ prepare_gcc() {
     # Set Cross Compile
     CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
     CROSS_COMPILE="${SCRIPTDIR}/ccachewrapper aarch64-raphiel-elf-"
-    COMPILER_USED="$(${CROSS_COMPILE}gcc --version | head -1)"
+    COMPILER_USED="$("${CROSS_COMPILE}"gcc --version | head -1)"
 
     GCC_LD=aarch64-raphiel-elf-ld.bfd
 
     # Announce what compiler we use
-    header "Using cross-compiler: $(${CROSS_COMPILE}gcc --version | head -1)"
+    header "Using cross-compiler: $("${CROSS_COMPILE}"gcc --version | head -1)"
 
     # Announce that our current compiler is GCC
     CU=gcc
@@ -103,12 +105,10 @@ build() {
     # Examine our compilation threads
     # 2x of our available CPUs
     CPU="$(grep -c '^processor' /proc/cpuinfo)"
-    JOBS="$(( ${CPU} * 2 ))"
+    JOBS="$(( CPU * 2 ))"
 
     if [ $CU = clang ]; then
-        make -j${JOBS} O="${OUTDIR}" CC="${CLANG_TCHAIN}" \
-        LD="${CLANG_LD}" HOSTCC="${CLANG_TCHAIN}" \
-        HOSTLD="${CLANG_LD}" "$@"
+        make -j${JOBS} O="${OUTDIR}" CC="${CLANG_TCHAIN}" LD="${CLANG_LD}" AS="${CLANG_AS}" CLANG_TRIPLE="${CLANG_TRIPLE}" "$@"
     else
         make -j${JOBS} O="${OUTDIR}" LD="${GCC_LD}" "$@"
     fi
