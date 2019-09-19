@@ -62,7 +62,7 @@ prepare_clang() {
         CLANG_AS="${CROSS_COMPILE}as"
         CLANG_TRIPLE="aarch64-linux-gnu-"
     else
-        CROSS_COMPILE="/drone/src/arm64cc/bin/aarch64-raphiel-elf-"
+        CROSS_COMPILE="aarch64-linux-gnu-"
         CROSS_COMPILE_ARM32="/drone/src/armcc/bin/arm-linux-gnueabi-"
         CLANG_LD="${CROSS_COMPILE}ld.bfd"
         CLANG_AS="${CROSS_COMPILE}as"
