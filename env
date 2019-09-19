@@ -48,7 +48,7 @@ if [ "${WORKER}" = raphielbox ]; then
 else
     PATH=/drone/src/armcc/bin:$PATH
     PATH=/drone/src/arm64cc/bin:$PATH
-    PATH=$(KERNELDIR)/LLVM/CLANG/bin:$PATH
+    PATH=/drone/src/clang/bin:$PATH
 fi
 
 prepare_clang() {
@@ -61,10 +61,10 @@ prepare_clang() {
         CLANG_TRIPLE="aarch64-linux-gnu-"
         CLANG_LD="aarch64-raphiel-elf-ld.bfd"
     else
-        CROSS_COMPILE="aarch64-raphiel-linux-"
+        CROSS_COMPILE="aarch64-raphiel-elf-"
         CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
         CLANG_TRIPLE="aarch64-linux-gnu-"
-        CLANG_LD="aarch64-raphiel-linux-gnu-ld.bfd"
+        CLANG_LD="aarch64-raphiel-elf-ld.bfd"
     fi
 
     CLANG_TCHAIN="${SCRIPTDIR}/ccachewrapper clang"
