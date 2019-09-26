@@ -43,11 +43,17 @@ rm -rf "${ANYKERNEL_DONE}"
 # Setup GCC Cross-compiler
 if [ "${WORKER}" = raphielbox ]; then
     PATH=${HOME}/working/arm-linux-gnueabi-8.x/bin:$PATH
-    PATH=${HOME}/x-tools/aarch64-raphiel-elf/bin:$PATH
-    PATH=${HOME}/toolchains/clang/bin/:$PATH
-elif [ "${CC}" != Clang ]; then
+    if [ "${CC}" = Clang ]; then
+        PATH=${HOME}/toolchains/binutils-old/bin/:$PATH
+        PATH=${HOME}/toolchains/clang-old/bin/:$PATH
+    else
+        PATH=${HOME}/x-tools/aarch64-raphiel-elf/bin:$PATH
+    fi
+else
     PATH=/drone/src/armcc/bin:$PATH
-    PATH=/drone/src/arm64cc/bin:$PATH
+    if [ "${CC}" != Clang ]; then
+        PATH=/drone/src/arm64cc/bin:$PATH
+    fi
 fi
 
 prepare_clang() {
@@ -55,9 +61,8 @@ prepare_clang() {
 
     # Clang configurations
     if [ "${WORKER}" = raphielbox ]; then
-        CROSS_COMPILE="aarch64-raphiel-elf-"
+        CROSS_COMPILE="aarch64-linux-gnu-"
         CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
-        CLANG_LD="aarch64-raphiel-elf-ld.bfd"
         CLANG_LD="${CROSS_COMPILE}ld.bfd"
         CLANG_AS="${CROSS_COMPILE}as"
         CLANG_TRIPLE="aarch64-linux-gnu-"
@@ -123,7 +128,7 @@ build-clang() {
     [[ ! -f $SCRIPTDIR/clang-build/.git ]] && { warn "Please init the submodule before continuing."; return 1; }
     [[ -d $INSTALL_DIR ]] && { rm -rf ${INSTALL_DIR}-old; mv -f $INSTALL_DIR{,-old}; }
 
-    "$SCRIPTDIR"/clang-build/build-llvm.py -B "$CBL_DIR" -I $INSTALL_DIR -t $ARCH --lto thin -u
+    "$SCRIPTDIR"/clang-build/build-llvm.py -B "$CBL_DIR" -I $INSTALL_DIR -t $ARCH --lto thin
 }
 
 # ClangBuiltLinux's build-binutils.py wrapper
@@ -135,7 +140,7 @@ build-binutils() {
     [[ ! -f $SCRIPTDIR/clang-build/.git ]] && { warn "Please init the submodule before continuing."; return 1; }
     [[ -d $INSTALL_DIR ]] && { rm -rf ${INSTALL_DIR}-old; mv -f $INSTALL_DIR{,-old}; }
 
-    "$SCRIPTDIR"/clang-build/build-binutils.py -B "$CBL_DIR" -I $INSTALL_DIR -t ${ARCH[@]} -u
+    "$SCRIPTDIR"/clang-build/build-binutils.py -B "$CBL_DIR" -I $INSTALL_DIR -t ${ARCH[@]}
 }
 
 # Whenever build is interrupted by purpose, report it
