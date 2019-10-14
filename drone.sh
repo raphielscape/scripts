@@ -120,6 +120,7 @@ DIFF=$(( END - START ))
 IMAGE="/drone/src/out/arch/${ARCH}/boot/Image.gz-dtb"
 # Zipname
 ZIPNAME="NightlyHat-${DEVICE}-${CC}-$(date +%Y%m%d-%H%M).zip"
+TEMP_ZIP="${ZIP_DIR}/${TEMPZIPNAME}"
 FINAL_ZIP="${ZIP_DIR}/${ZIPNAME}"
 
 if [ "${WORKER}" = raphielbox ]; then
@@ -154,11 +155,13 @@ copy "${IMAGE}" "${ANYKERNEL}"
 cd - || return
 
 cd "${ANYKERNEL}" || return
-command zip -rT9 "${FINAL_ZIP}" -- *
+command zip -rT9 "${TEMP_ZIP}" -- *
 cd - || return
 
 # Finalize the zip down
-if [ -f "$FINAL_ZIP" ]; then
+if [ -f "$TEMP_ZIP" ]; then
+  curl -sLo zipsigner-3.0.jar https://raw.githubusercontent.com/baalajimaestro/AnyKernel2/master/zipsigner-3.0.jar
+  java -jar zipsigner-3.0.jar ${TEMP_ZIP} ${FINAL_ZIP}
 	header "Uploading ${ZIPNAME}" "${LIGHTGREEN}"
 	push
 	header "${ZIPNAME} can be found at ${FINAL_ZIP}" "${LIGHTGREEN}"
