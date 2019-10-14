@@ -6,9 +6,9 @@
 # Licensed under the Raphielscape Public License, Version 1.c (the "License");
 # you may not use this file except in compliance with the License.
 #
-# Semaphore Environment container
+# Docker Environment container
 
-semaphorebox() {
+docker() {
 	ANYKERNEL="$(pwd)/anykernel"
 	ZIP_DIR="$(pwd)/files"
 	KBUILD_BUILD_USER="raphielscape"

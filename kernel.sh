@@ -15,7 +15,7 @@
 if [ "${WORKER}" = raphielbox ]; then
 	kernelbox
 else
-	semaphorebox
+	docker
 fi
 
 if [ "${EXEC}" = mido ]; then

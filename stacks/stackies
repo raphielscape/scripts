@@ -9,7 +9,7 @@
 # Component stack container
 
 # Include stacks
-. "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"/semaphore
+. "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"/docker
 . "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"/devices
 . "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"/colours
 . "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"/telegram

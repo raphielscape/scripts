@@ -43,18 +43,27 @@ rm -rf "${ANYKERNEL_DONE}"
 # Setup GCC Cross-compiler
 if [ "${WORKER}" = raphielbox ]; then
     PATH=${HOME}/working/arm-linux-gnueabi-8.x/bin:$PATH
+
     if [ "${CC}" = Clang ]; then
-        PATH=${HOME}/toolchains/binutils-old/bin/:$PATH
-        PATH=${HOME}/toolchains/clang-old/bin/:$PATH
-    else
-        PATH=${HOME}/x-tools/aarch64-raphiel-elf/bin:$PATH
+        PATH=${HOME}/toolchains/binutils/bin/:$PATH
+        PATH=${HOME}/toolchains/clang/bin/:$PATH
+        LD_LIBRARY_PATH=${HOME}/toolchains/clang/lib/:$LD_LIBRARY_PATH
+        LD_LIBRARY_PATH=${HOME}/toolchains/binutils/lib/:$LD_LIBRARY_PATH
     fi
+
+    if [ "${CC}" = GCC ]; then
+        PATH=${HOME}/x-tools/aarch64-raphiel-elf/bin/:$PATH
+        LD_LIBRARY_PATH=${HOME}/x-tools/aarch64-raphiel-elf/lib/:$LD_LIBRARY_PATH
+    fi
+
 else
     PATH=/drone/src/armcc/bin:$PATH
     if [ "${CC}" != Clang ]; then
         PATH=/drone/src/arm64cc/bin:$PATH
     fi
 fi
+
+export PATH LD_LIBRARY_PATH
 
 prepare_clang() {
     header "We're building Clang bois" "${GREEN}"
@@ -85,16 +94,16 @@ prepare_clang() {
     header "Using toolchain: $(${CLANG_TCHAIN} --version | head -n 1 |
     perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
 
-    header "Using cross-compiler: $(${CROSS_COMPILE}gcc --version | head -1)"
+    header "Using cross-compiler: $(${CLANG_LD} --version | head -1)"
 }
 
 prepare_gcc() {
     # Set Cross Compile
     CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
-    CROSS_COMPILE="${SCRIPTDIR}/ccachewrapper aarch64-raphiel-elf-"
+    CROSS_COMPILE="aarch64-raphiel-elf-"
     COMPILER_USED="$("${CROSS_COMPILE}"gcc --version | head -1)"
 
-    GCC_LD=aarch64-raphiel-elf-ld.bfd
+    GCC_LD=aarch64-raphiel-elf-ld
 
     # Announce what compiler we use
     header "Using cross-compiler: $("${CROSS_COMPILE}"gcc --version | head -1)"
@@ -104,7 +113,7 @@ prepare_gcc() {
 }
 
 # Then export the stuff
-export PATH CU COMPILER_USED CLANG_TCHAIN TCHAIN_PATH CLANG_TRIPLE KBUILD_COMPILER_STRING CROSS_COMPILE CROSS_COMPILE_ARM32 MAKE
+export CU COMPILER_USED CLANG_TCHAIN TCHAIN_PATH CLANG_TRIPLE KBUILD_COMPILER_STRING CROSS_COMPILE CROSS_COMPILE_ARM32 MAKE
 
 build() {
     # Examine our compilation threads
