@@ -73,6 +73,7 @@ fi
 # Zipname
 ZIPNAME="NightlyHat-${DEVICE}-${CU}-$(date +%Y%m%d-%H%M).zip"
 TEMPZIPNAME="NightlyHat-${DEVICE}-${CU}-$(date +%Y%m%d-%H%M)-unsigned.zip"
+TEMP_ZIP="${ZIP_DIR}/${TEMPZIPNAME}"
 ZIPNAMEREL="Disrupt-${DEVICE}-${CU}-$(date +%Y%m%d-%H%M).zip"
 
 # Final Zip
@@ -150,13 +151,14 @@ decolorize
 header "Zipping AnyKernel..." "${BLUE}"
 cd "${ANYKERNEL}" || return
 colorize "${CYAN}"
-		command zip -rT9 "${FINAL_ZIP}" -- *
+		command zip -rT9 "${TEMP_ZIP}" -- *
 	cd - || return
 decolorize
 
 # Finalize the zip down
-if [ -f "$FINAL_ZIP" ]; then
+if [ -f "$TEMP_ZIP" ]; then
 	if [ "${ZIP_UPLOAD}" = true ]; then
+		java -jar zipsigner-3.0.jar "${TEMP_ZIP}" "${FINAL_ZIP}"
 		header "Uploading ${ZIPNAME}" "${LIGHTGREEN}"
 		push
 	fi
