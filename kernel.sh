@@ -153,6 +153,7 @@ cd "${ANYKERNEL}" || return
 colorize "${CYAN}"
 		command zip -rT9 "${TEMP_ZIP}" -- *
 		java -jar "$SCRIPTDIR"/zipsigner-3.0.jar "${TEMP_ZIP}" "${FINAL_ZIP}"
+		delett "${TEMP_ZIP}"
 	cd - || return
 decolorize
 
