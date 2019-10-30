@@ -45,10 +45,10 @@ if [ "${WORKER}" = raphielbox ]; then
     PATH=${HOME}/working/arm-linux-gnueabi-8.x/bin:$PATH
 
     if [ "${CC}" = Clang ]; then
-        PATH=${HOME}/toolchains/binutils/bin/:$PATH
-        PATH=${HOME}/toolchains/clang/bin/:$PATH
-        LD_LIBRARY_PATH=${HOME}/toolchains/clang/lib/:$LD_LIBRARY_PATH
-        LD_LIBRARY_PATH=${HOME}/toolchains/binutils/lib/:$LD_LIBRARY_PATH
+        PATH=${HOME}/toolchains/binutils-old/bin/:$PATH
+        PATH=${HOME}/toolchains/clang-old/bin/:$PATH
+        LD_LIBRARY_PATH=${HOME}/toolchains/clang-old/lib/:$LD_LIBRARY_PATH
+        LD_LIBRARY_PATH=${HOME}/toolchains/binutils-old/lib/:$LD_LIBRARY_PATH
     fi
 
     if [ "${CC}" = GCC ]; then
@@ -60,6 +60,7 @@ else
     PATH=/drone/src/armcc/bin:$PATH
     if [ "${CC}" != Clang ]; then
         PATH=/drone/src/arm64cc/bin:$PATH
+        LD_LIBRARY_PATH=/drone/src/arm64cc/lib/:$LD_LIBRARY_PATH
     fi
 fi
 
@@ -83,7 +84,7 @@ prepare_clang() {
         CLANG_TRIPLE="aarch64-linux-gnu-"
     fi
 
-    CLANG_TCHAIN="${SCRIPTDIR}/ccachewrapper clang"
+    CLANG_TCHAIN="clang"
 
     # Export compiler for announcer
     COMPILER_USED="$(${CLANG_TCHAIN} --version | head -n 1 |
@@ -137,7 +138,7 @@ build-clang() {
     [[ ! -f $SCRIPTDIR/clang-build/.git ]] && { warn "Please init the submodule before continuing."; return 1; }
     [[ -d $INSTALL_DIR ]] && { rm -rf ${INSTALL_DIR}-old; mv -f $INSTALL_DIR{,-old}; }
 
-    "$SCRIPTDIR"/clang-build/build-llvm.py -B "$CBL_DIR" -I $INSTALL_DIR -t $ARCH --lto thin
+    "$SCRIPTDIR"/clang-build/build-llvm.py -B "$CBL_DIR" -I $INSTALL_DIR -t $ARCH --lto thin -m native -u --use-good-revision --clang-vendor Android
 }
 
 # ClangBuiltLinux's build-binutils.py wrapper
@@ -149,7 +150,7 @@ build-binutils() {
     [[ ! -f $SCRIPTDIR/clang-build/.git ]] && { warn "Please init the submodule before continuing."; return 1; }
     [[ -d $INSTALL_DIR ]] && { rm -rf ${INSTALL_DIR}-old; mv -f $INSTALL_DIR{,-old}; }
 
-    "$SCRIPTDIR"/clang-build/build-binutils.py -B "$CBL_DIR" -I $INSTALL_DIR -t ${ARCH[@]}
+    "$SCRIPTDIR"/clang-build/build-binutils.py -B "$CBL_DIR" -I $INSTALL_DIR -t ${ARCH[@]} -u
 }
 
 # Whenever build is interrupted by purpose, report it

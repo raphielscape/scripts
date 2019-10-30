@@ -1,4 +1,4 @@
-#!/usr/bin/env dash
+#!/usr/bin/env sh
 # shellcheck source=/dev/null
 #
 # Copyright (C) 2019 Raphielscape LLC.

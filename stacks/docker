@@ -1,4 +1,4 @@
-#!/usr/bin/env dash
+#!/usr/bin/env sh
 # shellcheck source=/dev/null
 #
 # Copyright (C) 2019 Raphielscape LLC.
@@ -11,8 +11,8 @@
 docker() {
 	ANYKERNEL="$(pwd)/anykernel"
 	ZIP_DIR="$(pwd)/files"
-	KBUILD_BUILD_USER="raphielscape"
-    ZIP_UPLOAD=true
+	KBUILD_BUILD_USER="drone-ci"
+        ZIP_UPLOAD=true
 	TERM="xterm-256color"
 }
 
