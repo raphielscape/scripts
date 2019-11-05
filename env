@@ -58,12 +58,9 @@ if [ "${WORKER}" = raphielbox ]; then
 
 else
     PATH=/drone/src/armcc/bin:$PATH
-    if [ "${CC}" != Clang ]; then
-        PATH=/drone/src/armcc/bin:$PATH
-        PATH=/drone/src/arm64cc/bin:$PATH
-        LD_LIBRARY_PATH=/drone/src/armcc/lib/:$LD_LIBRARY_PATH
-        LD_LIBRARY_PATH=/drone/src/arm64cc/lib/:$LD_LIBRARY_PATH
-    fi
+    PATH=/drone/src/arm64cc/bin:$PATH
+    LD_LIBRARY_PATH=/drone/src/armcc/lib/:$LD_LIBRARY_PATH
+    LD_LIBRARY_PATH=/drone/src/arm64cc/lib/:$LD_LIBRARY_PATH
 fi
 
 export PATH LD_LIBRARY_PATH
