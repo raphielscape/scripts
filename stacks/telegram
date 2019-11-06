@@ -130,7 +130,7 @@ tg_senderror() {
 # Fin Prober
 fin() {
     header "Yay! My works took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds.~"
-    tg_sendinfo "Build for ${DEVICE} with ${COMPILER_USED} took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds"
+    # tg_sendinfo "Build for ${DEVICE} with ${COMPILER_USED} took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds"
     if [ "${ZIP_UPLOAD}" = true ]; then
         tg_channelcast "Build for ${DEVICE} with ${COMPILER_USED} took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds"
     fi
@@ -139,8 +139,8 @@ fin() {
 # Errored Prober
 finerr() {
     header "My works took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds but it's error..."
-    tg_sendinfo "Build for ${DEVICE} with ${COMPILER_USED} took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds" \
-                "but it is having error anyways xd"
+    # tg_sendinfo "Build for ${DEVICE} with ${COMPILER_USED} took $((DIFF / 60)) minute(s) and $((DIFF % 60)) seconds" \
+    #             "but it is having error anyways xd"
     tg_senderror
     exit 1
 }
