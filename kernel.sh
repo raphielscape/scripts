@@ -18,18 +18,6 @@ else
 	docker
 fi
 
-if [ "${EXEC}" = mido ]; then
-	mido
-fi
-
-if [ "${EXEC}" = beryllium ]; then
-	beryllium
-fi
-
-if [ "${EXEC}" = dipper ]; then
-    dipper
-fi
-
 if [ "${CC}" = Clang ]; then
 	prepare_clang
 else
