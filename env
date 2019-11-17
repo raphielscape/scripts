@@ -43,6 +43,8 @@ rm -rf "${ANYKERNEL_DONE}"
 # Setup GCC Cross-compiler
 if [ "${WORKER}" = raphielbox ]; then
     PATH=${HOME}/working/arm-linux-gnueabi-8.x/bin:$PATH
+    PATH=${HOME}/x-tools/aarch64-raphiel-elf/bin:$PATH
+    LD_LIBRARY_PATH=${HOME}/x-tools/aarch64-raphiel-elf/lib:$LD_LIBRARY_PATH
 
     if [ "${CC}" = Clang ]; then
         PATH=${HOME}/toolchains/binutils-old/bin/:$PATH
@@ -50,12 +52,6 @@ if [ "${WORKER}" = raphielbox ]; then
         LD_LIBRARY_PATH=${HOME}/toolchains/clang-old/lib/:$LD_LIBRARY_PATH
         LD_LIBRARY_PATH=${HOME}/toolchains/binutils-old/lib/:$LD_LIBRARY_PATH
     fi
-
-    if [ "${CC}" = GCC ]; then
-        PATH=${HOME}/x-tools/aarch64-raphiel-elf/bin/:$PATH
-        LD_LIBRARY_PATH=${HOME}/x-tools/aarch64-raphiel-elf/lib/:$LD_LIBRARY_PATH
-    fi
-
 else
     PATH=/drone/src/armcc/bin:$PATH
     PATH=/drone/src/arm64cc/bin:$PATH
@@ -70,13 +66,13 @@ prepare_clang() {
 
     # Clang configurations
     if [ "${WORKER}" = raphielbox ]; then
-        CROSS_COMPILE="aarch64-linux-gnu-"
+        CROSS_COMPILE="aarch64-raphiel-elf-"
         CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
         CLANG_LD="${CROSS_COMPILE}ld.bfd"
         CLANG_AS="${CROSS_COMPILE}as"
         CLANG_TRIPLE="aarch64-linux-gnu-"
     else
-        CROSS_COMPILE="aarch64-linux-gnu-"
+        CROSS_COMPILE="aarch64-raphiel-elf-"
         CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
         CLANG_LD="${CROSS_COMPILE}ld.bfd"
         CLANG_AS="${CROSS_COMPILE}as"
