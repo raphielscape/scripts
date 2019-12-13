@@ -87,6 +87,7 @@ kickstart_pub() {
     tg_build_sendsticker
 
     tg_channelcast "Compiler <code>${COMPILER_USED}</code>" \
+    "Linker <b>${LINKER_USED}</b>" \
     "Device <b>${DEVICE}</b>" \
     "Branch <code>${PARSE_BRANCH}</code>" \
     "Commit Point <code>${COMMIT_POINT}</code>" \
@@ -100,6 +101,7 @@ kickstart_release() {
     tg_sendinfo "Release Beeld Rolled! Clocked at $(date +%Y%m%d-%H%M)"
 
     tg_channelcast "Compiler <code>${COMPILER_USED}</code>" \
+    "Linker <b>${LINKER_USED}</b>" \
     "Device <b>${DEVICE}</b>" \
     "Branch <code>${PARSE_BRANCH}</code>" \
     "Commit Point <code>${COMMIT_POINT}</code>" \

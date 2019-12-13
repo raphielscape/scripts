@@ -47,10 +47,10 @@ if [ "${WORKER}" = raphielbox ]; then
     LD_LIBRARY_PATH=${HOME}/x-tools/aarch64-raphiel-elf/lib:$LD_LIBRARY_PATH
 
     if [ "${CC}" = Clang ]; then
-        PATH=${HOME}/toolchains/binutils-old/bin/:$PATH
-        PATH=${HOME}/toolchains/clang-old/bin/:$PATH
-        LD_LIBRARY_PATH=${HOME}/toolchains/clang-old/lib/:$LD_LIBRARY_PATH
-        LD_LIBRARY_PATH=${HOME}/toolchains/binutils-old/lib/:$LD_LIBRARY_PATH
+        PATH=${HOME}/toolchains/binutils/bin/:$PATH
+        PATH=${HOME}/toolchains/clang/bin/:$PATH
+        LD_LIBRARY_PATH=${HOME}/toolchains/clang/lib/:$LD_LIBRARY_PATH
+        LD_LIBRARY_PATH=${HOME}/toolchains/binutils/lib/:$LD_LIBRARY_PATH
     fi
 else
     PATH=/drone/src/armcc/bin:$PATH
@@ -66,15 +66,15 @@ prepare_clang() {
 
     # Clang configurations
     if [ "${WORKER}" = raphielbox ]; then
-        CROSS_COMPILE="aarch64-raphiel-elf-"
+        CROSS_COMPILE="aarch64-linux-gnu-"
         CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
-        CLANG_LD="${CROSS_COMPILE}ld.bfd"
+        CLANG_LD="ld.lld"
         CLANG_AS="${CROSS_COMPILE}as"
         CLANG_TRIPLE="aarch64-linux-gnu-"
     else
         CROSS_COMPILE="aarch64-linux-gnu-"
         CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
-        CLANG_LD="${CROSS_COMPILE}ld.bfd"
+        CLANG_LD="ld.lld"
         CLANG_AS="${CROSS_COMPILE}as"
         CLANG_TRIPLE="aarch64-linux-gnu-"
     fi
@@ -84,13 +84,14 @@ prepare_clang() {
     # Export compiler for announcer
     COMPILER_USED="$(${CLANG_TCHAIN} --version | head -n 1 |
     perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
+    LINKER_USED="$(${CLANG_LD} --version | head -1)"
     CU=clang
 
     # Scream out the Clang compiler used
     header "Using toolchain: $(${CLANG_TCHAIN} --version | head -n 1 |
     perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
 
-    header "Using cross-compiler: $(${CLANG_LD} --version | head -1)"
+    header "Using Linker: $(${CLANG_LD} --version | head -1)"
 }
 
 prepare_gcc() {
@@ -100,6 +101,7 @@ prepare_gcc() {
     COMPILER_USED="$("${CROSS_COMPILE}"gcc --version | head -1)"
 
     GCC_LD=aarch64-raphiel-elf-ld
+    LINKER_USED="$(${GCC_LD} --version | head -1)"
 
     # Announce what compiler we use
     header "Using cross-compiler: $("${CROSS_COMPILE}"gcc --version | head -1)"
@@ -109,7 +111,7 @@ prepare_gcc() {
 }
 
 # Then export the stuff
-export CU COMPILER_USED CLANG_TCHAIN TCHAIN_PATH CLANG_TRIPLE KBUILD_COMPILER_STRING CROSS_COMPILE CROSS_COMPILE_ARM32 MAKE
+export CU COMPILER_USED CLANG_TCHAIN TCHAIN_PATH CLANG_TRIPLE KBUILD_COMPILER_STRING CROSS_COMPILE CROSS_COMPILE_ARM32 MAKE LINKER_USED
 
 build() {
     # Examine our compilation threads
@@ -131,9 +133,9 @@ build-clang() {
     INSTALL_DIR=${HOME}/toolchains/clang
 
     [[ ! -f $SCRIPTDIR/clang-build/.git ]] && { warn "Please init the submodule before continuing."; return 1; }
-    [[ -d $INSTALL_DIR ]] && { rm -rf ${INSTALL_DIR}-old; mv -f $INSTALL_DIR{,-old}; }
+    [[ -d "$INSTALL_DIR" ]] && { rm -rf "${INSTALL_DIR}"-old; mv -f "$INSTALL_DIR"{,-old}; }
 
-    "$SCRIPTDIR"/clang-build/build-llvm.py -B "$CBL_DIR" -I $INSTALL_DIR -t $ARCH --lto thin -m native -u --use-good-revision --clang-vendor Android
+    "$SCRIPTDIR"/clang-build/build-llvm.py -B "$CBL_DIR" -I "$INSTALL_DIR" -t $ARCH --lto thin -m native -u --use-good-revision --clang-vendor Android
 }
 
 # ClangBuiltLinux's build-binutils.py wrapper
@@ -143,9 +145,9 @@ build-binutils() {
     INSTALL_DIR=${HOME}/toolchains/binutils
 
     [[ ! -f $SCRIPTDIR/clang-build/.git ]] && { warn "Please init the submodule before continuing."; return 1; }
-    [[ -d $INSTALL_DIR ]] && { rm -rf ${INSTALL_DIR}-old; mv -f $INSTALL_DIR{,-old}; }
+    [[ -d "$INSTALL_DIR" ]] && { rm -rf "${INSTALL_DIR}"-old; mv -f "$INSTALL_DIR"{,-old}; }
 
-    "$SCRIPTDIR"/clang-build/build-binutils.py -B "$CBL_DIR" -I $INSTALL_DIR -t ${ARCH[@]} -u
+    "$SCRIPTDIR"/clang-build/build-binutils.py -B "$CBL_DIR" -I "$INSTALL_DIR" -t "${ARCH[@]}" -u
 }
 
 # Whenever build is interrupted by purpose, report it
