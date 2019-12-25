@@ -117,7 +117,7 @@ build() {
     # Examine our compilation threads
     # 2x of our available CPUs
     CPU="$(grep -c '^processor' /proc/cpuinfo)"
-    JOBS="$(( CPU * 2 ))"
+    JOBS="$(( CPU + 4 ))"
 
     if [ $CU = clang ]; then
         make -j${JOBS} O="${OUTDIR}" CC="${CLANG_TCHAIN}" LD="${CLANG_LD}" AS="${CLANG_AS}" CLANG_TRIPLE="${CLANG_TRIPLE}" "$@"
@@ -135,7 +135,7 @@ build-clang() {
     [[ ! -f $SCRIPTDIR/clang-build/.git ]] && { warn "Please init the submodule before continuing."; return 1; }
     [[ -d "$INSTALL_DIR" ]] && { rm -rf "${INSTALL_DIR}"-old; mv -f "$INSTALL_DIR"{,-old}; }
 
-    "$SCRIPTDIR"/clang-build/build-llvm.py -B "$CBL_DIR" -I "$INSTALL_DIR" -t $ARCH --lto thin -m native -u --use-good-revision --clang-vendor Android
+    "$SCRIPTDIR"/clang-build/build-llvm.py -B "$CBL_DIR" -I "$INSTALL_DIR" -t $ARCH --lto thin -m native -u --clang-vendor Android
 }
 
 # ClangBuiltLinux's build-binutils.py wrapper

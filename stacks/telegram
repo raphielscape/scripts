@@ -83,7 +83,7 @@ tg_debugcast() {
 }
 
 kickstart_pub() {
-    tg_sendinfo "Compilation Rolled! Clocked at $(date +%Y%m%d-%H%M)"
+    # tg_sendinfo "Compilation Rolled! Clocked at $(date +%Y%m%d-%H%M)"
     tg_build_sendsticker
 
     tg_channelcast "Compiler <code>${COMPILER_USED}</code>" \
@@ -98,7 +98,7 @@ kickstart_pub() {
 
 kickstart_release() {
     tg_buildmain_sendgif
-    tg_sendinfo "Release Beeld Rolled! Clocked at $(date +%Y%m%d-%H%M)"
+    # tg_sendinfo "Release Beeld Rolled! Clocked at $(date +%Y%m%d-%H%M)"
 
     tg_channelcast "Compiler <code>${COMPILER_USED}</code>" \
     "Linker <b>${LINKER_USED}</b>" \
