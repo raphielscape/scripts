@@ -11,9 +11,8 @@
 TELEGRAM="${SCRIPTDIR}"/telegram/telegram
 
 # Caster configurations
-MAINGROUP_ID="-1001140871591"
-BUILDSCAPERER_ID="-1001153251064"
-DEBUG_ID="-1001279397127"
+MAINGROUP_ID="-1001437638690"
+BUILDSCAPERER_ID="@disrupt_ci"
 
 # Graphics Interchange Format Assets
 Start_Asset="CAADAgAD0gADDPlNDE3eOj94HCJbFgQ"
@@ -65,16 +64,6 @@ tg_sendinfo() {
 # sendcast to channel
 tg_channelcast() {
     "${TELEGRAM}" -c ${BUILDSCAPERER_ID} -H \
-    "$(
-		for POST in "${@}"; do
-			echo "${POST}"
-		done
-    )"
-}
-
-# Debugcasting
-tg_debugcast() {
-    "${TELEGRAM}" -c ${DEBUG_ID} -H \
     "$(
 		for POST in "${@}"; do
 			echo "${POST}"

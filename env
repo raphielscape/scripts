@@ -68,18 +68,22 @@ prepare_clang() {
     if [ "${WORKER}" = raphielbox ]; then
         CROSS_COMPILE="aarch64-linux-gnu-"
         CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
-        CLANG_LD="ld.lld"
-        CLANG_AS="${CROSS_COMPILE}as"
-        CLANG_TRIPLE="aarch64-linux-gnu-"
     else
         CROSS_COMPILE="aarch64-linux-gnu-"
         CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
-        CLANG_LD="ld.lld"
-        CLANG_AS="${CROSS_COMPILE}as"
-        CLANG_TRIPLE="aarch64-linux-gnu-"
     fi
 
     CLANG_TCHAIN="clang"
+    CLANG_TRIPLE="aarch64-linux-gnu-"
+    CLANG_LD="ld.lld"
+    CLANG_AS="${CROSS_COMPILE}as"
+
+    AR="llvm-ar"
+    NM="llvm-nm"
+    STRIP="llvm-strip"
+    OBJCOPY="llvm-objcopy"
+    OBJDUMP="llvm-objdump"
+    OBJSIZE="llvm-objsize"
 
     # Export compiler for announcer
     COMPILER_USED="$(${CLANG_TCHAIN} --version | head -n 1 |
@@ -120,7 +124,9 @@ build() {
     JOBS="$(( CPU + 4 ))"
 
     if [ $CU = clang ]; then
-        make -j${JOBS} O="${OUTDIR}" CC="${CLANG_TCHAIN}" LD="${CLANG_LD}" AS="${CLANG_AS}" CLANG_TRIPLE="${CLANG_TRIPLE}" "$@"
+        make -j${JOBS} O="${OUTDIR}" CC="${CLANG_TCHAIN}" LD="${CLANG_LD}" AS="${CLANG_AS}" \
+        AR="${AR}" AR="${AR}" NM="${NM}" STRIP="${STRIP}" OBJCOPY="${OBJCOPY}" \
+        OBJDUMP="${OBJDUMP}" OBJSIZE="${OBJSIZE}" CLANG_TRIPLE="${CLANG_TRIPLE}" "$@"
     else
         make -j${JOBS} O="${OUTDIR}" LD="${GCC_LD}" "$@"
     fi
