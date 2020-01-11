@@ -48,7 +48,7 @@ tg_intgifmain() {
 # Push to Channel
 push() {
     "${TELEGRAM}" -f "${ZIP_DIR}/$ZIPNAME" \
-    -c ${BUILDSCAPERER_ID}
+    -c ${BUILDSCAPERER_ID} "SHA1: ${SHA1_SUM}"
 }
 
 # sendcast to group
@@ -76,8 +76,8 @@ kickstart_pub() {
     tg_build_sendsticker
 
     tg_channelcast "Compiler <code>${COMPILER_USED}</code>" \
-    "Linker <b>${LINKER_USED}</b>" \
     "Device <b>${DEVICE}</b>" \
+    "Linker <code>${LINKER_USED}</code>" \
     "Branch <code>${PARSE_BRANCH}</code>" \
     "Commit Point <code>${COMMIT_POINT}</code>" \
     "Under <code>$(hostname)</code>" \
@@ -90,8 +90,8 @@ kickstart_release() {
     # tg_sendinfo "Release Beeld Rolled! Clocked at $(date +%Y%m%d-%H%M)"
 
     tg_channelcast "Compiler <code>${COMPILER_USED}</code>" \
-    "Linker <b>${LINKER_USED}</b>" \
     "Device <b>${DEVICE}</b>" \
+    "Linker <code>${LINKER_USED}</code>" \
     "Branch <code>${PARSE_BRANCH}</code>" \
     "Commit Point <code>${COMMIT_POINT}</code>" \
     "Under <code>$(hostname)</code>" \

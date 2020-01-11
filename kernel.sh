@@ -61,13 +61,12 @@ fi
 # Zipname
 TEMPZIPNAME="NightlyHat-${DEVICE}-${CU}-$(date +%Y%m%d-%H%M)-unsigned.zip"
 TEMP_ZIP="${ZIP_DIR}/${TEMPZIPNAME}"
-ZIPNAME="NightlyHat-${DEVICE}-${CU}-$(date +%Y%m%d-%H%M).zip"
-ZIPNAMEREL="Disrupt-${DEVICE}-${CU}-$(date +%Y%m%d-%H%M).zip"
 
-# Final Zip
 if [ "${RELEASE}" = true ]; then
+	ZIPNAMEREL="Disrupt-${DEVICE}-${CU}-$(date +%Y%m%d-%H%M).zip"
 	export FINAL_ZIP="${ZIP_DIR}/${ZIPNAMEREL}"
 else
+	ZIPNAME="NightlyHat-${DEVICE}-${CU}-$(date +%Y%m%d-%H%M).zip"
 	export FINAL_ZIP="${ZIP_DIR}/${ZIPNAME}"
 fi
 
@@ -141,6 +140,7 @@ cd "${ANYKERNEL}" || return
 colorize "${CYAN}"
 		command zip -rT9 "${TEMP_ZIP}" -- *
 		java -jar "$SCRIPTDIR"/zipsigner-3.0.jar "${TEMP_ZIP}" "${FINAL_ZIP}"
+		export SHA1_SUM="$(sha1sum "${FINAL_ZIP}" | awk '{print $1}')"
 		delett "${TEMP_ZIP}"
 	cd - || return
 decolorize
