@@ -75,7 +75,7 @@ prepare_clang() {
 
     CLANG_TCHAIN="clang"
     CLANG_TRIPLE="aarch64-linux-gnu-"
-    CLANG_LD="ld.lld"
+    CLANG_LD="${CROSS_COMPILE}ld.bfd"
     CLANG_AS="${CROSS_COMPILE}as"
 
     AR="llvm-ar"
