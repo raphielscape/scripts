@@ -69,7 +69,7 @@ prepare_clang() {
         CROSS_COMPILE="aarch64-linux-gnu-"
         CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
     else
-        CROSS_COMPILE="aarch64-raphiel-elf-"
+        CROSS_COMPILE="aarch64-linux-gnu-"
         CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
     fi
 
