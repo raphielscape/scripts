@@ -73,7 +73,11 @@ prepare_clang() {
         CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
     fi
 
-    CLANG_TCHAIN="clang"
+    if [ "${WORKER}" = raphielbox ]; then
+        CLANG_TCHAIN="clang"
+    else
+        CLANG_TCHAIN="clang-11"
+    fi
     CLANG_TRIPLE="aarch64-linux-gnu-"
     CLANG_LD="${CROSS_COMPILE}ld.bfd"
     CLANG_AS="llvm-as"
