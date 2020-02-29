@@ -75,19 +75,27 @@ prepare_clang() {
 
     if [ "${WORKER}" = raphielbox ]; then
         CLANG_TCHAIN="clang"
+        CLANG_AS="llvm-as"
+
+        AR="llvm-ar"
+        NM="llvm-nm"
+        STRIP="llvm-strip"
+        OBJCOPY="llvm-objcopy"
+        OBJDUMP="llvm-objdump"
+        OBJSIZE="llvm-objsize"
     else
         CLANG_TCHAIN="clang-11"
+        CLANG_AS="llvm-as-11"
+
+        AR="llvm-ar-11"
+        NM="llvm-nm-11"
+        STRIP="llvm-strip-11"
+        OBJCOPY="llvm-objcopy-11"
+        OBJDUMP="llvm-objdump-11"
+        OBJSIZE="llvm-objsize-11"
     fi
     CLANG_TRIPLE="aarch64-linux-gnu-"
     CLANG_LD="${CROSS_COMPILE}ld.bfd"
-    CLANG_AS="llvm-as"
-
-    AR="llvm-ar"
-    NM="llvm-nm"
-    STRIP="llvm-strip"
-    OBJCOPY="llvm-objcopy"
-    OBJDUMP="llvm-objdump"
-    OBJSIZE="llvm-objsize"
 
     # Export compiler for announcer
     COMPILER_USED="$(${CLANG_TCHAIN} --version | head -n 1 |
