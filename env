@@ -100,6 +100,7 @@ prepare_clang() {
     perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
 
     header "Using Linker: $(${CLANG_LD} --version | head -1)"
+    header "Using Assembler: $(${CLANG_AS} --version | head -1)"
 }
 
 prepare_gcc() {
