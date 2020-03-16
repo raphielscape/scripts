@@ -22,7 +22,6 @@ case ${WORKER} in
         ZIP_DIR="$(pwd)/files"
         KBUILD_BUILD_USER="drone-ci"
         ZIP_UPLOAD=true
-        TERM="xterm-256color"
 esac
 
 export KBUILD_BUILD_USER
