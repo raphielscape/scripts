@@ -83,7 +83,7 @@ prepare_compiler() {
                 docker)
                     CC="clang-11"
                     AS="llvm-as-11"
-                    LD="ld.lld-11"
+                    LD="${CROSS_COMPILE}ld.bfd"
 
                     AR="llvm-ar-11"
                     NM="llvm-nm-11"
