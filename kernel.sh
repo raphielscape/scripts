@@ -68,10 +68,10 @@ TEMPZIPNAME="NightlyHat-${DEVICE}-${CU}-$(date +%Y%m%d-%H%M)-unsigned.zip"
 TEMP_ZIP="${ZIP_DIR}/${TEMPZIPNAME}"
 
 if [ "${RELEASE}" = true ]; then
-	ZIPNAMEREL="Disrupt-${DEVICE}-${CU}-$(date +%Y%m%d-%H%M).zip"
+	ZIPNAMEREL="Disrupt-${DEVICE}-$(date +%Y%m%d-%H%M).zip"
 	export FINAL_ZIP="${ZIP_DIR}/${ZIPNAMEREL}"
 else
-	ZIPNAME="NightlyHat-${DEVICE}-${CU}-$(date +%Y%m%d-%H%M).zip"
+	ZIPNAME="NightlyHat-${DEVICE}-$(date +%Y%m%d-%H%M).zip"
 	export FINAL_ZIP="${ZIP_DIR}/${ZIPNAME}"
 fi
 

@@ -71,7 +71,7 @@ prepare_compiler() {
                 raphielbox)
                     CC="clang"
                     AS="llvm-as"
-                    LD="ld.lld"
+                    LD="${CROSS_COMPILE}ld.bfd"
 
                     AR="llvm-ar"
                     NM="llvm-nm"
@@ -83,7 +83,7 @@ prepare_compiler() {
                 docker)
                     CC="clang-11"
                     AS="llvm-as-11"
-                    LD="${CROSS_COMPILE}ld.bfd"
+                    LD="ld.lld-11"
 
                     AR="llvm-ar-11"
                     NM="llvm-nm-11"
@@ -100,7 +100,7 @@ prepare_compiler() {
     esac
 }
 
-export CROSS_COMPILE
+export CROSS_COMPILE CROSS_COMPILE_ARM32
 
 compilerannounce() {
     case $COMPILER in
@@ -117,8 +117,6 @@ compilerannounce() {
     header "Using Toolchain: ${COMPILER_USED}"
     header "Using Linker: ${LINKER_USED}"
 }
-
-export CROSS_COMPILE_ARM32
 
 build() {
     # Examine our compilation threads
