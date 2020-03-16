@@ -30,105 +30,95 @@ CBL_DIR=$HOME/scripts/clang-build
 
 export TELEGRAM_TOKEN PARSE_BRANCH PARSE_ORIGIN COMMIT_POINT SRCDIR OUTDIR CBL_DIR
 
-kernelbox() {
-    ANYKERNEL="${HOME}/working/AnyKernel2"
-    ZIP_DIR="${HOME}/working/weeb_zip"
-}
-
-export ANYKERNEL ZIP_DIR KBUILD_BUILD_USER TOOLCHAIN
-
 # Delett Old AnyKernel in Aroma dir if exists
 rm -rf "${ANYKERNEL_DONE}"
 
-# Setup GCC Cross-compiler
-if [ "${WORKER}" = raphielbox ]; then
-    PATH=${HOME}/working/arm-linux-gnueabi-8.x/bin:$PATH
-    PATH=${HOME}/x-tools/aarch64-raphiel-elf/bin:$PATH
-    LD_LIBRARY_PATH=${HOME}/x-tools/aarch64-raphiel-elf/lib:$LD_LIBRARY_PATH
-
-    if [ "${CC}" = Clang ]; then
-        PATH=${HOME}/toolchains/binutils/bin/:$PATH
-        PATH=${HOME}/toolchains/clang/bin/:$PATH
-        LD_LIBRARY_PATH=${HOME}/toolchains/clang/lib/:$LD_LIBRARY_PATH
-        LD_LIBRARY_PATH=${HOME}/toolchains/binutils/lib/:$LD_LIBRARY_PATH
-    fi
-else
-    PATH=/drone/src/armcc/bin:$PATH
-    PATH=/drone/src/arm64cc/bin:$PATH
-    LD_LIBRARY_PATH=/drone/src/armcc/lib/:$LD_LIBRARY_PATH
-    LD_LIBRARY_PATH=/drone/src/arm64cc/lib/:$LD_LIBRARY_PATH
-fi
+case $WORKER in
+    raphielbox)
+        case $COMPILER in
+            Clang)
+                PATH=${HOME}/toolchains/binutils/bin/:$PATH
+                PATH=${HOME}/toolchains/clang/bin/:$PATH
+                PATH=${HOME}/working/arm-linux-gnueabi-8.x/bin:$PATH
+                LD_LIBRARY_PATH=${HOME}/working/arm-linux-gnueabi-8.x/lib/:$LD_LIBRARY_PATH
+                LD_LIBRARY_PATH=${HOME}/toolchains/clang/lib/:$LD_LIBRARY_PATH
+                LD_LIBRARY_PATH=${HOME}/toolchains/binutils/lib/:$LD_LIBRARY_PATH
+            ;;
+            GCC)
+                PATH=${HOME}/working/arm-linux-gnueabi-8.x/bin:$PATH
+                PATH=${HOME}/x-tools/aarch64-raphiel-elf/bin:$PATH
+                LD_LIBRARY_PATH=${HOME}/working/arm-linux-gnueabi-8.x/lib/:$LD_LIBRARY_PATH
+                LD_LIBRARY_PATH=${HOME}/x-tools/aarch64-raphiel-elf/lib:$LD_LIBRARY_PATH
+        esac
+    ;;
+    docker)
+        PATH=/drone/src/armcc/bin:$PATH
+        PATH=/drone/src/arm64cc/bin:$PATH
+        LD_LIBRARY_PATH=/drone/src/armcc/lib/:$LD_LIBRARY_PATH
+        LD_LIBRARY_PATH=/drone/src/arm64cc/lib/:$LD_LIBRARY_PATH
+esac
 
 export PATH LD_LIBRARY_PATH
 
-prepare_clang() {
-    header "We're building Clang bois" "${GREEN}"
-
+prepare_compiler() {
     # Clang configurations
-    if [ "${WORKER}" = raphielbox ]; then
-        CROSS_COMPILE="aarch64-linux-gnu-"
-        CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
-    else
-        CROSS_COMPILE="aarch64-linux-gnu-"
-        CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
-    fi
+    case $COMPILER in
+        Clang)
+            CROSS_COMPILE="aarch64-linux-gnu-"
+            CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
+            CLANG_TRIPLE="aarch64-linux-gnu-"
+            case $WORKER in
+                raphielbox)
+                    CC="clang"
+                    AS="llvm-as"
+                    LD="ld.lld"
 
-    if [ "${WORKER}" = raphielbox ]; then
-        CLANG_TCHAIN="clang"
-        CLANG_AS="llvm-as"
+                    AR="llvm-ar"
+                    NM="llvm-nm"
+                    STRIP="llvm-strip"
+                    OBJCOPY="llvm-objcopy"
+                    OBJDUMP="llvm-objdump"
+                    OBJSIZE="llvm-objsize"
+                ;;
+                docker)
+                    CC="clang-11"
+                    AS="llvm-as-11"
+                    LD="ld.lld-11"
 
-        AR="llvm-ar"
-        NM="llvm-nm"
-        STRIP="llvm-strip"
-        OBJCOPY="llvm-objcopy"
-        OBJDUMP="llvm-objdump"
-        OBJSIZE="llvm-objsize"
-    else
-        CLANG_TCHAIN="clang-11"
-        CLANG_AS="llvm-as-11"
+                    AR="llvm-ar-11"
+                    NM="llvm-nm-11"
+                    STRIP="llvm-strip-11"
+                    OBJCOPY="llvm-objcopy-11"
+                    OBJDUMP="llvm-objdump-11"
+                    OBJSIZE="llvm-objsize-11"
+            esac
+        ;;
+        GCC)
+            CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
+            CROSS_COMPILE="aarch64-raphiel-elf-"
+            LD=aarch64-raphiel-elf-ld
+    esac
+}
 
-        AR="llvm-ar-11"
-        NM="llvm-nm-11"
-        STRIP="llvm-strip-11"
-        OBJCOPY="llvm-objcopy-11"
-        OBJDUMP="llvm-objdump-11"
-        OBJSIZE="llvm-objsize-11"
-    fi
-    CLANG_TRIPLE="aarch64-linux-gnu-"
-    CLANG_LD="${CROSS_COMPILE}ld.bfd"
+export CROSS_COMPILE
 
-    # Export compiler for announcer
-    COMPILER_USED="$(${CLANG_TCHAIN} --version | head -n 1 |
-    perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
-    LINKER_USED="$(${CLANG_LD} --version | head -1)"
-    CU=clang
+compilerannounce() {
+    case $COMPILER in
+        Clang)
+            COMPILER_USED="$(${CC} --version | head -n 1 |
+            perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
+        ;;
+        GCC)
+            COMPILER_USED="$("${CROSS_COMPILE}"gcc --version | head -1)"
+    esac
+    LINKER_USED="$(${LD} --version | head -1)"
 
     # Scream out the Clang compiler used
-    header "Using toolchain: $(${CLANG_TCHAIN} --version | head -n 1 |
-    perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
-
-    header "Using Linker: $(${CLANG_LD} --version | head -1)"
-    header "Using Assembler: $(${CLANG_AS} --version | head -1)"
+    header "Using Toolchain: ${COMPILER_USED}"
+    header "Using Linker: ${LINKER_USED}"
 }
 
-prepare_gcc() {
-    # Set Cross Compile
-    CROSS_COMPILE_ARM32="arm-linux-gnueabi-"
-    CROSS_COMPILE="aarch64-raphiel-elf-"
-    COMPILER_USED="$("${CROSS_COMPILE}"gcc --version | head -1)"
-
-    GCC_LD=aarch64-raphiel-elf-ld
-    LINKER_USED="$(${GCC_LD} --version | head -1)"
-
-    # Announce what compiler we use
-    header "Using cross-compiler: $("${CROSS_COMPILE}"gcc --version | head -1)"
-
-    # Announce that our current compiler is GCC
-    CU=gcc
-}
-
-# Then export the stuff
-export CU COMPILER_USED CLANG_TCHAIN TCHAIN_PATH CLANG_TRIPLE KBUILD_COMPILER_STRING CROSS_COMPILE CROSS_COMPILE_ARM32 MAKE LINKER_USED
+export CROSS_COMPILE_ARM32
 
 build() {
     # Examine our compilation threads
@@ -136,13 +126,22 @@ build() {
     CPU="$(grep -c '^processor' /proc/cpuinfo)"
     JOBS="$(( CPU + 4 ))"
 
-    if [ $CU = clang ]; then
-        make -j${JOBS} O="${OUTDIR}" CC="${CLANG_TCHAIN}" LD="${CLANG_LD}" AS="${CLANG_AS}" \
-        AR="${AR}" AR="${AR}" NM="${NM}" STRIP="${STRIP}" OBJCOPY="${OBJCOPY}" \
-        OBJDUMP="${OBJDUMP}" OBJSIZE="${OBJSIZE}" CLANG_TRIPLE="${CLANG_TRIPLE}" "$@"
-    else
-        make -j${JOBS} O="${OUTDIR}" LD="${GCC_LD}" "$@"
-    fi
+    case $COMPILER in
+        Clang)
+            make -j${JOBS} O="${OUTDIR}" CC="${CC}" LD="${LD}" AS="${AS}" \
+            AR="${AR}" AR="${AR}" NM="${NM}" STRIP="${STRIP}" OBJCOPY="${OBJCOPY}" \
+            OBJDUMP="${OBJDUMP}" OBJSIZE="${OBJSIZE}" CLANG_TRIPLE="${CLANG_TRIPLE}" "$@"
+        ;;
+        GCC)
+            make -j${JOBS} O="${OUTDIR}" LD="${LD}" "$@"
+        ;;
+        *)
+            header "Invalid compiler"
+    esac
+}
+
+clone() {
+	command git clone --depth 1 "${@}"
 }
 
 # ClangBuiltLinux's build-llvm.py wrapper

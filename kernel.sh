@@ -12,17 +12,23 @@
 . "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"/env
 
 # Init
-if [ "${WORKER}" = raphielbox ]; then
-	kernelbox
-else
-	docker
-fi
+case ${WORKER} in
+    raphielbox)
+        ANYKERNEL="${HOME}/working/AnyKernel2"
+        ZIP_DIR="${HOME}/working/weeb_zip"
+    ;;
+    docker)
+        ANYKERNEL="$(pwd)/anykernel"
+        ZIP_DIR="$(pwd)/files"
+        KBUILD_BUILD_USER="drone-ci"
+        ZIP_UPLOAD=true
+        TERM="xterm-256color"
+esac
 
-if [ "${CC}" = Clang ]; then
-	prepare_clang
-else
-	prepare_gcc
-fi
+export KBUILD_BUILD_USER
+
+prepare_compiler
+compilerannounce
 
 # Export the kernel architecture
 ARCH="arm64"
@@ -98,33 +104,36 @@ DIFF=$((END - START))
 # AnyKernel cleanups
 header "Bringing-up AnyKernel~"
 colorize "${YELLOW}"
-if [ "${WORKER}" = raphielbox ]; then
-	if [ "${SDM845}" = true ]; then
-		cd "${WORKDIR}/AnyKernel2-git" || return
-		header "It's sdm845, checking out..."
-		git checkout sdm845 >> /dev/null
-	else
-		cd "${WORKDIR}/AnyKernel2-git" || return
-		header "It's common, checking out..."
-		git checkout master >> /dev/null
-	fi
 
-	delett "${ANYKERNEL}"
+case $WORKER in
+	raphielbox)
+		if [ "${SDM845}" = true ]; then
+			cd "${WORKDIR}/AnyKernel2-git" || return
+			header "It's sdm845, checking out..."
+			git checkout sdm845 >> /dev/null
+		else
+			cd "${WORKDIR}/AnyKernel2-git" || return
+			header "It's common, checking out..."
+			git checkout master >> /dev/null
+		fi
+		delett "${ANYKERNEL}"
+
 		copy "${WORKDIR}/AnyKernel2-git" "${ANYKERNEL}"
 			cd "${ANYKERNEL}" || return
 			delett -v zImage
 			delett ".git"
-		cd "${ANYKERNEL}/patch" || return
-			delett -- *
-	cd - || return
-else
-	cd "${ANYKERNEL}" || return
-		delett zImage
-		delett ".git"
-		cd "${ANYKERNEL}"/patch || return
-			delett -- *
-	cd - || return
-fi
+			cd "${ANYKERNEL}/patch" || return
+				delett -- *
+		cd - || return
+	;;
+	*)
+		cd "${ANYKERNEL}" || return
+			delett zImage
+			delett ".git"
+			cd "${ANYKERNEL}"/patch || return
+				delett -- *
+		cd - || return
+esac
 decolorize
 
 # Copy the image to AnyKernel
@@ -140,7 +149,8 @@ cd "${ANYKERNEL}" || return
 colorize "${CYAN}"
 		command zip -rT9 "${TEMP_ZIP}" -- *
 		java -jar "$SCRIPTDIR"/zipsigner-3.0.jar "${TEMP_ZIP}" "${FINAL_ZIP}"
-		export SHA1_SUM="$(sha1sum "${FINAL_ZIP}" | awk '{print $1}')"
+		SHA1_SUM="$(sha1sum "${FINAL_ZIP}" | awk '{print $1}')"
+		export SHA1_SUM
 		delett "${TEMP_ZIP}"
 	cd - || return
 decolorize

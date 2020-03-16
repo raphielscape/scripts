@@ -109,8 +109,6 @@ tg_senderror() {
 
     if [ "${ZIP_UPLOAD}" = true ]; then
         tg_channelcast "Build Throwing Error(s)"
-    else
-        tg_debugcast "Build Throwing Error(s)"
     fi
 
     [ -n "${STATUS}" ] &&
