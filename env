@@ -70,27 +70,14 @@ prepare_compiler() {
             case $WORKER in
                 raphielbox)
                     CC="clang"
-                    AS="llvm-as"
-                    LD="${CROSS_COMPILE}ld.bfd"
-
-                    AR="llvm-ar"
-                    NM="llvm-nm"
-                    STRIP="llvm-strip"
-                    OBJCOPY="llvm-objcopy"
-                    OBJDUMP="llvm-objdump"
-                    OBJSIZE="llvm-objsize"
+                    LD="ld.lld"
+                    LLVM="llvm-"
                 ;;
                 docker)
                     CC="clang-11"
-                    AS="llvm-as-11"
                     LD="ld.lld-11"
-
-                    AR="llvm-ar-11"
-                    NM="llvm-nm-11"
-                    STRIP="llvm-strip-11"
-                    OBJCOPY="llvm-objcopy-11"
-                    OBJDUMP="llvm-objdump-11"
-                    OBJSIZE="llvm-objsize-11"
+                    LLVM="llvm-"
+                    LLVM_VERSION="-11"
             esac
         ;;
         GCC)
@@ -100,7 +87,7 @@ prepare_compiler() {
     esac
 }
 
-export CROSS_COMPILE CROSS_COMPILE_ARM32
+export CROSS_COMPILE CROSS_COMPILE_ARM32 LLVM LLVM_VERSION
 
 compilerannounce() {
     case $COMPILER in
@@ -126,9 +113,16 @@ build() {
 
     case $COMPILER in
         Clang)
-            make -j${JOBS} O="${OUTDIR}" CC="${CC}" LD="${LD}" AS="${AS}" \
-            AR="${AR}" AR="${AR}" NM="${NM}" STRIP="${STRIP}" OBJCOPY="${OBJCOPY}" \
-            OBJDUMP="${OBJDUMP}" OBJSIZE="${OBJSIZE}" CLANG_TRIPLE="${CLANG_TRIPLE}" "$@"
+            case $WORKER in
+                raphielbox)
+                    make -j${JOBS} O="${OUTDIR}" CC="${CC}" LD="${LD}" \
+                    CLANG_TRIPLE="${CLANG_TRIPLE}" LLVM=${LLVM} "$@"
+                ;;
+                docker)
+                    make -j${JOBS} O="${OUTDIR}" CC="${CC}" LD="${LD}" \
+                    CLANG_TRIPLE="${CLANG_TRIPLE}" LLVM=${LLVM} \
+                    LLVM_VERSION=${LLVM_VERSION} "$@"
+            esac
         ;;
         GCC)
             make -j${JOBS} O="${OUTDIR}" LD="${LD}" "$@"
