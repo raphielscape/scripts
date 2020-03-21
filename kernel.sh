@@ -42,12 +42,17 @@ export ARCH SUBARCH IMAGE
 header "You're working with $DEVICE on $PARSE_BRANCH" "$GREEN"
 
 # First-post works
-if [ "${ZIP_UPLOAD}" = true ]; then
-	kickstart_pub
-else
-	if [ "${RELEASE}" = true ]; then
-		kickstart_release
-	fi
+if [ ! "${WORKER}" = raphielbox ]; then
+	case $COMMIT_POINT in
+		*"[REL]"*)
+			kickstart_release
+		;;
+		*"[CHECKPOINT]"*)
+			checkpoint_pub
+		;;
+		*)
+			kickstart_pub
+	esac
 fi
 
 # Whenever build is errored, report it.
@@ -67,13 +72,19 @@ fi
 TEMPZIPNAME="NightlyHat-${DEVICE}-${CU}-$(date +%Y%m%d-%H%M)-unsigned.zip"
 TEMP_ZIP="${ZIP_DIR}/${TEMPZIPNAME}"
 
-if [ "${RELEASE}" = true ]; then
-	ZIPNAMEREL="Disrupt-${DEVICE}-$(date +%Y%m%d-%H%M).zip"
-	export FINAL_ZIP="${ZIP_DIR}/${ZIPNAMEREL}"
-else
-	ZIPNAME="NightlyHat-${DEVICE}-$(date +%Y%m%d-%H%M).zip"
-	export FINAL_ZIP="${ZIP_DIR}/${ZIPNAME}"
-fi
+case $COMMIT_POINT in
+	*"[REL]"*)
+		ZIPNAME="Disrupt-${DEVICE}-$(date +%Y%m%d-%H%M).zip"
+		export FINAL_ZIP="${ZIP_DIR}/${ZIPNAME}"
+	;;
+	*"[CHECKPOINT]"*)
+		ZIPNAME="PointOfDisrupt-${DEVICE}-$(date +%Y%m%d-%H%M).zip"
+		export FINAL_ZIP="${ZIP_DIR}/${ZIPNAME}"
+	;;
+	*)
+		ZIPNAME="NightlyHat-${DEVICE}-$(date +%Y%m%d-%H%M).zip"
+		export FINAL_ZIP="${ZIP_DIR}/${ZIPNAME}"
+esac
 
 # Create zip directory if it's not exists
 [ ! -d "${ZIP_DIR}" ] && mkdir -pv "${ZIP_DIR}"

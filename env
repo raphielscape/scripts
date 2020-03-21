@@ -85,9 +85,9 @@ prepare_compiler() {
             CROSS_COMPILE="aarch64-raphiel-elf-"
             LD=aarch64-raphiel-elf-ld
     esac
-}
 
-export CROSS_COMPILE CROSS_COMPILE_ARM32 LLVM LLVM_VERSION
+    export CROSS_COMPILE CROSS_COMPILE_ARM32 LLVM LLVM_VERSION
+}
 
 compilerannounce() {
     case $COMPILER in

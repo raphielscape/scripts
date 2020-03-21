@@ -72,7 +72,6 @@ tg_channelcast() {
 }
 
 kickstart_pub() {
-    # tg_sendinfo "Compilation Rolled! Clocked at $(date +%Y%m%d-%H%M)"
     tg_build_sendsticker
 
     tg_channelcast "Compiler <code>${COMPILER_USED}</code>" \
@@ -85,9 +84,8 @@ kickstart_pub() {
     "Started on <code>$(whoami)</code>"
 }
 
-kickstart_release() {
-    tg_buildmain_sendgif
-    # tg_sendinfo "Release Beeld Rolled! Clocked at $(date +%Y%m%d-%H%M)"
+checkpoint_pub() {
+    tg_build_sendsticker
 
     tg_channelcast "Compiler <code>${COMPILER_USED}</code>" \
     "Device <b>${DEVICE}</b>" \
@@ -98,8 +96,24 @@ kickstart_release() {
     "Clocked at <code>$(date +%Y%m%d-%H%M)</code>" \
     "Started on <code>$(whoami)</code>"
 
-    tg_sendinfo "This ${COMPILER_USED} build will be pushed separately under Release tag" \
-                "You can sleep until I done lewding Hat Kid"
+    tg_sendinfo "This build is a Pre-release build and (maybe) safe for Production. " \
+            "You can sleep until I done fixing the spaceship."
+}
+
+kickstart_release() {
+    tg_buildmain_sendgif
+
+    tg_channelcast "Compiler <code>${COMPILER_USED}</code>" \
+    "Device <b>${DEVICE}</b>" \
+    "Linker <code>${LINKER_USED}</code>" \
+    "Branch <code>${PARSE_BRANCH}</code>" \
+    "Commit Point <code>${COMMIT_POINT}</code>" \
+    "Under <code>$(hostname)</code>" \
+    "Clocked at <code>$(date +%Y%m%d-%H%M)</code>" \
+    "Started on <code>$(whoami)</code>"
+
+    tg_sendinfo "This build will be pushed separately under Release tag. " \
+                "You can sleep until I done lewding Hat Kid."
 }
 
 # Whenever errors occured, report them
