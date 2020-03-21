@@ -115,12 +115,10 @@ build() {
         Clang)
             case $WORKER in
                 raphielbox)
-                    make -j${JOBS} O="${OUTDIR}" CC="${CC}" LD="${LD}" \
-                    CLANG_TRIPLE="${CLANG_TRIPLE}" LLVM=${LLVM} "$@"
+                    make -j${JOBS} O="${OUTDIR}" CLANG_TRIPLE="${CLANG_TRIPLE}" LLVM=${LLVM} "$@"
                 ;;
                 docker)
-                    make -j${JOBS} O="${OUTDIR}" CC="${CC}" LD="${LD}" \
-                    CLANG_TRIPLE="${CLANG_TRIPLE}" LLVM=${LLVM} \
+                    make -j${JOBS} O="${OUTDIR}" CLANG_TRIPLE="${CLANG_TRIPLE}" LLVM=${LLVM} \
                     LLVM_VERSION=${LLVM_VERSION} "$@"
             esac
         ;;
