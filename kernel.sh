@@ -169,6 +169,10 @@ decolorize
 if [ -f "$FINAL_ZIP" ]; then
 	if [ "${ZIP_UPLOAD}" = true ]; then
 		header "Uploading ${ZIPNAME}" "${LIGHTGREEN}"
+		# HACK : Telegram ranting that our action is too fast
+		# Telegram want 10 seconds pause per-commands
+		# Sleep for 10 Second before pushing
+		sleep 10
 		push
 	fi
 	header "${ZIPNAME} can be found at ${FINAL_ZIP}" "${LIGHTGREEN}"
