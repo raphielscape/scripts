@@ -74,10 +74,10 @@ prepare_compiler() {
                     LLVM="llvm-"
                 ;;
                 docker)
-                    CC="clang-11"
-                    LD="ld.lld-11"
+                    CC="clang-12"
+                    LD="ld.lld-12"
                     LLVM="llvm-"
-                    LLVM_VERSION="-11"
+                    LLVM_VERSION="-12"
             esac
         ;;
         GCC)
