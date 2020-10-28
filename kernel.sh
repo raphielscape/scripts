@@ -117,15 +117,21 @@ colorize "${YELLOW}"
 
 case $WORKER in
 	raphielbox)
-		if [ "${SDM845}" = true ]; then
+		case "${FAMILY}" in ${SDM845})
 			cd "${WORKDIR}/AnyKernel2-git" || return
 			header "It's sdm845, checking out..."
 			git checkout sdm845 >> /dev/null
-		else
+		;;
+		${SM8250})
 			cd "${WORKDIR}/AnyKernel2-git" || return
-			header "It's common, checking out..."
+			header "It's sdm845, checking out..."
+			git checkout sm8250 >> /dev/null
+		;;
+		*)
+			cd "${WORKDIR}/AnyKernel2-git" || return
+			header "It's anything else, checking out master..."
 			git checkout master >> /dev/null
-		fi
+		esac
 		delett "${ANYKERNEL}"
 
 		copy "${WORKDIR}/AnyKernel2-git" "${ANYKERNEL}"
